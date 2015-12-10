@@ -8,6 +8,9 @@
 
 <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
+function ChangeDocumentationStatus(id, status){
+    document.write(id + " " + status);
+}
 function CreateAchievement(name){
     $.ajax({
         method:"POST",
@@ -20,6 +23,9 @@ function CreateAchievement(name){
         });              
 
 }
+function DeleteAchievement(id){
+    document.write(id);
+}
 function DisplayAchievement(id){
     $.ajax({
         method:"POST",
@@ -27,7 +33,7 @@ function DisplayAchievement(id){
         data:{id:id}
     })
         .done (function (result){
-            document.write(result);
+            $("#achievement_profile").html(result);
         });      
 
 }
@@ -58,8 +64,8 @@ if ($_GET['rla']==0):?>
 <div id="error"></div>
 <div id="list_of_achievements"></div>
 <?php elseif ($_GET['rla']>0):?>
-<body onload="DisplayAchievement(<?php echo $_GET['rla'] ?>)">
-
+<body onload="DisplayAchievement(<?php echo $_GET['rla'];?>)">
+<div id="achievement_profile"></div>
 <?php endif;?>
 </body>
 </html>
