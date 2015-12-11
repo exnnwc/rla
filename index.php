@@ -8,8 +8,28 @@
 
 <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 <script>
+function ChangeDescription(id, description){
+    $.ajax({
+        method:"POST",
+        url:"achievements.php",
+        data:{function_to_be_called:"change_description", id:id, description:description}
+    })
+        .done (function (result){
+            DisplayAchievement(id);
+        });              
+    
+    
+}
 function ChangeDocumentationStatus(id, status){
-    document.write(id + " " + status);
+    $.ajax({
+        method:"POST",
+        url:"achievements.php",
+        data:{function_to_be_called:"change_documentation_status", id:id, status:status}
+    })
+        .done (function (result){
+            DisplayAchievement(id);
+        });              
+    
 }
 function CreateAchievement(name){
     $.ajax({
@@ -23,19 +43,58 @@ function CreateAchievement(name){
         });              
 
 }
-function DeleteAchievement(id){
-    document.write(id);
-}
-function DisplayAchievement(id){
+function DeleteAchievement(id, fromProfile){
+if (window.confirm("Are you sure you want to delete this achievement?")){
     $.ajax({
         method:"POST",
-        url:"display.php",
-        data:{id:id}
+        url:"achievements.php",
+        data:{function_to_be_called:"delete", id:id}
     })
         .done (function (result){
-            $("#achievement_profile").html(result);
-        });      
+                if (fromProfile==true)
+                    DisplayAchievement(id);
+                else if (fromProfile==false){
+                    ListAchievements();
+                }
 
+        });   
+}
+}
+function DisplayAchievement(id){
+   $.ajax({
+        method:"POST",
+        url:"achievements.php",
+        data:{function_to_be_called:"is_it_active", id:id}
+    })
+        .done (function (result){
+            if (result=="1"){
+                    $.ajax({
+                        method:"POST",
+                        url:"display.php",
+                        data:{id:id}
+                    })
+                        .done (function (result){
+                            $("#achievement_profile").html(result);
+                        });
+            } else if (result=="0"){
+                $("#achievement_profile").html("This achievement has been deleted.");
+            } else {
+                $("#achievement_profile").html("This profile does not exist.");
+            }
+        }); 
+
+}
+
+function IsItActive(id){
+
+   $.ajax({
+        method:"POST",
+        url:"achievements.php",
+        data:{function_to_be_called:"is_it_active", id:id}
+    })
+        .done (function (result){
+                $("#achievement_profile").html(typeof result);
+        });
 }
 function ListAchievements(){
 
@@ -65,6 +124,7 @@ if ($_GET['rla']==0):?>
 <div id="list_of_achievements"></div>
 <?php elseif ($_GET['rla']>0):?>
 <body onload="DisplayAchievement(<?php echo $_GET['rla'];?>)">
+<div id="error"></div>
 <div id="achievement_profile"></div>
 <?php endif;?>
 </body>
