@@ -24,3 +24,4 @@ censored boolean,
 documented boolean default 0,
 active boolean default 1);
 
+Doing some shit.
