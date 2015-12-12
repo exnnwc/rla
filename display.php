@@ -54,10 +54,16 @@ echo $achievement->documented
 <div>
 <h3>
 Category <input type="button" value="Edit" />
-<div style="display:none;" />
-<h4>None</h4>
-</div>
 </h3>
+<div style="display:none;" />
+<div><input type='radio' />None</div>
+<div style='margin-left:30px;'>N/A</div>
+<?php
+display_categories($achievement->category);
+?>
+</div>
+
+
 <div>
 <?php
 echo $achievement->category ? $achievement->category : "None selected.";
@@ -105,4 +111,7 @@ function display_documentation_menu($id, $status){
     return $menu;
 }
 
+function display_categories($active_category){
+    
+}
 ?>

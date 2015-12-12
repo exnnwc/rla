@@ -20,6 +20,21 @@ function ChangeDescription(id, description){
     
     
 }
+function ChangeRank(id, new_rank, fromProfile){
+    $.ajax({
+        method:"POST",
+        url:"achievements.php",
+        data:{function_to_be_called:"change_rank", id:id, new_rank:new_rank}
+    })
+        .done (function (result){
+            if (fromProfile){
+                DisplayAchievement(id);
+            } else {
+                ListAchievements();
+            }
+        });              
+    
+}
 function ChangeDocumentationStatus(id, status){
     $.ajax({
         method:"POST",
