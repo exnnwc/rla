@@ -31,15 +31,14 @@ function ChangeDocumentationStatus(id, status){
         });              
     
 }
-function CreateAchievement(name){
+function CreateAchievement(parent, name){
     $.ajax({
         method:"POST",
         url:"achievements.php",
-        data:{function_to_be_called:"create_quick", name:name}
+        data:{function_to_be_called:"create_quick", parent:parent, name:name}
     })
         .done (function (result){
             ListAchievements();
-//            $("#error").html(result);
         });              
 
 }
@@ -52,6 +51,7 @@ if (window.confirm("Are you sure you want to delete this achievement?")){
     })
         .done (function (result){
                 if (fromProfile==true)
+					//Need to include code to make a distinction between the parent and child.
                     DisplayAchievement(id);
                 else if (fromProfile==false){
                     ListAchievements();
@@ -75,6 +75,15 @@ function DisplayAchievement(id){
                     })
                         .done (function (result){
                             $("#achievement_profile").html(result);
+										    $.ajax({
+												method:"POST",
+												url:"achievements.php",
+												data:{function_to_be_called:"list_children", parent:id}
+											})
+												.done (function (result){
+													$("#child_achievements_of_"+id).html(result);
+													
+												}); 
                         });
             } else if (result=="0"){
                 $("#achievement_profile").html("This achievement has been deleted.");
@@ -97,7 +106,6 @@ function IsItActive(id){
         });
 }
 function ListAchievements(){
-
     $.ajax({
         method:"POST",
         url:"achievements.php",
@@ -105,6 +113,7 @@ function ListAchievements(){
     })
         .done (function (result){
             $("#list_of_achievements").html(result);
+
         });      
 
 }
@@ -118,12 +127,12 @@ if (!isset($_GET['rla'])){
 }
 if ($_GET['rla']==0):?>
 <body onload="ListAchievements();">
-<input id="new_achievement" type='text' onkeypress="if (event.keyCode==13){CreateAchievement(this.value);this.value='';}"/>
-<input type="button" value="Quick Create" onclick="CreateAchievement($('#new_achievement')"/>
+<input id="new_achievement" type='text' onkeypress="if (event.keyCode==13){CreateAchievement(0, this.value);this.value='';}"/>
+<input type="button" value="Quick Create" onclick="CreateAchievement(0, $('#new_achievement')"/>
 <div id="error"></div>
 <div id="list_of_achievements"></div>
 <?php elseif ($_GET['rla']>0):?>
-<body onload="DisplayAchievement(<?php echo $_GET['rla'];?>)">
+<body onload="DisplayAchievement(<?php echo $_GET['rla'];?>);ListChildrenOf(<?php echo $_GET['rla'];?>)">
 <div id="error"></div>
 <div id="achievement_profile"></div>
 <?php endif;?>

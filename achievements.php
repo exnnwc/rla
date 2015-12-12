@@ -9,7 +9,7 @@ switch ($_POST['function_to_be_called']){
         change_description($_POST['id'], $_POST['description']);
         break;
     case "create_quick":
-        create_quick($_POST['name']);
+        create_quick($_POST['name'], $_POST['parent']);
         break;
     case "delete":
         delete($_POST['id']);
@@ -20,7 +20,9 @@ switch ($_POST['function_to_be_called']){
     case "list":
         list_all();
         break;
-
+	case "list_children":
+		list_children($_POST['parent']);
+		break;
 }
 
 function change_description($id, $description){
@@ -40,10 +42,11 @@ function change_documentation_status($id, $status){
     $statement->execute();
 }
 
-function create_quick($name){
+function create_quick($name, $parent){
     global $connection;
-    $statement=$connection->prepare("insert into achievements(name) values (?)");
+    $statement=$connection->prepare("insert into achievements(name, parent) values (?, ?)");
     $statement->bindValue(1, $name, PDO::PARAM_STR);
+    $statement->bindValue(2, $parent, PDO::PARAM_INT);
     $statement->execute();
 }
 
@@ -80,7 +83,7 @@ function list_children($id){
     $statement->execute();
     while ($achievement=$statement->fetchObject()){
         echo "<div>
-              <input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, false);\" />
+              <input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, true);\" />
               <a href='http://".$_SERVER['SERVER_NAME']."/rla/?rla=$achievement->id'> $achievement->name </a>
               </div>";
     }

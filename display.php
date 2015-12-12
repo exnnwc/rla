@@ -73,8 +73,9 @@ echo $achievement->description ? $achievement->description : "";
 <h3>
 Sub-Achievements
 </h3>
-
-<div><?php display_child_achievements($achievement->id); ?></div>
+<input id="new_achievement<?php echo $achievement->id; ?>" type='text' onkeypress="if (event.keyCode==13){CreateAchievement(<?php echo $achievement->id; ?>, this.value);this.value='';}"/>
+<input type="button" value="Quick Create" onclick="CreateAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>')"/>
+<div id='child_achievements_of_<?php echo $achievement->id; ?>'></div>
 </div>
 <?php
 
@@ -89,8 +90,4 @@ function display_documentation_menu($id, $status){
     return $menu;
 }
 
-
-function display_child_achievements($achievement->id){
-    
-}
 ?>
