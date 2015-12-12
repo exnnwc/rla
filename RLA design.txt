@@ -19,9 +19,10 @@ completed timestamp,
 owner int unsigned,
 parent int unsigned,
 name varchar(255),
+category varchar(255),
 description text,
 censored boolean,
 documented boolean default 0,
 active boolean default 1);
 
-Doing some shit.
+

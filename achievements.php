@@ -83,7 +83,7 @@ function list_children($id){
     $statement->execute();
     while ($achievement=$statement->fetchObject()){
         echo "<div>
-              <input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, true);\" />
+              <input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, $achievement->parent, true);\" />
               <a href='http://".$_SERVER['SERVER_NAME']."/rla/?rla=$achievement->id'> $achievement->name </a>
               </div>";
     }

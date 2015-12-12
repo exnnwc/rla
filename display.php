@@ -22,7 +22,10 @@ echo $achievement->name;
 
 </h1>
 <div>
-<input type='button' value='Delete' onclick="DeleteAchievement(<?php echo $_POST['id'];?>, true)" />
+<input type='button' value='Delete' onclick="DeleteAchievement( 
+<?php echo $achievement->id; ?> , 
+<?php echo $achievement->parent; ?>
+, true)" />
 </div>
 <div>
 Created:
@@ -49,6 +52,18 @@ echo $achievement->documented
 
 </div>
 <div>
+<h3>
+Category <input type="button" value="Edit" />
+<div style="display:none;" />
+<h4>None</h4>
+</div>
+</h3>
+<div>
+<?php
+echo $achievement->category ? $achievement->category : "None selected.";
+
+?>
+</div>
 <h3>
 Description
 <input type='button' value='Edit' onclick="$('#current_description').hide(); $('#new_description_input').show()"/>

@@ -32,17 +32,26 @@ function ChangeDocumentationStatus(id, status){
     
 }
 function CreateAchievement(parent, name){
+
     $.ajax({
         method:"POST",
         url:"achievements.php",
         data:{function_to_be_called:"create_quick", parent:parent, name:name}
     })
         .done (function (result){
-            ListAchievements();
+            if (parent==0){
+                ListAchievements();
+
+            } else if (parent>0){
+                DisplayAchievement(parent);
+
+            } else {
+                document.write("2");
+            }            
         });              
 
 }
-function DeleteAchievement(id, fromProfile){
+function DeleteAchievement(id, parent, fromProfile){
 if (window.confirm("Are you sure you want to delete this achievement?")){
     $.ajax({
         method:"POST",
@@ -52,7 +61,11 @@ if (window.confirm("Are you sure you want to delete this achievement?")){
         .done (function (result){
                 if (fromProfile==true)
 					//Need to include code to make a distinction between the parent and child.
+                if (parent==0){
                     DisplayAchievement(id);
+                } else if (parent>0){
+                    DisplayAchievement(parent);
+                }
                 else if (fromProfile==false){
                     ListAchievements();
                 }
@@ -61,6 +74,7 @@ if (window.confirm("Are you sure you want to delete this achievement?")){
 }
 }
 function DisplayAchievement(id){
+
    $.ajax({
         method:"POST",
         url:"achievements.php",
@@ -113,7 +127,6 @@ function ListAchievements(){
     })
         .done (function (result){
             $("#list_of_achievements").html(result);
-
         });      
 
 }
