@@ -1,11 +1,15 @@
 <?php
-$connection = new PDO ("mysql:host=localhost;dbname=rla", "root", "");
-switch ($_POST['function_to_be_called']){    
+
+$connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
+switch ($_POST['function_to_be_called']) {
     case "change_documentation_status":
         change_documentation_status($_POST['id'], $_POST['status']);
         break;
     case "change_description":
         change_description($_POST['id'], $_POST['description']);
+        break;
+    case "change_power":
+        change_power($_POST['id'], $_POST['new_power']);
         break;
     case "change_rank":
         change_rank($_POST['id'], $_POST['new_rank']);
@@ -21,98 +25,137 @@ switch ($_POST['function_to_be_called']){
     case "list":
         list_all();
         break;
-	case "list_children":
-		list_children($_POST['parent']);
-		break;
+    case "list_children":
+        list_children($_POST['parent']);
+        break;
 }
 
-function change_description($id, $description){
+function change_description($id, $description) {
     //In the future, create a new one instead of just changing it.
     global $connection;
-    $statement=$connection->prepare("update achievements set description=? where id=?");
+    $statement = $connection->prepare("update achievements set description=? where id=?");
     $statement->bindValue(1, $description, PDO::PARAM_STR);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
 
-function change_documentation_status($id, $status){
+function change_documentation_status($id, $status) {
     global $connection;
-    $statement=$connection->prepare("update achievements set documented=? where id=?");
+    $statement = $connection->prepare("update achievements set documented=? where id=?");
     $statement->bindValue(1, $status, PDO::PARAM_BOOL);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
-function change_rank($id, $rank){
+
+function change_power($id, $power) {
+//    echo "$id $power";
     global $connection;
-    $statement=$connection->prepare ("update achievements set rank=? where id=?");
-    $statement->bindValue(1, $rank, PDO::PARAM_INT);
+    $statement = $connection->prepare("update achievements set power=? where id=?");
+    $statement->bindValue(1, $power, PDO::PARAM_INT);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
     //Need to reorder the other ones.
 }
-function create_quick($name, $parent){
+
+function change_rank($id, $rank) {
     global $connection;
-    $statement=$connection->prepare("insert into achievements(name, parent) values (?, ?)");
+    $statement = $connection->prepare("update achievements set rank=? where id=?");
+    $statement->bindValue(1, $rank, PDO::PARAM_INT);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
+    //Need to reorder the other ones.
+}
+
+function create_quick($name, $parent) {
+    global $connection;
+
+    $statement = $connection->prepare("insert into achievements(name, parent, rank) values (?, ?, ?)");
     $statement->bindValue(1, $name, PDO::PARAM_STR);
     $statement->bindValue(2, $parent, PDO::PARAM_INT);
+    $statement->bindValue(3, fetch_rank($parent) + 1, PDO::PARAM_INT);
     $statement->execute();
 }
 
-function delete($id){
+function delete($id) {
     global $connection;
-    $statement=$connection->prepare("update achievements set active=0 where id=?");
+    $statement = $connection->prepare("select * from achievements where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    $achievement = $statement->fetchObject();
+    $statement = $connection->prepare("update achievements set active=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 
+    $rank = 1;
+    $statement = $connection->query("select * from achievements where active=1 and parent=$achievement->parent order by rank");
+    while ($achievement_in_list = $statement->fetchObject) {
+        $connection->exec("update achievements set rank=$rank where id=$achivement_in_list");
+        $rank++;
+    }
 }
 
-function is_it_active($id){
+function fetch_rank($parent) {
     global $connection;
-    $statement=$connection->prepare("select active from achievements where id=?");
+    $statement = $connection->prepare("select rank from achievements where active=1 and parent=? order by rank desc limit 1");
+    $statement->bindValue(1, $parent, PDO::PARAM_INT);
+    $statement->execute();
+    return $statement->fetchColumn();
+}
+
+function is_it_active($id) {
+    global $connection;
+    $statement = $connection->prepare("select active from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     echo $statement->fetchColumn();
 }
-function list_all(){
+
+function list_all() {
+    echo "<table style='text-align:center;'>"
+    . "<tr><td>Rank</td><td>X</td><td>Power</td><td>Achievement Name</td></tr>";
     global $connection;
-    $statement=$connection->query("select * from achievements where active=1 and parent=0");
-    while ($achievement=$statement->fetchObject()){
-        echo "<div title='ID #$achievement->id'>$achievement->rank)
-              <input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, false);\" />
+    $statement = $connection->query("select * from achievements where active=1 and parent=0");
+    while ($achievement = $statement->fetchObject()) {
+        //<div title='ID #$achievement->id'>
+        echo "<tr><td>$achievement->rank</td>
+            <td>
+              <input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, $achievement->parent, false);\" />
+                  </td><td>
               <input type='button' value='-' 
-                onclick=\"ChangeRank($achievement->id, ". ($achievement->rank-1).", true);\"/>
-              <input type='text' style='width:32px;text-align:center;' value='$achievement->repeated' />
-              <input type='button' value='+' />
-              <a href='http://".$_SERVER['SERVER_NAME']."/rla/?rla=$achievement->id'> $achievement->name </a>
-              </div>";
+                onclick=\"ChangePower($achievement->id, " . ($achievement->power - 1) . ", false);\"/>                    
+              <input type='text' style='width:32px;text-align:center;' value='$achievement->power' />
+              <input type='button' value='+' 
+                onclick=\"ChangePower($achievement->id, " . ($achievement->power + 1) . ", false);\"/>
+                    </td><td>
+              <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement->id'> $achievement->name </a>
+                  </td></td></tr>
+              ";
     }
+    echo "</table>";
 }
 
-function list_children($id){
+function list_children($id) {
     global $connection;
-    $statement=$connection->prepare("select * from achievements where active=1 and parent=?");
+    $statement = $connection->prepare("select * from achievements where active=1 and parent=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
-    while ($achievement=$statement->fetchObject()){
+    while ($achievement = $statement->fetchObject()) {
         echo "<div>
               <input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, $achievement->parent, true);\" />
-              <a href='http://".$_SERVER['SERVER_NAME']."/rla/?rla=$achievement->id'> $achievement->name </a>
+              <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement->id'> $achievement->name </a>
               </div>";
     }
-
 }
-
-
 
 function rank_table_in_order($query, $parent) {
 //Erase if not used by 01/15/15
-$rank=1;
-    if ($query==0){
-        $query="select * from achievements where active=1 and parent=$parent";
+    $rank = 1;
+    if ($query == 0) {
+        $query = "select * from achievements where active=1 and parent=$parent";
     }
-$statement=$connection->query($query);
-while ($achievement=$statement->fetchObject()){
-    $connection->exec("update achievements set rank=$rank where id=$achievement->id");
-    $rank++;
+    $statement = $connection->query($query);
+    while ($achievement = $statement->fetchObject()) {
+        $connection->exec("update achievements set rank=$rank where id=$achievement->id");
+        $rank++;
+    }
 }
-}
-
