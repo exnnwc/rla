@@ -7,148 +7,7 @@
     </head>
 
     <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script>
-        function ChangeDescription(id, description) {
-            $.ajax({
-                method: "POST",
-                url: "achievements.php",
-                data: {function_to_be_called: "change_description", id: id, description: description}
-            })
-                    .done(function (result) {
-                        DisplayAchievement(id);
-                    });
-
-
-        }
-        function ChangePower(id, new_power, fromProfile) {
-            $.ajax({
-                method: "POST",
-                url: "achievements.php",
-                data: {function_to_be_called: "change_power", id: id, new_power: new_power}
-            })
-                    .done(function (result) {
-                        //  $("#error").html(result);
-                        if (fromProfile) {
-                            DisplayAchievement(id);
-                            //$("#error").html("1");
-                        } else {
-                            ListAchievements();
-                            //$("#error").html("2");
-                        }
-                    });
-
-        }
-        function ChangeDocumentationStatus(id, status) {
-            $.ajax({
-                method: "POST",
-                url: "achievements.php",
-                data: {function_to_be_called: "change_documentation_status", id: id, status: status}
-            })
-                    .done(function (result) {
-                        DisplayAchievement(id);
-                    });
-
-        }
-        function CreateAchievement(parent, name) {
-            //    document.write(parent + " " + name);
-            $.ajax({
-                method: "POST",
-                url: "achievements.php",
-                data: {function_to_be_called: "create_quick", parent: parent, name: name}
-            })
-                    .done(function (result) {
-                        if (parent == 0) {
-                            ListAchievements();
-
-                        } else if (parent > 0) {
-                            DisplayAchievement(parent);
-
-                        } else {
-                            document.write("2");
-                        }
-                    });
-
-        }
-        function DeleteAchievement(id, parent, fromProfile) {
-            if (window.confirm("Are you sure you want to delete this achievement?")) {
-                $.ajax({
-                    method: "POST",
-                    url: "achievements.php",
-                    data: {function_to_be_called: "delete", id: id}
-                })
-                        .done(function (result) {
-                            if (fromProfile) {
-                                //Need to include code to make a distinction between the parent and child.
-                                if (parent == 0) {
-                                    DisplayAchievement(id);
-                                } else if (parent > 0) {
-                                    DisplayAchievement(parent);
-                                }
-                            } else if (fromProfile == false) {
-                                ListAchievements();
-                            }
-
-                        }
-                        );
-            }
-        }
-        function DisplayAchievement(id) {
-
-            $.ajax({
-                method: "POST",
-                url: "achievements.php",
-                data: {function_to_be_called: "is_it_active", id: id}
-            })
-                    .done(function (result) {
-                        if (result == "1") {
-                            $.ajax({
-                                method: "POST",
-                                url: "display.php",
-                                data: {id: id}
-                            })
-                                    .done(function (result) {
-                                        $("#achievement_profile").html(result);
-                                        $.ajax({
-                                            method: "POST",
-                                            url: "achievements.php",
-                                            data: {function_to_be_called: "list_children", parent: id}
-                                        })
-                                                .done(function (result) {
-                                                    $("#child_achievements_of_" + id).html(result);
-
-                                                });
-                                    });
-                        } else if (result == "0") {
-                            $("#achievement_profile").html("This achievement has been deleted.");
-                        } else {
-                            $("#achievement_profile").html("This profile does not exist.");
-                        }
-                    });
-
-        }
-
-        function IsItActive(id) {
-
-            $.ajax({
-                method: "POST",
-                url: "achievements.php",
-                data: {function_to_be_called: "is_it_active", id: id}
-            })
-                    .done(function (result) {
-                        $("#achievement_profile").html(typeof result);
-                    });
-        }
-        function ListAchievements() {
-            $.ajax({
-                method: "POST",
-                url: "achievements.php",
-                data: {function_to_be_called: "list"}
-            })
-                    .done(function (result) {
-                        $("#list_of_achievements").html(result);
-                    });
-
-        }
+    <script src="rla.js">
 
     </script>
     <?php
@@ -159,17 +18,35 @@
     }
     if ($_GET['rla'] == 0):
         ?>
-        <body onload="ListAchievements();">
-            <input id="new_achievement" type='text' onkeypress="if (event.keyCode == 13) {
+        <body onload="ListAchievements(0);">
+            <input id="new_achievement" type='text' maxlength="255" onkeypress="if (event.keyCode == 13) {
                             CreateAchievement(0, this.value);
                             this.value = '';
-                        }"/>
+                        }"/>          
             <input type="button" value="Quick Create" onclick="CreateAchievement(0, $('#new_achievement').val());"/>
+            <div>
+                <input id="sort_rank_button" type="button" value="Rank &#8595;" 
+                       onclick="ListAchievements('rank');$('#sort_rank_button').hide();$('#sort_rankrev_button').show();" />
+                <input id="sort_rankrev_button" type='button' value="Rank &#8593;"  style="display:none"
+                       onclick="ListAchievements('rank_rev');$('#sort_rank_button').show();$('#sort_rankrev_button').hide();" />
+                <input id="sort_power_button" type="button" value="Power &#8595;" 
+                       onclick="ListAchievements('power');$('#sort_power_button').hide();$('#sort_powerrev_button').show();" />
+                <input id="sort_powerrev_button" type="button" value="Power &#8593;" style="display:none"
+                       onclick="ListAchievements('power_rev');$('#sort_power_button').show();$('#sort_powerrev_button').hide();" />
+                <input id="sort_name_button" type="button" value="Name &#8595;" 
+                       onclick="ListAchievements('name');$('#sort_name_button').hide();$('#sort_namerev_button').show();" />
+                <input id="sort_namerev_button" type="button" value="Name &#8593;"  style="display:none"
+                       onclick="ListAchievements('name_rev');$('#sort_name_button').show();$('#sort_namerev_button').hide();" />
+                <input id="sort_created_button" type="button" value="Time &#8595;" 
+                       onclick="ListAchievements('created');$('#sort_created_button').hide();$('#sort_createdrev_button').show();" />
+                <input id="sort_createdrev_button" type="button" value="Time &#8593;"  style="display:none"
+                       onclick="ListAchievements('created_rev');$('#sort_created_button').show();$('#sort_createdrev_button').hide();" />
+                
+            </div>
             <div id="error"></div>
             <div id="list_of_achievements"></div>
         <?php elseif ($_GET['rla'] > 0): ?>
-        <body onload="DisplayAchievement(<?php echo $_GET['rla']; ?>);
-                    ListChildrenOf(<?php echo $_GET['rla']; ?>)">
+        <body onload="DisplayAchievement(<?php echo $_GET['rla']; ?>);">
             <div id="error"></div>
             <div id="achievement_profile"></div>
         <?php endif; ?>
