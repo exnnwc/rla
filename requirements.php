@@ -81,7 +81,7 @@ function list_requirements($id, $type) {
             } else if ($type=="by"){
                 echo $requirement->required_by;
             }
-            echo ");\" />$achievement->name</div>";
+            echo ");\" /><a href='http://".$_SERVER['SERVER_NAME']."/rla/?rla=$achievement->id'>$achievement->name</a></div>";
         }
     }
 }

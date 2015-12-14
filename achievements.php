@@ -10,6 +10,9 @@ switch ($_POST['function_to_be_called']) {
     case "change_description":
         change_description($_POST['id'], $_POST['description']);
         break;
+    case "change_name":
+        change_name($_POST['id'], $_POST['new_name']);
+        break;
     case "change_power":
         change_power($_POST['id'], $_POST['new_power']);
         break;
@@ -48,6 +51,21 @@ function change_documentation_status($id, $status) {
     $statement->bindValue(1, $status, PDO::PARAM_BOOL);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
+}
+
+function change_name($id, $name){
+    global $connection;
+    //echo "$id - $name";
+    $statement=$connection->prepare("select count(*) from achievements where id=? and name=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->bindValue(2, $name, PDO::PARAM_STR);
+    $statement->execute();
+    if ($statement->fetchColumn()==0){
+        $statement=$connection->prepare("update achievements set name=? where id=?");
+        $statement->bindValue(1, $name, PDO::PARAM_STR);
+        $statement->bindValue(2, $id, PDO::PARAM_INT);
+        $statement->execute();
+    }
 }
 
 function change_power($id, $power) {

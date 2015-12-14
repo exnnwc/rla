@@ -10,6 +10,18 @@ function ChangeDescription(id, description) {
 
 
 }
+function ChangeName(id, new_name){
+    //document.write(id+ " " + new_name);
+    $.ajax({
+        method: "POST",
+        url: "achievements.php",
+        data: {function_to_be_called: "change_name", id: id, new_name: new_name}
+    })
+            .done(function (result) {
+//                $("#error").html(result);
+                DisplayAchievement(id);
+            });
+}
 function ChangePower(id, new_power, fromProfile) {
     $.ajax({
         method: "POST",
@@ -73,7 +85,7 @@ function CreateAchievement(parent, name) {
                         ListAchievements(0);
 
                     } else if (parent > 0) {
-                        DisplayAchievement(parent);
+                        DisplayChildren(parent);
 
                     } else {
                         document.write("2");
@@ -118,7 +130,7 @@ function DeleteAchievement(id, parent, fromProfile) {
                         if (parent == 0) {
                             DisplayAchievement(id);
                         } else if (parent > 0) {
-                            DisplayAchievement(parent);
+                            DisplayChildren(parent);
                         }
                     } else if (fromProfile == false) {
                         ListAchievements(0);
@@ -160,15 +172,7 @@ function DisplayAchievement(id) {
                                 $("#achievement_profile").html(result);
                                 ListRequirements(id, "for");
                                 ListRequirements(id, "by");
-                                $.ajax({
-                                    method: "POST",
-                                    url: "achievements.php",
-                                    data: {function_to_be_called: "list_children", parent: id}
-                                })
-                                        .done(function (result) {
-                                            $("#child_achievements_of_" + id).html(result);
-
-                                        });
+                                DisplayChildren(id);
                             });
                 } else if (result == "0") {
                     $("#achievement_profile").html("This achievement has been deleted.");
@@ -178,7 +182,18 @@ function DisplayAchievement(id) {
             });
 
 }
+function DisplayChildren(parent){
+                                $.ajax({
+                                    method: "POST",
+                                    url: "achievements.php",
+                                    data: {function_to_be_called: "list_children", parent:parent}
+                                })
+                                        .done(function (result) {
+                                            $("#child_achievements_of_" + parent).html(result);
 
+                                        });
+
+}
 function IsItActive(id) {
 
     $.ajax({
