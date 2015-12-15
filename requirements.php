@@ -53,6 +53,15 @@ function list_new_requirements($id) {
 
 function list_requirements($id, $type) {
     global $connection;
+    switch ($type){
+        case "for":
+            $other_type="by";
+            break;
+        case "by":
+            $other_type="for";
+            break;
+    }
+
     $query = "select count(*) from requirements where active=1 and required_$type=?";
     $statement = $connection->prepare($query);
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -60,28 +69,23 @@ function list_requirements($id, $type) {
     if ($statement->fetchColumn() == 0) {
         echo "None.";
     } else {
-        $query = "select * from requirements where active=1 and required_$type=?";
+        $query="select achievements.id, achievements.name, requirements.id, requirements.required_$type from achievements inner join requirements on achievements.id=requirements.required_$other_type where requirements.active=1 and required_$type=? order by achievements.name";
+       
         $statement = $connection->prepare($query);
         $statement->bindValue(1, $id, PDO::PARAM_INT);
         $statement->execute();
+        while ($result=$statement->fetch(PDO::FETCH_NUM)){
+            $achievement_id=$result[0];
+            $achievement_name=$result[1];
+            $requirement_id=$result[2];
+            $requirement_required=$result[3];
+
+           echo "<div><input type='button' value='X' 
+                    onclick=\"DeleteRequirement($requirement_id, $requirement_required);\" />
+                  <a href='http://".$_SERVER['SERVER_NAME']."/rla/?rla=$achievement_id'>$achievement_name</a></div>";
+ 
+        }        
 
 
-
-        while ($requirement = $statement->fetchObject()) {
-            if ($type == "for") {
-                $query = "select * from achievements where id=$requirement->required_by";
-            } else if ($type == "by") {
-                $query = "select * from achievements where id=$requirement->required_for";
-            }
-
-            $achievement = $connection->query($query)->fetchObject();
-            echo "<div><input type='button' value='X' onclick=\"DeleteRequirement($requirement->id, ";
-            if ($type=="for"){
-                echo $requirement->required_for;
-            } else if ($type=="by"){
-                echo $requirement->required_by;
-            }
-            echo ");\" /><a href='http://".$_SERVER['SERVER_NAME']."/rla/?rla=$achievement->id'>$achievement->name</a></div>";
-        }
     }
 }

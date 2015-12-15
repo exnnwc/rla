@@ -40,20 +40,26 @@ function ChangePower(id, new_power, fromProfile) {
             });
 
 }
-function ChangeRank(id, new_rank, fromProfile) {
+function ChangeRank(id, new_rank, fromProfile, parent) {
     if (new_rank > 0) {
+        console.log (id + " " + new_rank);
         $.ajax({
             method: "POST",
             url: "achievements.php",
+            
             data: {function_to_be_called: "change_rank", id: id, new_rank: new_rank}
         })
                 .done(function (result) {
-                    $("#error").html(result);
+
+                    //$("#error").html(result);
                     if (fromProfile) {
-                        DisplayAchievement(id);
+                        console.log(parent);
+                        DisplayChildren(parent);
                         //$("#error").html("1");
                     } else {
+                                                console.log ("2");
                         ListAchievements(0);
+                        
                         //$("#error").html("2");
                     }
                 });

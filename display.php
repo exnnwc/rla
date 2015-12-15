@@ -11,6 +11,7 @@ $statement->bindValue(1, $_POST['id'], PDO::PARAM_INT);
 $statement->execute();
 $achievement = $statement->fetchObject();
 ?>
+
 <div id="navbar" style='text-align:center'>
 
     <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/">Back To List</a>
@@ -27,7 +28,7 @@ $achievement = $statement->fetchObject();
 </h1>
 
 <div>
-    <div id="new_achievement_name_div" style="display:none;">
+  <div id="new_achievement_name_div" style="display:none;">
         <input id="new_achievement_name" type="text" value="<?php echo $achievement->name; ?>" 
                onkeypress="if (event.keyCode == 13) {
                            ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
@@ -39,9 +40,7 @@ $achievement = $statement->fetchObject();
                onclick="ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
                   $('#show_new_achievement_name').show();
                   $('#hide_new_achievement_name').hide();"/>
-     <!--ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
-                    $('#show_new_achievement_name').show();
-                    $('#hide_new_achievement_name').hide();" />!-->
+
 
     </div>
     <input id="show_new_achievement_name" type="button" value="Edit" 
@@ -58,6 +57,7 @@ $achievement = $statement->fetchObject();
             , true)" />
 
 </div>
+
 <div>
     Parent: 
     <?php
@@ -72,7 +72,7 @@ $achievement = $statement->fetchObject();
     Created:
 
     <?php
-    echo date($pref_date_format, strtotime($achievement->created))
+    echo date($pref_date_format, strtotime($achievement->created));
     ?>
 
 </div>
@@ -96,24 +96,7 @@ $achievement = $statement->fetchObject();
         ?>
 
     </div>
-    <!--<div>
-        <h3>
-            Category <input type="button" value="Edit" />
-        </h3>
-        <div style="display:none;" />
-        <div><input type='radio' />None</div>
-        <div style='margin-left:30px;'>N/A</div>
-    <?php
-    display_categories($achievement->category);
-    ?>
-    </div>
-    
-    
-    <div>
-    <?php
-    echo $achievement->category ? $achievement->category : "None selected.";
-    ?>
-    </div>-->
+
     <h3>
         Description
         <input id="show_new_description" type='button' value='Edit' onclick="$('#current_description').hide();
@@ -171,7 +154,7 @@ $achievement = $statement->fetchObject();
                 CreateAchievement(<?php echo $achievement->id; ?>, this.value);
                 this.value = '';
             }"/>
-    <input type="button" value="Quick Create" onclick="CreateAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>')"/>
+    <input type="button" value="Quick Create" onclick="CreateAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());"/>
     <div id='child_achievements_of_<?php echo $achievement->id; ?>'></div>
 </div>
 <?php

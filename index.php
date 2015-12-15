@@ -18,6 +18,7 @@
     }
     if ($_GET['rla'] == 0):
         ?>
+
         <body onload="ListAchievements(0);">
             <div>
             <input id="new_achievement" type='text' maxlength="255" onkeypress="if (event.keyCode == 13) {
