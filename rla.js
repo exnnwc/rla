@@ -10,7 +10,7 @@ function ChangeDescription(id, description) {
 
 
 }
-function ChangeName(id, new_name){
+function ChangeName(id, new_name) {
     //document.write(id+ " " + new_name);
     $.ajax({
         method: "POST",
@@ -94,28 +94,35 @@ function CreateAchievement(parent, name) {
     }
 }
 function CreateRequirement(required_for, required_by, type) {
-    //    document.write(parent + " " + name);
-    $.ajax({
-        method: "POST",
-        url: "requirements.php",
-        data: {function_to_be_called: "create", required_for: required_for, required_by: required_by}
-    })
-            .done(function (result) {
-                if (result.substr(0, 1) == "0") {
-                    if (type == "for") {
-                        $("#requirements_error" + required_for).html(result.substr(1, result.length));
-                    } else if (type == "by") {
-                        $("#requirements_error" + required_by).html(result.substr(1, result.length));
+    if (required_for != required_by) {
+        $.ajax({
+            method: "POST",
+            url: "requirements.php",
+            data: {function_to_be_called: "create", required_for: required_for, required_by: required_by}
+        })
+                .done(function (result) {
+                    if (result.substr(0, 1) == "0") {
+                        if (type == "for") {
+                            $("#requirements_error" + required_for).html(result.substr(1, result.length));
+                        } else if (type == "by") {
+                            $("#requirements_error" + required_by).html(result.substr(1, result.length));
+                        }
+                    } else {
+                        if (type == "for") {
+                            ListRequirements(required_for, type);
+                        } else if (type == "by") {
+                            ListRequirements(required_by, type);
+                        }
                     }
-                } else {
-                    if (type == "for") {
-                        ListRequirements(required_for, type);
-                    } else if (type == "by") {
-                        ListRequirements(required_by, type);
-                    }
-                }
-            });
+                });
+    } else {
+        if (type == "for") {
+            $("#requirements_error" + required_for).html("Achievement cannot be a requirement of itself.");
+        } else if (type == "by") {
+            $("#requirements_error" + required_by).html("Achievement cannot be a requirement of itself.");
+        }
 
+    }
 }
 function DeleteAchievement(id, parent, fromProfile) {
     if (window.confirm("Are you sure you want to delete this achievement?")) {
@@ -182,16 +189,16 @@ function DisplayAchievement(id) {
             });
 
 }
-function DisplayChildren(parent){
-                                $.ajax({
-                                    method: "POST",
-                                    url: "achievements.php",
-                                    data: {function_to_be_called: "list_children", parent:parent}
-                                })
-                                        .done(function (result) {
-                                            $("#child_achievements_of_" + parent).html(result);
+function DisplayChildren(parent) {
+    $.ajax({
+        method: "POST",
+        url: "achievements.php",
+        data: {function_to_be_called: "list_children", parent: parent}
+    })
+            .done(function (result) {
+                $("#child_achievements_of_" + parent).html(result);
 
-                                        });
+            });
 
 }
 function IsItActive(id) {

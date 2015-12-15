@@ -15,7 +15,7 @@ $achievement = $statement->fetchObject();
 
     <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/">Back To List</a>
     <div>
-    <?php display_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
+        <?php display_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
     </div>    
 </div>
 <h1> 
@@ -28,30 +28,45 @@ $achievement = $statement->fetchObject();
 
 <div>
     <div id="new_achievement_name_div" style="display:none;">
-        <input id="new_achievement_name" type="text" value="<?php echo $achievement->name; ?>" />
-        
+        <input id="new_achievement_name" type="text" value="<?php echo $achievement->name; ?>" 
+               onkeypress="if (event.keyCode == 13) {
+                           ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
+                           $('#show_new_achievement_name').show();
+                           $('#hide_new_achievement_name').hide();
+                       }"/>
+
         <input type="button" value="Change name" 
-          onclick="ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
-                   $('#show_new_achievement_name').show(); 
-                   $('#hide_new_achievement_name').hide();"/>
-<!--ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
-               $('#show_new_achievement_name').show();
-               $('#hide_new_achievement_name').hide();" />!-->
+               onclick="ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
+                  $('#show_new_achievement_name').show();
+                  $('#hide_new_achievement_name').hide();"/>
+     <!--ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
+                    $('#show_new_achievement_name').show();
+                    $('#hide_new_achievement_name').hide();" />!-->
 
     </div>
     <input id="show_new_achievement_name" type="button" value="Edit" 
-      onclick="$('#new_achievement_name_div').show();
-               $('#show_new_achievement_name').hide();
-               $('#hide_new_achievement_name').show();" />
+           onclick="$('#new_achievement_name_div').show();
+              $('#show_new_achievement_name').hide();
+              $('#hide_new_achievement_name').show();" />
     <input id="hide_new_achievement_name" type="button" value="Cancel" style="display:none" 
-      onclick="$('#new_achievement_name_div').hide();
-               $('#show_new_achievement_name').show();
-               $('#hide_new_achievement_name').hide();" />
+           onclick="$('#new_achievement_name_div').hide();
+              $('#show_new_achievement_name').show();
+              $('#hide_new_achievement_name').hide();" />
     <input type='button' value='Delete' onclick="DeleteAchievement(
     <?php echo $achievement->id; ?>,
     <?php echo $achievement->parent; ?>
-        , true)" />
+            , true)" />
 
+</div>
+<div>
+    Parent: 
+    <?php
+    if ($achievement->parent == 0) {
+        echo "Top level";
+    } else {
+        echo "<a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
+    }
+    ?>
 </div>
 <div>
     Created:
@@ -70,53 +85,57 @@ $achievement = $statement->fetchObject();
 </div>
 <div> 
     Rank:<?php echo $achievement->rank; ?>
-<div>
-    Power:<?php echo $achievement->power; ?>
-</div>
+    <div>
+        Power:<?php echo $achievement->power; ?>
+    </div>
 
-<div>
+    <div>
 
+        <?php
+        echo $achievement->documented ? "Documented (Requires proof of completion)" . display_documentation_menu($achievement->id, 0) : "Undocumented (No proof of completion required)" . display_documentation_menu($achievement->id, 1);
+        ?>
+
+    </div>
+    <!--<div>
+        <h3>
+            Category <input type="button" value="Edit" />
+        </h3>
+        <div style="display:none;" />
+        <div><input type='radio' />None</div>
+        <div style='margin-left:30px;'>N/A</div>
     <?php
-    echo $achievement->documented ? "Documented (Requires proof of completion)" . display_documentation_menu($achievement->id, 0) : "Undocumented (No proof of completion required)" . display_documentation_menu($achievement->id, 1);
+    display_categories($achievement->category);
     ?>
-
-</div>
-<!--<div>
+    </div>
+    
+    
+    <div>
+    <?php
+    echo $achievement->category ? $achievement->category : "None selected.";
+    ?>
+    </div>-->
     <h3>
-        Category <input type="button" value="Edit" />
+        Description
+        <input id="show_new_description" type='button' value='Edit' onclick="$('#current_description').hide();
+            $('#new_description_input').show();
+            $('#show_new_description').hide();"/>
     </h3>
-    <div style="display:none;" />
-    <div><input type='radio' />None</div>
-    <div style='margin-left:30px;'>N/A</div>
-<?php
-display_categories($achievement->category);
-?>
-</div>
-
-
-<div>
-<?php
-echo $achievement->category ? $achievement->category : "None selected.";
-?>
-</div>-->
-<h3>
-    Description
-    <input type='button' value='Edit' onclick="$('#current_description').hide();
-        $('#new_description_input').show()"/>
-</h3>
-<span id="current_description">
-    <?php
-    echo $achievement->description ? str_replace("\n", "<BR>", $achievement->description) : "There is no description.";
-    ?>
-</span>
-<span id="new_description_input" style="display:none">
-    <textarea id="new_description" style="width:600px;height:150px;">
-<?php
-echo $achievement->description ? $achievement->description : "";
-?>
-    </textarea>
-    <input type='button' value='Submit' onclick="ChangeDescription(<?php echo $achievement->id; ?>, $('#new_description').val())" />
-</span>
+    <span id="current_description">
+        <?php
+        echo $achievement->description ? str_replace("\n", "<BR>", $achievement->description) : "There is no description.";
+        ?>
+    </span>
+    <span id="new_description_input" style="display:none">
+        <textarea id="new_description" style="width:600px;height:150px;">
+            <?php
+            echo $achievement->description ? $achievement->description : "";
+            ?>
+        </textarea>
+        <div>
+        <input type="button" value="Cancel" onclick="$('#new_description_input').hide();$('#show_new_description').show();" />
+        <input type='button' value='Submit' onclick="ChangeDescription(<?php echo $achievement->id; ?>, $('#new_description').val())" />
+        </div>
+    </span>
 </div>
 <div>
     <h3>Requirements
@@ -149,9 +168,9 @@ echo $achievement->description ? $achievement->description : "";
         Sub-Achievements
     </h3>
     <input id="new_achievement<?php echo $achievement->id; ?>" type='text' maxlength="255" onkeypress="if (event.keyCode == 13) {
-            CreateAchievement(<?php echo $achievement->id; ?>, this.value);
-            this.value = '';
-        }"/>
+                CreateAchievement(<?php echo $achievement->id; ?>, this.value);
+                this.value = '';
+            }"/>
     <input type="button" value="Quick Create" onclick="CreateAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>')"/>
     <div id='child_achievements_of_<?php echo $achievement->id; ?>'></div>
 </div>
@@ -172,47 +191,55 @@ function display_categories($active_category) {
     
 }
 
-function display_nav_menu($id, $rank, $parent){
+function display_nav_menu($id, $rank, $parent) {
     global $connection;
-    if ($rank>1){
-        $statement=$connection->prepare("select * from achievements where active=1 and rank=? and parent=?");
-        $statement->bindValue(1, ($rank-1), PDO::PARAM_INT);
+    if ($rank > 1) {
+        $statement = $connection->prepare("select * from achievements where active=1 and rank=? and parent=?");
+        $statement->bindValue(1, ($rank - 1), PDO::PARAM_INT);
         $statement->bindValue(2, $parent, PDO::PARAM_INT);
         $statement->execute();
-        $prev_achievement=$statement->fetchObject();
+        $prev_achievement = $statement->fetchObject();
         echo "<div title='$prev_achievement->name' style='float:left'>
-                <a href='http://" . $_SERVER['SERVER_NAME'] ."/rla/?rla=$prev_achievement->id'>Previous</a>
+                <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$prev_achievement->id'>Previous</a>
               </div>";
     } else {
         echo "<div style='float:left;'>Previous</div>";
     }
 
     echo "<select id='achievement_id' style='text-align:center;'
-            onchange=\"window.location.assign('http://" . $_SERVER['SERVER_NAME'] ."/rla/?rla='+$('#achievement_id').val())\">
+            onchange=\"window.location.assign('http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla='+$('#achievement_id').val())\">
           <option>Go to another achievement here</option>";
-    $statement=$connection->prepare ("select * from achievements where active=1 and parent=? and id!=? order by name asc");
+    $statement = $connection->prepare("select * from achievements where active=1 and parent=? and id!=? order by name asc");
     $statement->bindValue(1, $parent, PDO::PARAM_INT);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
-    while ($achievement=$statement->fetchObject()){
+    while ($achievement = $statement->fetchObject()) {
         echo "<option value='$achievement->id' > $achievement->name</option>";
     }
     echo "</select>";
-    $statement=$connection->prepare("select rank from achievements where active=1 and parent=? order by rank desc limit 1");
+    $statement = $connection->prepare("select rank from achievements where active=1 and parent=? order by rank desc limit 1");
     $statement->bindValue(1, $parent, PDO::PARAM_INT);
     $statement->execute();
-    $highest_rank=$statement->fetchColumn();
-    if ($rank<$highest_rank){
-        $statement=$connection->prepare("select * from achievements where active=1 and rank=? and parent=?");
-        $statement->bindValue(1, ($rank+1), PDO::PARAM_INT);
+    $highest_rank = $statement->fetchColumn();
+    if ($rank < $highest_rank) {
+        $statement = $connection->prepare("select * from achievements where active=1 and rank=? and parent=?");
+        $statement->bindValue(1, ($rank + 1), PDO::PARAM_INT);
         $statement->bindValue(2, $parent, PDO::PARAM_INT);
         $statement->execute();
-        $next_achievement=$statement->fetchObject();
+        $next_achievement = $statement->fetchObject();
         echo "<div title='$next_achievement->name' style='float:right'>
-                <a href='http://" . $_SERVER['SERVER_NAME'] ."/rla/?rla=$next_achievement->id'>Next</a>
+                <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$next_achievement->id'>Next</a>
               </div>";
     } else {
         echo "<div class='right'>Next</div>";
     }
+}
+
+function fetch_achievement_name($id) {
+    global $connection;
+    $statement = $connection->prepare("select name from achievements where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    return $statement->fetchColumn();
 }
 ?>
