@@ -33,6 +33,14 @@ active boolean default 1,
 rank int unsigned,
 repeated int unsigned);
 
+relations (
+id int unsigned primary key auto_increment,
+created timestamp default current_timestamp,
+updated timestamp default 0 on update current_timestamp,
+a int unsigned,
+b int unsigned,
+active boolean default 0);
+
 create table requirements(
 id int unsigned primary key auto_increment,
 created timestamp default current_timestamp,

@@ -42,7 +42,6 @@ function ChangePower(id, new_power, fromProfile) {
 }
 function ChangeRank(id, new_rank, fromProfile, parent) {
     if (new_rank > 0) {
-        console.log (id + " " + new_rank);
         $.ajax({
             method: "POST",
             url: "achievements.php",
@@ -53,11 +52,9 @@ function ChangeRank(id, new_rank, fromProfile, parent) {
 
                     //$("#error").html(result);
                     if (fromProfile) {
-                        console.log(parent);
                         DisplayChildren(parent);
                         //$("#error").html("1");
                     } else {
-                                                console.log ("2");
                         ListAchievements(0);
                         
                         //$("#error").html("2");
@@ -98,6 +95,16 @@ function CreateAchievement(parent, name) {
                     }
                 });
     }
+}
+function CreateRelation(a, b){
+        $.ajax({
+        method: "POST",
+        url: "relations.php",
+        data: {function_to_be_called: "create", a:a, b:b}
+    })
+            .done(function (result) {
+                ListRelations(a);
+            });
 }
 function CreateRequirement(required_for, required_by, type) {
     if (required_for != required_by) {
@@ -153,6 +160,18 @@ function DeleteAchievement(id, parent, fromProfile) {
                 );
     }
 }
+function DeleteRelation(id, achievement_id){
+    if (window.confirm("Are you sure you want to delete this as a relationship?")) {
+        $.ajax({
+            method: "POST",
+            url: "relations.php",
+            data: {function_to_be_called: "delete", id: id}
+        })
+                .done(function (result) {
+                    ListRelations(achievement_id);
+                });
+    }    
+}
 function DeleteRequirement(id, achievement_id) {
     if (window.confirm("Are you sure you want to delete this as a requirement?")) {
         $.ajax({
@@ -186,6 +205,8 @@ function DisplayAchievement(id) {
                                 ListRequirements(id, "for");
                                 ListRequirements(id, "by");
                                 DisplayChildren(id);
+                                ListRelations(id);
+                                ListNewRelations(id);
                             });
                 } else if (result == "0") {
                     $("#achievement_profile").html("This achievement has been deleted.");
@@ -232,6 +253,28 @@ function ListAchievements(sort) {
                 $("#list_of_achievements").html(result);
             });
 
+}
+function ListNewRelations(id){
+        $.ajax({
+        method: "POST",
+        url: "relations.php",
+        data: {function_to_be_called: "list_new"}
+    })
+            .done(function (result) {
+                $("#list_of_new_relations" + id).html(result);
+            });
+}
+
+function ListRelations(achievement_id){
+        $.ajax({
+        method: "POST",
+        url: "relations.php",
+        data: {function_to_be_called: "list", achievement_id: achievement_id}
+    })
+            .done(function (result) {
+                $("#list_of_relations" + achievement_id).html(result);
+
+            });
 }
 function ListNewRequirements(id) {
     $.ajax({
