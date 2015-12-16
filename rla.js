@@ -74,9 +74,11 @@ function ChangeDocumentationStatus(id, status) {
 
 }
 function CreateAchievement(parent, name) {
-    //    document.write(parent + " " + name);
+   // console.log(parent + " " + name);
     if (name.length > 255) {
         $("#error").html("This has too many characters.")
+    } else if (name.trim()=="") {
+
     } else {
         $.ajax({
             method: "POST",
@@ -89,6 +91,7 @@ function CreateAchievement(parent, name) {
 
                     } else if (parent > 0) {
                         DisplayChildren(parent);
+                        //console.log(result);
 
                     } else {
                         document.write("2");
@@ -96,6 +99,21 @@ function CreateAchievement(parent, name) {
                 });
     }
 }
+
+function CreateNote(note, achievement_id, edit){
+   // console.log(edit + " " + achievement_id + " " + note);
+    $.ajax({
+        method:"POST",
+        url:"notes.php",
+        data:{function_to_be_called:"create", note:note.trim(), achievement_id:achievement_id, edit:edit}
+    })
+        .done( function (result) {
+            ListNotes(achievement_id);
+        //    console.log(result);
+        });
+        
+}
+
 function CreateRelation(a, b){
         $.ajax({
         method: "POST",
@@ -160,6 +178,18 @@ function DeleteAchievement(id, parent, fromProfile) {
                 );
     }
 }
+function DeleteNote(id, achievement_id){
+    if (window.confirm("Are you sure you want to delete this as a relationship?")) {
+        $.ajax({
+            method: "POST",
+            url: "notes.php",
+            data: {function_to_be_called: "delete", id: id}
+        })
+                .done(function (result) {
+                    ListNotes(achievement_id);
+                });
+    }   
+}
 function DeleteRelation(id, achievement_id){
     if (window.confirm("Are you sure you want to delete this as a relationship?")) {
         $.ajax({
@@ -207,6 +237,7 @@ function DisplayAchievement(id) {
                                 DisplayChildren(id);
                                 ListRelations(id);
                                 ListNewRelations(id);
+                                ListNotes(id);
                             });
                 } else if (result == "0") {
                     $("#achievement_profile").html("This achievement has been deleted.");
@@ -264,7 +295,19 @@ function ListNewRelations(id){
                 $("#list_of_new_relations" + id).html(result);
             });
 }
+function ListNotes(achievement_id){
+    //console.log("LISTING NOTES" + achievement_id);
+        $.ajax({
+        method: "POST",
+        url: "notes.php",
+        data: {function_to_be_called: "list", achievement_id: achievement_id}
+    })
+            .done(function (result) {
+               // console.log(result);
+                $("#list_of_notes" + achievement_id).html(result);
+            });
 
+}
 function ListRelations(achievement_id){
         $.ajax({
         method: "POST",

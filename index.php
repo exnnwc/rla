@@ -62,6 +62,7 @@
             <div id="list_of_achievements"></div>
         <?php elseif ($_GET['rla'] > 0): ?>
         <body onload="DisplayAchievement(<?php echo $_GET['rla']; ?>);">
+        <script src="notes.js"></script>
             <div id="error"></div>
             <div id="achievement_profile"></div>
         <?php endif; ?>

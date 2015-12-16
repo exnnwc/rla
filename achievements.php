@@ -134,15 +134,17 @@ function change_rank($id, $new_rank) {
 }
 
 function create_quick($name, $parent) {
+    echo "$name $parent";
     global $connection;
-    $parent=fetch_achievement($parent);
     if ($parent==0){
         $query="insert into achievements(name, parent, rank) values (?, ?, ?)";
         
     } else if ($parent>0){
         $query="insert into achievements(name, parent, rank, documented) values (?, ?, ?, ?)";
     }
-    $statement = $connection->prepare();
+    $achievement=fetch_achievement($parent);
+
+    $statement = $connection->prepare($query);
     $statement->bindValue(1, $name, PDO::PARAM_STR);
     $statement->bindValue(2, $parent, PDO::PARAM_INT);
     $statement->bindValue(3, fetch_rank($parent) + 1, PDO::PARAM_INT);
