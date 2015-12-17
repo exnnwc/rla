@@ -45,7 +45,6 @@ function ChangeRank(id, new_rank, fromProfile, parent) {
         $.ajax({
             method: "POST",
             url: "achievements.php",
-            
             data: {function_to_be_called: "change_rank", id: id, new_rank: new_rank}
         })
                 .done(function (result) {
@@ -56,7 +55,7 @@ function ChangeRank(id, new_rank, fromProfile, parent) {
                         //$("#error").html("1");
                     } else {
                         ListAchievements(0);
-                        
+
                         //$("#error").html("2");
                     }
                 });
@@ -74,10 +73,10 @@ function ChangeDocumentationStatus(id, status) {
 
 }
 function CreateAchievement(parent, name) {
-   // console.log(parent + " " + name);
+    // console.log(parent + " " + name);
     if (name.length > 255) {
         $("#error").html("This has too many characters.")
-    } else if (name.trim()=="") {
+    } else if (name.trim() == "") {
 
     } else {
         $.ajax({
@@ -100,28 +99,36 @@ function CreateAchievement(parent, name) {
     }
 }
 
-function CreateNote(note, achievement_id, edit){
-   // console.log(edit + " " + achievement_id + " " + note);
-    $.ajax({
-        method:"POST",
-        url:"notes.php",
-        data:{function_to_be_called:"create", note:note.trim(), achievement_id:achievement_id, edit:edit}
-    })
-        .done( function (result) {
-            ListNotes(achievement_id);
-        //    console.log(result);
-        });
-        
+function CreateNote(note, achievement_id, edit) {
+    // console.log(edit + " " + achievement_id + " " + note);
+    if (note.trim() == "") {
+
+
+    } else {
+        $.ajax({
+            method: "POST",
+            url: "notes.php",
+            data: {function_to_be_called: "create", note: note.trim(), achievement_id: achievement_id, edit: edit}
+        })
+                .done(function (result) {
+                    ListNotes(achievement_id);
+                    //    console.log(result);
+                });
+    }
 }
 
-function CreateRelation(a, b){
-        $.ajax({
+function CreateRelation(a, b) {
+    $.ajax({
         method: "POST",
         url: "relations.php",
-        data: {function_to_be_called: "create", a:a, b:b}
+        data: {function_to_be_called: "create", a: a, b: b}
     })
             .done(function (result) {
-                ListRelations(a);
+                if (result.substr(0, 1) == "0") {
+                    $("#relation_error").html(result.substr(2, result.length));
+                } else {
+                    ListRelations(a);
+                }
             });
 }
 function CreateRequirement(required_for, required_by, type) {
@@ -178,7 +185,7 @@ function DeleteAchievement(id, parent, fromProfile) {
                 );
     }
 }
-function DeleteNote(id, achievement_id){
+function DeleteNote(id, achievement_id) {
     if (window.confirm("Are you sure you want to delete this as a relationship?")) {
         $.ajax({
             method: "POST",
@@ -188,9 +195,9 @@ function DeleteNote(id, achievement_id){
                 .done(function (result) {
                     ListNotes(achievement_id);
                 });
-    }   
+    }
 }
-function DeleteRelation(id, achievement_id){
+function DeleteRelation(id, achievement_id) {
     if (window.confirm("Are you sure you want to delete this as a relationship?")) {
         $.ajax({
             method: "POST",
@@ -200,7 +207,7 @@ function DeleteRelation(id, achievement_id){
                 .done(function (result) {
                     ListRelations(achievement_id);
                 });
-    }    
+    }
 }
 function DeleteRequirement(id, achievement_id) {
     if (window.confirm("Are you sure you want to delete this as a requirement?")) {
@@ -285,8 +292,8 @@ function ListAchievements(sort) {
             });
 
 }
-function ListNewRelations(id){
-        $.ajax({
+function ListNewRelations(id) {
+    $.ajax({
         method: "POST",
         url: "relations.php",
         data: {function_to_be_called: "list_new"}
@@ -295,21 +302,21 @@ function ListNewRelations(id){
                 $("#list_of_new_relations" + id).html(result);
             });
 }
-function ListNotes(achievement_id){
+function ListNotes(achievement_id) {
     //console.log("LISTING NOTES" + achievement_id);
-        $.ajax({
+    $.ajax({
         method: "POST",
         url: "notes.php",
         data: {function_to_be_called: "list", achievement_id: achievement_id}
     })
             .done(function (result) {
-               // console.log(result);
+                // console.log(result);
                 $("#list_of_notes" + achievement_id).html(result);
             });
 
 }
-function ListRelations(achievement_id){
-        $.ajax({
+function ListRelations(achievement_id) {
+    $.ajax({
         method: "POST",
         url: "relations.php",
         data: {function_to_be_called: "list", achievement_id: achievement_id}
@@ -326,7 +333,8 @@ function ListNewRequirements(id) {
         data: {function_to_be_called: "list_new"}
     })
             .done(function (result) {
-                $("#list_of_new_requirements" + id).html(result);
+                $("#list_of_new_required_for" + id).html(result);
+                $("#list_of_new_required_by" + id).html(result);
             });
 }
 function ListRequirements(id, type) {
@@ -340,4 +348,18 @@ function ListRequirements(id, type) {
             });
 }
 
+function SwitchAchievement(id, status, parent){
+    $.ajax({
+        method: "POST",
+        url: "achievements.php",
+        data: {function_to_be_called: "switch", id:id, status:status}
+    })
+            .done(function (result) {
+                if (parent==0){
+                    ListAchievements(0);
+                } else {
+                    
+                }
 
+            });    
+}

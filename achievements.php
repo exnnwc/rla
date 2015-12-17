@@ -34,6 +34,9 @@ switch ($_POST['function_to_be_called']) {
     case "list_children":
         list_children($_POST['parent']);
         break;
+    case "switch":
+        switch_achievement($_POST['id'], $_POST['status']);
+        break;
 }
 
 function change_description($id, $description) {
@@ -53,15 +56,15 @@ function change_documentation_status($id, $status) {
     $statement->execute();
 }
 
-function change_name($id, $name){
+function change_name($id, $name) {
     global $connection;
 
-    $statement=$connection->prepare("select count(*) from achievements where id=? and name=?");
+    $statement = $connection->prepare("select count(*) from achievements where id=? and name=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->bindValue(2, $name, PDO::PARAM_STR);
     $statement->execute();
-    if ($statement->fetchColumn()==0){
-        $statement=$connection->prepare("update achievements set name=? where id=?");
+    if ($statement->fetchColumn() == 0) {
+        $statement = $connection->prepare("update achievements set name=? where id=?");
         $statement->bindValue(1, $name, PDO::PARAM_STR);
         $statement->bindValue(2, $id, PDO::PARAM_INT);
         $statement->execute();
@@ -101,7 +104,7 @@ function change_rank($id, $new_rank) {
         $statement->bindValue(2, $new_rank, PDO::PARAM_INT);
         $statement->execute();
         $other_achievement = $statement->fetchObject();
-        $query="SHIT AINT READY";
+        $query = "SHIT AINT READY";
         if (abs($achievement->rank - $other_achievement->rank) == 1) {
 
             update_rank($other_achievement->id, $achievement->rank);
@@ -125,30 +128,28 @@ function change_rank($id, $new_rank) {
             error_log(date("m/d/y H:i", time()) . __FUNCTION__ . " " . __FILE__ . " @ line " . __LINE__ . " "
                     . var_dump($achievement) . "<BR>\n " . var_dump($other_achievement) . "<BR>\n");
         }
-
     } else {
 
         rank_table_in_order(0, $achievement->parent);
     }
-        update_rank($id, $new_rank);
+    update_rank($id, $new_rank);
 }
 
 function create_quick($name, $parent) {
     echo "$name $parent";
     global $connection;
-    if ($parent==0){
-        $query="insert into achievements(name, parent, rank) values (?, ?, ?)";
-        
-    } else if ($parent>0){
-        $query="insert into achievements(name, parent, rank, documented) values (?, ?, ?, ?)";
+    if ($parent == 0) {
+        $query = "insert into achievements(name, parent, rank) values (?, ?, ?)";
+    } else if ($parent > 0) {
+        $query = "insert into achievements(name, parent, rank, documented) values (?, ?, ?, ?)";
     }
-    $achievement=fetch_achievement($parent);
+    $achievement = fetch_achievement($parent);
 
     $statement = $connection->prepare($query);
     $statement->bindValue(1, $name, PDO::PARAM_STR);
     $statement->bindValue(2, $parent, PDO::PARAM_INT);
     $statement->bindValue(3, fetch_rank($parent) + 1, PDO::PARAM_INT);
-    if ($parent>0){
+    if ($parent > 0) {
         $statement->bindValue(4, $achievement->parent, PDO::PARAM_INT);
     }
     $statement->execute();
@@ -163,19 +164,21 @@ function delete($id) {
     //Add user ownership.
     $connection->exec("update achievements set rank=rank-1 where active=1 and parent=$achievement->parent and rank>=$achievement->rank");
 }
-function display_achievement_listing_menu($achievement, $child){
-    $string="<input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, $achievement->parent, true);\" />
+
+function display_achievement_listing_menu($achievement, $child) {
+    $string = "<input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, $achievement->parent, true);\" />
             <input type='button' value='-' 
                 onclick=\"ChangeRank($achievement->id, " . ($achievement->rank + 1) . ", true, $achievement->parent);\"/>                    
               <input type='text' style='width:32px;text-align:center;' value='$achievement->rank' 
-                  onkeypress=\"if (event.keyCode==13){ChangeRank($achievement->id"; 
+                  onkeypress=\"if (event.keyCode==13){ChangeRank($achievement->id";
     //$child ? $string=$string.$achievement->parent : $string=$string.$achievement->id;
-    $string=$string. ", this.value, true, $achievement->parent); }\"/>
+    $string = $string . ", this.value, true, $achievement->parent); }\"/>
               <input type='button' value='+' 
                 onclick=\"ChangeRank($achievement->id, " . ($achievement->rank - 1) . ", true, $achievement->parent);\"/>";
 
     return $string;
 }
+
 function fetch_achievement($id) {
     global $connection;
     $statement = $connection->prepare("select * from achievements where id=?");
@@ -237,11 +240,19 @@ function is_it_active($id) {
 function list_all($sort_by) {
 
     echo "<table style='text-align:center;'>"
-    . "<tr><td>X</td><td>Rank</td><td>Power</td><td>Achievement Name</td></tr>";
+    . "<tr><td>X</td><td>Rank</td><td>Power</td><td>
+            <a href='http://".$_SERVER['SERVER_NAME']."/rla/work/' style='color:black;'>Work</a>
+                </td><td>Achievement Name</td></tr>";
     global $connection;
     $statement = $connection->query("select * from achievements where active=1 and parent=0" . fetch_order_query($sort_by));
     while ($achievement = $statement->fetchObject()) {
-        echo "<tr><td>
+        echo "<tr";
+        if ($achievement->work){
+            //echo " style='background-color:green;'";
+        } else {
+            //echo " style='background-color:red;'";            
+        }
+        echo "><td>
               <input type='button' value='X' onclick=\"DeleteAchievement($achievement->id, $achievement->parent, false);\" />
                   </td><td>              <input type='button' value='-' 
                 onclick=\"ChangeRank($achievement->id, " . ($achievement->rank + 1) . ", false);\"/>                    
@@ -250,31 +261,54 @@ function list_all($sort_by) {
               <input type='button' value='+' 
                 onclick=\"ChangeRank($achievement->id, " . ($achievement->rank - 1) . ", false);\"/>
                     </td><td>
-              <input type='button' value='-' 
-                onclick=\"ChangePower($achievement->id, " . ($achievement->power - 1) . ", false);\"/>                    
-              <input type='text' style='width:32px;text-align:center;' value='$achievement->power' 
-                  onkeypress=\"if (event.keyCode==13){ChangePower($achievement->id, this.value, false); }\"/>
-              <input type='button' value='+' 
-                onclick=\"ChangePower($achievement->id, " . ($achievement->power + 1) . ", false);\"/>
-                    </td><td style='text-align:left'>
-              <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement->id'> $achievement->name </a>
+                    $achievement->power
+                    </td><td>";
+        echo $achievement->work ? 
+                 "<input type='button' value='Off' onclick=\"SwitchAchievement($achievement->id, 0, 0);\" />" : 
+                 "<input type='button' value='On' onclick=\"SwitchAchievement($achievement->id, 1, 0);\" />" ;
+        echo "</td><td style='text-align:left'>
+              <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement->id' style='";
+        if ($achievement->work){
+            echo "color:green;";
+        } else {
+            echo "color:red;";
+        }
+        echo "'> 
+                $achievement->name 
+                    </a>
                   </td></td></tr>
               ";
     }
     echo "</table>";
 }
 
+/* <input type='button' value='-' 
+  onclick=\"ChangePower($achievement->id, " . ($achievement->power - 1) . ", false);\"/>
+  <input type='text' style='width:32px;text-align:center;' value='$achievement->power'
+  onkeypress=\"if (event.keyCode==13){ChangePower($achievement->id, this.value, false); }\"/>
+  <input type='button' value='+'
+  onclick=\"ChangePower($achievement->id, " . ($achievement->power + 1) . ", false);\"/>
+ * 
+ */
+
 function list_children($id) {
     global $connection;
-    $statement = $connection->prepare("select * from achievements where active=1 and parent=? order by rank");
+    $statement = $connection->prepare("select count(*) from achievements where active=1 and parent=? order by rank");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
-    while ($achievement = $statement->fetchObject()) {
-        echo "<div>"
-                .display_achievement_listing_menu($achievement, true)
-              
-              ." <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement->id'>$achievement->name </a>
+
+    if ($statement->fetchColumn() == 0) {
+        echo "<div style=' font-style:italic;'>This achievement has no children.</div>";
+    } else {
+        $statement = $connection->prepare("select * from achievements where active=1 and parent=? order by rank");
+        $statement->bindValue(1, $id, PDO::PARAM_INT);
+        $statement->execute();
+        while ($achievement = $statement->fetchObject()) {
+            echo "<div>"
+            . display_achievement_listing_menu($achievement, true)
+            . " <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement->id'>$achievement->name </a>
               </div>";
+        }
     }
 }
 
@@ -292,6 +326,14 @@ function rank_table_in_order($query, $parent) {
         $connection->exec("update achievements set rank=$rank where id=$achievement->id");
         $rank++;
     }
+}
+
+function switch_achievement($id, $status){
+    global $connection;
+    $statement=$connection->prepare("update achievements set work=? where id=?");
+    $statement->bindValue(1, $status, PDO::PARAM_INT);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
 }
 
 function update_rank($id, $new_rank) {

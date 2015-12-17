@@ -67,7 +67,13 @@ function list_requirements($id, $type) {
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     if ($statement->fetchColumn() == 0) {
-        echo "None.";
+        echo "<div style=' font-style:italic;'>";
+        if ($type=="for"){
+            echo "No other achievements required to complete this achievement.";
+        } else if ($type=="by"){
+            echo "No other achievements require this achievement for completion.";
+        }        
+        echo "</div>";
     } else {
         $query="select achievements.id, achievements.name, requirements.id, requirements.required_$type from achievements inner join requirements on achievements.id=requirements.required_$other_type where requirements.active=1 and required_$type=? order by achievements.name";
        

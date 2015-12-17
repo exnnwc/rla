@@ -13,8 +13,12 @@ $achievement = $statement->fetchObject();
 ?>
 
 <div id="navbar" style='text-align:center'>
-
-    <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/">Back To List</a>
+    <div style="margin:5px;">
+    <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/">List</a>
+    </div><div style="margin-bottom:10px;">
+    
+    <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/?rla=<?php echo fetch_random_achievement_id();      ?>">Random</a>
+    </div>
     <div>
         <?php display_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
     </div>    
@@ -105,15 +109,11 @@ $achievement = $statement->fetchObject();
     </h3>
     <span id="current_description">
         <?php
-        echo $achievement->description ? str_replace("\n", "<BR>", $achievement->description) : "There is no description.";
+        echo $achievement->description ? str_replace("\n", "<BR>", $achievement->description) : "<div style=' font-style:italic;'>There is no description.</div>";
         ?>
     </span>
     <span id="new_description_input" style="display:none">
-        <textarea id="new_description" style="width:600px;height:150px;">
-            <?php
-            echo $achievement->description ? $achievement->description : "";
-            ?>
-        </textarea>
+        <textarea id="new_description" style="width:600px;height:150px;"><?php echo $achievement->description ? $achievement->description : ""; ?></textarea>
         <div>
             <input type="button" value="Cancel" onclick="$('#new_description_input').hide();
                     $('#show_new_description').show();" />
@@ -121,6 +121,34 @@ $achievement = $statement->fetchObject();
         </div>
     </span>
 </div>
+<div>
+    <h3>
+        Children
+        <input id="hide_new_children" type="button" value="-" style="display:none"
+               onclick="$('#new_children').hide();
+                       $('#hide_new_children').hide();
+                       $('#show_new_children').show();" />
+        <input id="show_new_children" type="button" value="+" style="" 
+               onclick="$('#new_children').show();
+                       $('#hide_new_children').show();
+                       $('#show_new_children').hide();" />
+
+    </h3>
+    <div id="new_children" style="display:none">
+        <input id="new_achievement<?php echo $achievement->id; ?>" type='text' maxlength="255" 
+               onkeypress="if (event.keyCode == 13) {
+                           CreateAchievement(<?php echo $achievement->id; ?>, this.value);
+                           this.value = '';
+                       }"/>
+        <input type="button" value="Quick Create" 
+               onclick="
+                       CreateAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());"/>
+
+    </div>
+    <div id='child_achievements_of_<?php echo $achievement->id; ?>'></div>
+</div>
+
+
 <h2 style='text-align:center;'>
     Other Achievements
     <input id="hide_other_achievements" type="button" value="-" style="float:left;display:none;"
@@ -133,74 +161,71 @@ $achievement = $statement->fetchObject();
                    $('#show_other_achievements').hide();" />
 </h2>
 <div id="other_achievements<?php echo $achievement->id ?>" style="display:none;">
-    <div>
-        <h3>
-            Children
-    <input id="hide_new_children" type="button" value="-" style="display:none"
-           onclick="$('#new_children').hide();
-                   $('#hide_new_children').hide();
-                   $('#show_new_children').show();" />
-    <input id="show_new_children" type="button" value="+" style="" 
-           onclick="$('#new_children').show();
-                   $('#hide_new_children').show();
-                   $('#show_new_children').hide();" />
 
-        </h3>
-        <div id="new_children" style="display:none">
-            <input id="new_achievement<?php echo $achievement->id; ?>" type='text' maxlength="255" 
-              onkeypress="if (event.keyCode == 13) {
-                            CreateAchievement(<?php echo $achievement->id; ?>, this.value);
-                            this.value = '';
-                          }"/>
-            <input type="button" value="Quick Create" 
-              onclick="
-                CreateAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());"/>
-           
-        </div>
-         <div id='child_achievements_of_<?php echo $achievement->id; ?>'></div>
+    <h3>
+        Required For Completion
+        <input id="show_new_required_for" type="button" value="+" style="margin-left:5px;" 
+               onclick="ListNewRequirements(<?php echo $achievement->id; ?>);
+                           $('#new_required_for').show();
+                           $('#hide_new_required_for').show();
+                           $('#show_new_required_for').hide();"/>
+        <input id="hide_new_required_for" type="button" value="-" style="margin-left:5px;display:none;" 
+               onclick="$('#new_required_for').hide();
+                           $('#hide_new_required_for').hide();
+                           $('#show_new_required_for').show();"/>
+    </h3>
+    <div id="new_required_for" style="display:none;">
+        <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
+        <select id="list_of_new_required_for<?php echo $achievement->id; ?>"></select><br>
+        <input type="button" value="Required for completion" 
+               onclick="CreateRequirement(<?php echo $achievement->id; ?>, $('#list_of_new_required_for<?php echo $achievement->id; ?>').val(), 'for');"/>
     </div>
-    <div>
-        <h3>Required
-            <input id="show_new_requirement" type="button" value="+" style="margin-left:5px;" 
-                   onclick="ListNewRequirements(<?php echo $achievement->id; ?>);
-                           $('#new_requirement_div').show();
-                           $('#hide_new_requirement').show();
-                           $('#show_new_requirement').hide();"/>
-            <input id="hide_new_requirement" type="button" value="-" style="margin-left:5px;display:none;" 
-                   onclick="$('#new_requirement_div').hide();
-                           $('#hide_new_requirement').hide();
-                           $('#show_new_requirement').show();"/>
-        </h3>
-        <div id="new_requirement_div" style="display:none;">
-            <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
-            <select id="list_of_new_requirements<?php echo $achievement->id; ?>"></select><br>
-            <input type="button" value="Required for completion" 
-                   onclick="CreateRequirement(<?php echo $achievement->id; ?>, $('#list_of_new_requirements<?php echo $achievement->id; ?>').val(), 'for');"/>
-            <input type="button" value="Required by others" 
-                   onclick="CreateRequirement($('#list_of_new_requirements<?php echo $achievement->id; ?>').val(), <?php echo $achievement->id; ?>, 'by');"/>
-        </div>
-    </div>
-    <h4>Require For Completion</h4>
     <div id="required_for_<?php echo $achievement->id ?>"></div>
-    <h4>Required By Others</h4>
+
+    <h3>
+        Required By Others
+        <input id="show_new_required_by" type="button" value="+" style="margin-left:5px;" 
+               onclick="ListNewRequirements(<?php echo $achievement->id; ?>);
+                           $('#new_required_by').show();
+                           $('#hide_new_required_by').show();
+                           $('#show_new_required_by').hide();"/>
+        <input id="hide_new_required_by" type="button" value="-" style="margin-left:5px;display:none;" 
+               onclick="$('#new_required_by').hide();
+                           $('#hide_new_required_by').hide();
+                           $('#show_new_required_by').show();"/>
+    </h3>
+    <div id="new_required_by" style="display:none;">
+        <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
+        <select id="list_of_new_required_by<?php echo $achievement->id; ?>"></select><br>       
+        <input type="button" value="Required by others" 
+               onclick="CreateRequirement($('#list_of_new_required_by<?php echo $achievement->id; ?>').val(), <?php echo $achievement->id; ?>, 'by');"/>
+    </div>
     <div id="required_by_<?php echo $achievement->id ?>"></div>
 
 
     <div>
         <h3>
-            Related<input id="hide_new_relation" type="button" value="+" style="margin-left:5px" 
-                          onclick="$('#new_relation').show();$('#hide_new_relation').hide();" />
+            Related
+            <input id="show_new_relation" type="button" value="+" style="" 
+                   onclick="$('#new_relation').show();
+                           $('#hide_new_relation').show();
+                           $('#show_new_relation').hide();" />
+            <input id="hide_new_relation" type="button" value="-"   style="display:none;"
+                   onclick="$('#new_relation').hide();
+                           $('#hide_new_relation').hide();
+                           $('#show_new_relation').show();" />
         </h3>
         <div id="new_relation" style="display:none;">
-            <select id="list_of_new_relations<?php echo $achievement->id?>" style="text-align:center;">
-                
+            <select id="list_of_new_relations<?php echo $achievement->id ?>" style="text-align:center;">
+
             </select>
-            <input type="button" value="Cancel" onclick="$('#new_relation').hide();$('#hide_new_relation').show();" />
+
             <input type="button" value="Create Relation" 
-                   onclick="CreateRelation(<?php echo $achievement->id?>, $('#list_of_new_relations<?php echo $achievement->id?>').val() );" />
+                   onclick="CreateRelation(<?php echo $achievement->id ?>, $('#list_of_new_relations<?php echo $achievement->id ?>').val());" />
         </div>
+        <div id="relation_error" style="color:red;"></div>
         <div id="list_of_relations<?php echo $achievement->id ?>"></div>
-              
+
     </div>
 </div>
 
@@ -209,32 +234,37 @@ $achievement = $statement->fetchObject();
 
 
 <div>
-<h2 style='text-align:center;'>
-    Notes    
-    <input id="show_new_notes" type="button" value="+" style="float:left;"
-           onclick="$('#new_notes').show();
-                   $('#hide_new_notes').show();
-                   $('#show_new_notes').hide();" />
-    <input id="hide_new_notes" type="button" value="-" style="float:left;display:none;" 
-           onclick="$('#new_notes').hide();
-                   $('#hide_new_notes').hide();
-                   $('#show_new_notes').show();" />
-</h2>
-<div id="new_notes" style="display:none;">
-    <textarea id="new_note_inputted" style='width:600px;height:150px;'>
+    <h2 style='text-align:center;'>
+        Notes    
+        <input id="show_notes" type="button" value="+" style="float:left;display:none;"
+               onclick="$('#all_notes').show();
+                       $('#hide_notes').show();
+                       $('#show_notes').hide();" />
+        <input id="hide_notes" type="button" value="-" style="float:left;" 
+               onclick="$('#all_notes').hide();
+                       $('#hide_notes').hide();
+                       $('#show_notes').show();" />
+    </h2>
+    <div id="all_notes">
+        <input id="show_new_notes" type="button" value="Create Note" 
+               onclick="$('#show_new_notes').hide();
+                   $('#new_notes').show();" />
+        <div id="new_notes" style="display:none;">
+            <textarea id="new_note_inputted" style='width:400px;height:100px;'></textarea>
+            <div>
+                <input type="button" value="Cancel"
+                       onclick="$('#new_notes').hide();
 
-    </textarea>
-    <div>
-    <input type="button" value="Create Note"
-        onclick="  CreateNote($('#new_note_inputted').val(), <?php echo $achievement->id; ?>, 0);
-                   $('#new_notes').hide();
-                   $('#hide_new_notes').hide();
-                   $('#show_new_notes').show();" />
-      </div>
-</div>
-<div id="list_of_notes<?php echo $achievement->id; ?>">
-    
-</div>
+                           $('#show_new_notes').show();" />
+                <input type="button" value="Create Note"
+                       onclick="  CreateNote($('#new_note_inputted').val(), <?php echo $achievement->id; ?>, 0);
+                           $('#new_notes').hide();
+                           $('#hide_new_notes').hide();
+                           $('#show_new_notes').show();" />
+            </div>
+        </div>
+        <div id="list_of_notes<?php echo $achievement->id; ?>"></div>
+    </div>
 </div>
 
 <?php
@@ -304,5 +334,13 @@ function fetch_achievement_name($id) {
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     return $statement->fetchColumn();
+}
+
+function fetch_random_achievement_id(){
+    global $connection;
+    $statement = $connection->query("select id from achievements where active=1 and parent=0 order by rand() limit 1");
+    return $statement->fetchColumn();
+    
+    
 }
 ?>
