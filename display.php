@@ -14,10 +14,10 @@ $achievement = $statement->fetchObject();
 
 <div id="navbar" style='text-align:center'>
     <div style="margin:5px;">
-    <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/">List</a>
+        <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/">List</a>
     </div><div style="margin-bottom:10px;">
-    
-    <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/?rla=<?php echo fetch_random_achievement_id();      ?>">Random</a>
+
+        <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/?rla=<?php echo fetch_random_achievement_id(); ?>">Random</a>
     </div>
     <div>
         <?php display_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
@@ -100,7 +100,24 @@ $achievement = $statement->fetchObject();
         ?>
 
     </div>
-
+    <h3>
+        Actions
+        <input id="hide_new_actions" type="button" value="-" style="display:none"
+               onclick="$('#new_actions').hide();
+                       $('#hide_new_actions').hide();
+                       $('#show_new_actions').show();" />
+        <input id="show_new_actions" type="button" value="+" style="" 
+               onclick="$('#new_actions').show();
+                       $('#hide_new_actions').show();
+                       $('#show_new_actions').hide();" />        
+    </h3>
+        <div id="new_actions" style="display:none;">
+            <select id="list_of_current_actions<?php echo $achievement->id; ?>"> </select><br/>
+            <input id="new_action_input" type="text" onkeypress="if (event.keyCode==13){CreateAction(<?php echo $achievement->id ?>, this.value)}"/> 
+            <input type="button" value="Create Action" onclick="CreateAction(<?php echo $achievement->id ?>, $('#new_action_input').val())"/>
+        </div>
+    </div>
+    <div id="actions<?php echo $achievement->id;?>"> </div>
     <h3>
         Description
         <input id="show_new_description" type='button' value='Edit' onclick="$('#current_description').hide();
@@ -166,13 +183,13 @@ $achievement = $statement->fetchObject();
         Required For Completion
         <input id="show_new_required_for" type="button" value="+" style="margin-left:5px;" 
                onclick="ListNewRequirements(<?php echo $achievement->id; ?>);
-                           $('#new_required_for').show();
-                           $('#hide_new_required_for').show();
-                           $('#show_new_required_for').hide();"/>
+                       $('#new_required_for').show();
+                       $('#hide_new_required_for').show();
+                       $('#show_new_required_for').hide();"/>
         <input id="hide_new_required_for" type="button" value="-" style="margin-left:5px;display:none;" 
                onclick="$('#new_required_for').hide();
-                           $('#hide_new_required_for').hide();
-                           $('#show_new_required_for').show();"/>
+                       $('#hide_new_required_for').hide();
+                       $('#show_new_required_for').show();"/>
     </h3>
     <div id="new_required_for" style="display:none;">
         <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
@@ -186,13 +203,13 @@ $achievement = $statement->fetchObject();
         Required By Others
         <input id="show_new_required_by" type="button" value="+" style="margin-left:5px;" 
                onclick="ListNewRequirements(<?php echo $achievement->id; ?>);
-                           $('#new_required_by').show();
-                           $('#hide_new_required_by').show();
-                           $('#show_new_required_by').hide();"/>
+                       $('#new_required_by').show();
+                       $('#hide_new_required_by').show();
+                       $('#show_new_required_by').hide();"/>
         <input id="hide_new_required_by" type="button" value="-" style="margin-left:5px;display:none;" 
                onclick="$('#new_required_by').hide();
-                           $('#hide_new_required_by').hide();
-                           $('#show_new_required_by').show();"/>
+                       $('#hide_new_required_by').hide();
+                       $('#show_new_required_by').show();"/>
     </h3>
     <div id="new_required_by" style="display:none;">
         <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
@@ -248,19 +265,19 @@ $achievement = $statement->fetchObject();
     <div id="all_notes">
         <input id="show_new_notes" type="button" value="Create Note" 
                onclick="$('#show_new_notes').hide();
-                   $('#new_notes').show();" />
+                       $('#new_notes').show();" />
         <div id="new_notes" style="display:none;">
             <textarea id="new_note_inputted" style='width:400px;height:100px;'></textarea>
             <div>
                 <input type="button" value="Cancel"
                        onclick="$('#new_notes').hide();
 
-                           $('#show_new_notes').show();" />
+                               $('#show_new_notes').show();" />
                 <input type="button" value="Create Note"
                        onclick="  CreateNote($('#new_note_inputted').val(), <?php echo $achievement->id; ?>, 0);
-                           $('#new_notes').hide();
-                           $('#hide_new_notes').hide();
-                           $('#show_new_notes').show();" />
+                               $('#new_notes').hide();
+                               $('#hide_new_notes').hide();
+                               $('#show_new_notes').show();" />
             </div>
         </div>
         <div id="list_of_notes<?php echo $achievement->id; ?>"></div>
@@ -336,11 +353,9 @@ function fetch_achievement_name($id) {
     return $statement->fetchColumn();
 }
 
-function fetch_random_achievement_id(){
+function fetch_random_achievement_id() {
     global $connection;
     $statement = $connection->query("select id from achievements where active=1 and parent=0 order by rand() limit 1");
     return $statement->fetchColumn();
-    
-    
 }
 ?>

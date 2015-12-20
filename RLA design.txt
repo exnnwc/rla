@@ -19,8 +19,22 @@ When creating empty achievements, there still needs to be a publication stage to
 Users receive points that can be used to vote achievements up or down. They receive one point a day. They can vote up or down on something and use a point. If they vote up, it transfers to the owner of the action.
 
 For example, one user can tag another user's achievement as something and another person can upvote that tagging action, letting the tagger receive a point. If they vote it down, the action receives a negative balance and the tagger will not receive any points from any upvotes until it becomes positive.
-        
 
+action_log(
+id int unsigned primary key auto_increment,
+created timestamp default current_timestamp,
+updated timestamp default 0 on update current_timestamp,
+active boolean default 1,
+action_ref int unsigned
+);
+        
+actions(
+id int unsigned primary key auto_increment,
+created timestamp default current_timestamp,
+updated timestamp default 0 on update current_timestamp,
+active boolean default 1,
+achievement_id int unsigned
+);
 
 achievements(
 id int unsigned primary key auto_increment,

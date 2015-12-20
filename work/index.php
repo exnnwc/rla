@@ -1,4 +1,4 @@
-<html><body onload="ListAllWork()">
+<html><body onload="ListAllWork();DisplayWorkHistory();">
             <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
         <script src="work.js"></script>

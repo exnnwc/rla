@@ -1,3 +1,5 @@
+
+
 function ChangeWork(id, work) {
     //console.log(id + " " + work);
     $.ajax({
@@ -7,7 +9,32 @@ function ChangeWork(id, work) {
     })
             .done(function (result) {
                 ListAllWork();
-            })
+            });
+}
+
+function CancelWork(achievement_id) {
+    console.log(achievement_id);
+        $.ajax({
+        method: "POST",
+        url: "work.php",
+        data: {function_to_be_called: "cancel_work", achievement_id:achievement_id}
+    })
+            .done(function (result) {
+                console.log(result);
+                ListAllWork();
+            });
+}
+
+function DisplayWorkHistory() {
+    
+        $.ajax({
+        method: "POST",
+        url: "work.php",
+        data: {function_to_be_called: "display_work_history"}
+    })
+            .done(function (result) {
+                $("#work_history").html(result);
+            });
 }
 
 function ListAllWork(){
@@ -34,7 +61,7 @@ function ListWork(work) {
                 }else if (work==4){
                     $("#monthly").html(result);
                 }
-            })
+            });
 }
 
 function CreateWork(achievement_id){
@@ -44,7 +71,7 @@ function CreateWork(achievement_id){
         data:{function_to_be_called:"create_work", achievement_id:achievement_id}
     })
             .done (function (result){
-                
-    })
+                ListAllWork();
+            });
 }
       
