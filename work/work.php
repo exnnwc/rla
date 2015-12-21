@@ -2,33 +2,33 @@
 
 $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
 
-switch ($_POST["function_to_be_called"]) {
+switch (filter_input(INPUT_POST,"function_to_be_called", FILTER_SANITIZE_STRING)) {
     case "cancel_work":
-        cancel_work($_POST['achievement_id']);
+        cancel_work(filter_input(INPUT_POST,'achievement_id']);
         break;
     case "change_work":
-        change_work($_POST['id'], $_POST['work']);
+        change_work(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST,'work']);
         break;
     case "create_action":
-        create_action($_POST['achievement_id'], $_POST['action'], $_POST['reference']);
+        create_action(filter_input(INPUT_POST,'achievement_id'], filter_input(INPUT_POST,'action'], filter_input(INPUT_POST,'reference']);
         break;
     case "create_work":
-        create_work($_POST['achievement_id']);
+        create_work(filter_input(INPUT_POST,'achievement_id']);
         break;    
     case "delete_action":
-        delete_action($_POST['id']);
+        delete_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "display_work_history";
         display_work_history();
         break;
     case "list_actions":
-        list_actions($_POST['achievement_id']);
+        list_actions(filter_input(INPUT_POST,'achievement_id']);
         break;
     case "list_current_actions":
         list_current_actions();
         break;
     case "list_work":
-        list_work($_POST['work']);
+        list_work(filter_input(INPUT_POST,'work']);
         break;
 
 }

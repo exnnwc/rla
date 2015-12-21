@@ -7,7 +7,7 @@ $pref_date_format = "F j, Y g:i:s";
 
 $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
 $statement = $connection->prepare("select * from achievements where id=? and active=1");
-$statement->bindValue(1, $_POST['id'], PDO::PARAM_INT);
+$statement->bindValue(1, filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), PDO::PARAM_INT);
 $statement->execute();
 $achievement = $statement->fetchObject();
 ?>
@@ -23,7 +23,7 @@ $achievement = $statement->fetchObject();
         <?php display_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
     </div>    
 </div>
-<h1 style='text-align:center;'> 
+<h1 id="achievement_name" style='text-align:center;'> 
 
     <?php
     echo $achievement->name;
@@ -35,13 +35,13 @@ $achievement = $statement->fetchObject();
     <div id="new_achievement_name_div" style="display:none;">
         <input id="new_achievement_name" type="text" value="<?php echo $achievement->name; ?>" 
                onkeypress="if (event.keyCode == 13) {
-                           ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
+                           changeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
                            $('#show_new_achievement_name').show();
                            $('#hide_new_achievement_name').hide();
                        }"/>
 
         <input type="button" value="Change name" 
-               onclick="ChangeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
+               onclick="changeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
                        $('#show_new_achievement_name').show();
                        $('#hide_new_achievement_name').hide();"/>
 
@@ -55,7 +55,7 @@ $achievement = $statement->fetchObject();
            onclick="$('#new_achievement_name_div').hide();
                    $('#show_new_achievement_name').show();
                    $('#hide_new_achievement_name').hide();" />
-    <input type='button' value='Delete' onclick="DeleteAchievement(
+    <input type='button' value='Delete' onclick="deleteAchievement(
     <?php echo $achievement->id; ?>,
     <?php echo $achievement->parent; ?>
             , true)" />
@@ -134,7 +134,7 @@ $achievement = $statement->fetchObject();
         <div>
             <input type="button" value="Cancel" onclick="$('#new_description_input').hide();
                     $('#show_new_description').show();" />
-            <input type='button' value='Submit' onclick="ChangeDescription(<?php echo $achievement->id; ?>, $('#new_description').val())" />
+            <input type='button' value='Submit' onclick="changeDescription(<?php echo $achievement->id; ?>, $('#new_description').val())" />
         </div>
     </span>
 </div>

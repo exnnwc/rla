@@ -3,7 +3,10 @@ Your Resume Of Awesome
 Tell people what you'e doing with your life.
 Finally have an answer to what you've been up to.
 
-
+12/20/15
+I've been thinking that maybe actions aren't really necessary. I feel like they 
+might be too micromanaging in the scheme of things. When I finish this refactor,
+I'll sit down and fully design everything that's in Trello.
 
 user
 There are two types of achievements:

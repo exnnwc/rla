@@ -1,18 +1,18 @@
 <?php
 
 $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
-switch ($_POST['function_to_be_called']) {
+switch (filter_input(INPUT_POST,'function_to_be_called']) {
     case "list_requirements":
-        list_requirements($_POST['id'], $_POST['type']);
+        list_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST,'type']);
         break;
     case "create":
-        create($_POST['required_for'], $_POST['required_by']);
+        create(filter_input(INPUT_POST,'required_for'], filter_input(INPUT_POST,'required_by']);
         break;
     case "delete":
-        delete($_POST['id']);
+        delete(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "list_new":
-        list_new_requirements($_POST['id']);
+        list_new_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
 }
 

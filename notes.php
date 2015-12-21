@@ -1,14 +1,14 @@
 <?php
 $connection = new PDO ("mysql: host=localhost;dbname=rla", "root", "");
-switch ($_POST['function_to_be_called']){
+switch (filter_input(INPUT_POST,'function_to_be_called']){
     case "create":
-        create($_POST['note'], $_POST['achievement_id'],  $_POST['edit']);
+        create(filter_input(INPUT_POST,'note'], filter_input(INPUT_POST,'achievement_id'],  filter_input(INPUT_POST,'edit']);
         break;
     case "delete":
-        delete($_POST['id']);
+        delete(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "list":
-        list_notes($_POST['achievement_id']);
+        list_notes(filter_input(INPUT_POST,'achievement_id']);
         break;
     
 }
