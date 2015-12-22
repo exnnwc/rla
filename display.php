@@ -55,10 +55,7 @@ $achievement = $statement->fetchObject();
            onclick="$('#new_achievement_name_div').hide();
                    $('#show_new_achievement_name').show();
                    $('#hide_new_achievement_name').hide();" />
-    <input type='button' value='Delete' onclick="deleteAchievement(
-    <?php echo $achievement->id; ?>,
-    <?php echo $achievement->parent; ?>
-            , true)" />
+    <input id='delete_achievement_<?php echo $achievement->id; ?>' class='delete_button' type='button' value='Delete' />
 
 </div>
 

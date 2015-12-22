@@ -1,7 +1,8 @@
 <?php
+
 include ("config.php");
 //TODO: Keep track of all changes. 
-$connection = new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME, DB_USER, DB_PWD);
+$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 switch (filter_input(INPUT_POST, 'function_to_be_called', FILTER_SANITIZE_STRING)) {
     case "change_description":
         change_description(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
@@ -164,14 +165,31 @@ function delete_achievement($id) {
 
 function display_achievement_listing_menu($achievement, $child) {
     //revisit
-    $string = "<input type='button' value='X' onclick=\"deleteAchievement($achievement->id, $achievement->parent, true);\" />
+    if ($child) {
+        $string = "<input id='delete_achievement_$achievement->id' class=\"delete_button\" type='button' value='X' />
+        
             <input type='button' value='-' 
                 onclick=\"changeRank($achievement->id, " . ($achievement->rank + 1) . ", true, $achievement->parent);\"/>                    
               <input type='text' style='width:32px;text-align:center;' value='$achievement->rank' 
                   onkeypress=\"if (event.keyCode==13){changeRank($achievement->id";
-    $string = $string . ", this.value, true, $achievement->parent); }\"/>
+        $string = $string . ", this.value, true, $achievement->parent); }\"/>
               <input type='button' value='+' 
                 onclick=\"changeRank($achievement->id, " . ($achievement->rank - 1) . ", true, $achievement->parent);\"/>";
+    } else {        
+        $string = "<td>
+              <input id='delete_achievement_$achievement->id' class='delete_buttons' type='button' value='X'  />
+                  </td><td>              
+              <input id='down_rank_$achievement->id' type='button' class='down_rank_button' value='-' />
+              <input id='change_rank_$achievement->id' type='text' class='change_rank' value='$achievement->rank' style='width:32px;text-align:center;' />
+              <input id='up_rank_$achievement->id' type='button' class='up_rank_button' value='+' />                
+                    </td><td>
+                    $achievement->power
+                    </td><td>";
+        $string = $string . ($achievement->work ?
+                "<input id='turn_work_off_$achievement->id' type='button' class='change_work_button' value='Off' />" :
+                "<input id='turn_work_on_$achievement->id' type='button' class='change_work_button' value='On' />");
+        $string = $string . "</td>";
+    }
     return $string;
 }
 
@@ -236,28 +254,16 @@ function list_achievements($sort_by) {
 
     echo "<table style='text-align:center;'>"
     . "<tr><td>X</td><td>Rank</td><td>Power</td><td>
-            <a href='".SITE_ROOT."/work/' style='color:black;'>Work</a>
+            <a href='" . SITE_ROOT . "/work/' style='color:black;'>Work</a>
                 </td><td>Achievement Name</td></tr>";
     global $connection;
     $query = "select * from achievements where active=1 and parent=0" . fetch_order_query($sort_by);
     $statement = $connection->query($query);
     while ($achievement = $statement->fetchObject()) {
-        echo "<tr><td>
-              <input type='button' value='X' onclick=\"deleteAchievement($achievement->id, $achievement->parent, false);\" />
-                  </td><td>              <input type='button' value='-' 
-                onclick=\"changeRank($achievement->id, " . ($achievement->rank + 1) . ", false);\"/>                    
-              <input type='text' style='width:32px;text-align:center;' value='$achievement->rank' 
-                  onkeypress=\"if (event.keyCode==13){changeRank($achievement->id, this.value, false); }\"/>
-              <input type='button' value='+' 
-                onclick=\"changeRank($achievement->id, " . ($achievement->rank - 1) . ", false);\"/>
-                    </td><td>
-                    $achievement->power
-                    </td><td>";
-        echo $achievement->work ?
-                "<input type='button' value='Off' onclick=\"changeWorkStatus($achievement->id, 0, 0);\" />" :
-                "<input type='button' value='On' onclick=\"changeWorkStatus($achievement->id, 1, 0);\" />";
-        echo "</td><td style='text-align:left'>
-              <a href='".SITE_ROOT."/?rla=$achievement->id' style='";
+        echo "<tr>"
+        .display_achievement_listing_menu($achievement, false)
+            ."<td style='text-align:left'>
+              <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='";
         if ($achievement->work) {
             echo "color:green;";
         } else {
@@ -271,7 +277,6 @@ function list_achievements($sort_by) {
     }
     echo "</table>";
 }
-
 
 function list_children($id) {
     global $connection;
@@ -287,7 +292,7 @@ function list_children($id) {
         while ($achievement = $statement->fetchObject()) {
             echo "<div>"
             . display_achievement_listing_menu($achievement, true)
-            . " <a href='".SITE_ROOT."/?rla=$achievement->id'>$achievement->name </a>
+            . " <a href='" . SITE_ROOT . "/?rla=$achievement->id'>$achievement->name </a>
               </div>";
         }
     }

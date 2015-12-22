@@ -1,9 +1,15 @@
 <html>
+    <head>
     <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="index.js"></script>
     <script src="achievements.js"></script>
     <script src="rla.js"></script>
-   
+    <style>
+        .delete_button{
+            //background-color: blue;
+        }
+    </style>
+    </head>
 
     <?php
     if (isset($_GET['rla'])) {

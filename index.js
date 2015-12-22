@@ -3,19 +3,19 @@ $(document.body).ready(function () {
         listAchievements("default");
         $('#new_achievement_text_input').keypress(function (event) {
             if (event.which === 13) {
-                CreateAchievement(0, $('#new_achievement_text_input').val());
+                createAchievement(0, $('#new_achievement_text_input').val());
                 $('#new_achievement_text_input').val("");
             }
         });
         $('#new_achievement_button').click(function () {
-            CreateAchievement(0, $('#new_achievement_text_input').val());
+            createAchievement(0, $('#new_achievement_text_input').val());
             $('#new_achievement_text_input').val("");
         });
         $("#hide_achievements_button").click(function () {
             $('#sorting_menu').hide();
             $('#list_of_achievements').hide();
             $('#hide_achievements_button').hide();
-            $('#show_achievements_list').show();
+            $('#show_achievements_button').show();
         });
         $("#show_achievements_button").click(function () {
             $('#sorting_menu').show();
@@ -35,8 +35,15 @@ $(document.body).ready(function () {
             $("#sort_" + sort_by + "_button").hide();
             $("#sort_" + sort_inverse + "_button").show();
         });
-    } else if ($(document.body).attr('id').substr(0,19) === "achievement_number_") {
-        var achievement_id=$(document.body).attr('id').substr(19,$(document.body).attr('id').length-19);
+        $('.delete_buttons').click(function (event) {
+            console.log("asdfadsfa");
+        });
+        $(".change_work_button").click(function (){
+           console.log("work"); 
+        });
+        
+    } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
+        var achievement_id = $(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19);
         displayAchievement(achievement_id);
     } else {
     }
