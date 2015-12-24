@@ -4,16 +4,19 @@ $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
 
 switch (filter_input(INPUT_POST,"function_to_be_called", FILTER_SANITIZE_STRING)) {
     case "cancel_work":
-        cancel_work(filter_input(INPUT_POST,'achievement_id']);
+        cancel_work(filter_input(INPUT_POST,'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "change_work":
-        change_work(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST,'work']);
+        change_work(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), 
+            filter_input(INPUT_POST,'work', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "create_action":
-        create_action(filter_input(INPUT_POST,'achievement_id'], filter_input(INPUT_POST,'action'], filter_input(INPUT_POST,'reference']);
+        create_action(filter_input(INPUT_POST,'achievement_id', FILTER_SANITIZE_NUMBER_INT), 
+            filter_input(INPUT_POST,'action', FILTER_SANITIZE_STRING),
+            filter_input(INPUT_POST,'reference', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "create_work":
-        create_work(filter_input(INPUT_POST,'achievement_id']);
+        create_work(filter_input(INPUT_POST,'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;    
     case "delete_action":
         delete_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
@@ -22,13 +25,13 @@ switch (filter_input(INPUT_POST,"function_to_be_called", FILTER_SANITIZE_STRING)
         display_work_history();
         break;
     case "list_actions":
-        list_actions(filter_input(INPUT_POST,'achievement_id']);
+        list_actions(filter_input(INPUT_POST,'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "list_current_actions":
         list_current_actions();
         break;
     case "list_work":
-        list_work(filter_input(INPUT_POST,'work']);
+        list_work(filter_input(INPUT_POST,'work', FILTER_SANITIZE_NUMBER_INT));
         break;
 
 }

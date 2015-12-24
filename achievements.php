@@ -166,7 +166,7 @@ function delete_achievement($id) {
 function display_achievement_listing_menu($achievement, $child) {
     //revisit
     if ($child) {
-        $string = "<input id='delete_achievement_$achievement->id' class=\"delete_button\" type='button' value='X' />
+        $string = "<input class='delete_button' type='button' value='X' />
         
             <input type='button' value='-' 
                 onclick=\"changeRank($achievement->id, " . ($achievement->rank + 1) . ", true, $achievement->parent);\"/>                    
@@ -177,12 +177,13 @@ function display_achievement_listing_menu($achievement, $child) {
                 onclick=\"changeRank($achievement->id, " . ($achievement->rank - 1) . ", true, $achievement->parent);\"/>";
     } else {        
         $string = "<td>
-              <input id='delete_achievement_$achievement->id' class='delete_buttons' type='button' value='X'  />
-                  </td><td>              
+              <input class='new_shit' type='button' value='X'  />
+                  </td><td>";
+/*            
               <input id='down_rank_$achievement->id' type='button' class='down_rank_button' value='-' />
               <input id='change_rank_$achievement->id' type='text' class='change_rank' value='$achievement->rank' style='width:32px;text-align:center;' />
-              <input id='up_rank_$achievement->id' type='button' class='up_rank_button' value='+' />                
-                    </td><td>
+              <input id='up_rank_$achievement->id' type='button' class='up_rank_button' value='+' />                */
+        $String = $string . "</td><td>
                     $achievement->power
                     </td><td>";
         $string = $string . ($achievement->work ?

@@ -2,15 +2,15 @@
 
 $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
 
-switch (filter_input(INPUT_POST,'function_to_be_called']) {
+switch (filter_input(INPUT_POST,'function_to_be_called', FILTER_SANITIZE_STRING)) {
     case "create":
-        create(filter_input(INPUT_POST,'a'], filter_input(INPUT_POST,'b']);
+        create(filter_input(INPUT_POST,'a', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST,'b', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "delete":
         delete(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "list":
-        list_relations(filter_input(INPUT_POST,'achievement_id']);
+        list_relations(filter_input(INPUT_POST,'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "list_new":
         list_new();

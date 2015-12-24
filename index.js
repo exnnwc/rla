@@ -13,6 +13,9 @@ $(document.body).ready(function () {
         });
         $("#hide_achievements_button").click(function () {
             $('#sorting_menu').hide();
+        $(".new_shit").on("click", function () {
+            console.log("ASDFAS");
+        });
             $('#list_of_achievements').hide();
             $('#hide_achievements_button').hide();
             $('#show_achievements_button').show();
@@ -23,6 +26,7 @@ $(document.body).ready(function () {
             $('#hide_achievements_button').show();
             $('#show_achievements_button').hide();
         });
+
         $(".sort_button").click(function (event) {
             var button_id = event.target.id;
             var sort_by = button_id.substr(5, (button_id.length - 12));
@@ -35,10 +39,8 @@ $(document.body).ready(function () {
             $("#sort_" + sort_by + "_button").hide();
             $("#sort_" + sort_inverse + "_button").show();
         });
-        $('.delete_buttons').click(function (event) {
-            console.log("asdfadsfa");
-        });
-        $(".change_work_button").click(function (){
+
+        $(".delete_button").click(function (){
            console.log("work"); 
         });
         
@@ -48,3 +50,7 @@ $(document.body).ready(function () {
     } else {
     }
 });
+
+        $(".new_shit").on("click", function () {
+            console.log("ASDFAS");
+        });

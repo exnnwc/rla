@@ -1,12 +1,14 @@
 <?php
 
 $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
-switch (filter_input(INPUT_POST,'function_to_be_called']) {
+switch (filter_input(INPUT_POST,'function_to_be_called', FILTER_SANITIZE_STRING)) {
     case "list_requirements":
-        list_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST,'type']);
+        list_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), 
+            filter_input(INPUT_POST,'type', FILTER_SANITIZE_STRING));
         break;
     case "create":
-        create(filter_input(INPUT_POST,'required_for'], filter_input(INPUT_POST,'required_by']);
+        create(filter_input(INPUT_POST,'required_for', FILTER_SANITIZE_NUMBER_INT), 
+            filter_input(INPUT_POST,'required_by', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "delete":
         delete(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));

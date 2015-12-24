@@ -1,11 +1,12 @@
 <?php
+include ("config.php");
 $pref_date_format = "F j, Y g:i:s";
 
 //There could be an issue where users spoof this to see other people's achievements.
 //Be sure to check user's session data and page reference before commencing.
 
 
-$connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
+$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 $statement = $connection->prepare("select * from achievements where id=? and active=1");
 $statement->bindValue(1, filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), PDO::PARAM_INT);
 $statement->execute();
@@ -14,10 +15,10 @@ $achievement = $statement->fetchObject();
 
 <div id="navbar" style='text-align:center'>
     <div style="margin:5px;">
-        <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/">List</a>
+        <a href="<?PHP echo SITE_ROOT; ?>">List</a>
     </div><div style="margin-bottom:10px;">
 
-        <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/?rla=<?php echo fetch_random_achievement_id(); ?>">Random</a>
+        <a href="<?php echo SITE_ROOT ?>/?rla=<?php echo fetch_random_achievement_id(); ?>">Random</a>
     </div>
     <div>
         <?php display_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
