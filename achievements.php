@@ -177,18 +177,22 @@ function display_achievement_listing_menu($achievement, $child) {
                 onclick=\"changeRank($achievement->id, " . ($achievement->rank - 1) . ", true, $achievement->parent);\"/>";
     } else {        
         $string = "<td>
-              <input class='new_shit' type='button' value='X'  />
-                  </td><td>";
-/*            
-              <input id='down_rank_$achievement->id' type='button' class='down_rank_button' value='-' />
-              <input id='change_rank_$achievement->id' type='text' class='change_rank' value='$achievement->rank' style='width:32px;text-align:center;' />
-              <input id='up_rank_$achievement->id' type='button' class='up_rank_button' value='+' />                */
-        $String = $string . "</td><td>
+                        <input class='new_shit' type='button' value='X'  
+                            onclick=\"deleteAchievement($achievement->id, $achievement->parent, 0);\" />
+                  </td><td>
+                        <input id='down_rank_$achievement->id' type='button' class='down_rank_button' value='-' />
+                        <input id='change_rank_$achievement->id' type='text' 
+                            class='change_rank' value='$achievement->rank' style='width:32px;text-align:center;' 
+                                onkeypress=\"if (event.keyCode===13){changeRank($achievement->id, this.value, true, $achievement->parent);}\" />
+                        <input id='up_rank_$achievement->id' type='button' class='up_rank_button' value='+' />";
+        $string = $string . "</td><td>
                     $achievement->power
                     </td><td>";
         $string = $string . ($achievement->work ?
-                "<input id='turn_work_off_$achievement->id' type='button' class='change_work_button' value='Off' />" :
-                "<input id='turn_work_on_$achievement->id' type='button' class='change_work_button' value='On' />");
+                "<input id='turn_work_off_$achievement->id' type='button' class='change_work_button' value='Off' 
+                    onclick=\"changeWorkStatus($achievement->id, 0, $achievement->parent);\"/>" :
+                "<input id='turn_work_on_$achievement->id' type='button' class='change_work_button' value='On' 
+                    onclick=\"changeWorkStatus($achievement->id, 1, $achievement->parent);\"/>");
         $string = $string . "</td>";
     }
     return $string;
