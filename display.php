@@ -152,12 +152,12 @@ $achievement = $statement->fetchObject();
     <div id="new_children" style="display:none">
         <input id="new_achievement<?php echo $achievement->id; ?>" type='text' maxlength="255" 
                onkeypress="if (event.keyCode == 13) {
-                           CreateAchievement(<?php echo $achievement->id; ?>, this.value);
+                           createAchievement(<?php echo $achievement->id; ?>, this.value);
                            this.value = '';
                        }"/>
         <input type="button" value="Quick Create" 
                onclick="
-                       CreateAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());"/>
+                       createAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());"/>
 
     </div>
     <div id='child_achievements_of_<?php echo $achievement->id; ?>'></div>

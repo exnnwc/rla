@@ -2,22 +2,22 @@
 
 function CreateAction(achievement_id, action) {
     //console.log(achievement_id + " " + action);
-    if (!$('#list_of_current_actions'+achievement_id + ' option:selected').val()){
-        reference=0;
-        
+    if (!$('#list_of_current_actions' + achievement_id + ' option:selected').val()) {
+        reference = 0;
+
     } else {
-        reference=$('#list_of_current_actions'+achievement_id).val();
+        reference = $('#list_of_current_actions' + achievement_id).val();
     }
-   // console.log ($('#list_of_current_actions'+achievement_id).val() + " " + achievement_id + " " + action);
+    // console.log ($('#list_of_current_actions'+achievement_id).val() + " " + achievement_id + " " + action);
     $.ajax({
         method: "POST",
         url: "work/work.php",
-        data: {function_to_be_called: "create_action", achievement_id: achievement_id, action: action, reference:reference}
+        data: {function_to_be_called: "create_action", achievement_id: achievement_id, action: action, reference: reference}
     })
             .done(function (result) {
                 //console.log (result);
                 listActions(achievement_id);
-                    });
+            });
 }
 function CreateNote(note, achievement_id, edit) {
     // console.log(edit + " " + achievement_id + " " + note);
@@ -38,18 +38,23 @@ function CreateNote(note, achievement_id, edit) {
 }
 
 function CreateRelation(a, b) {
-    $.ajax({
-        method: "POST",
-        url: "relations.php",
-        data: {function_to_be_called: "create", a: a, b: b}
-    })
-            .done(function (result) {
-                if (result.substr(0, 1) == "0") {
-                    $("#relation_error").html(result.substr(2, result.length));
-                } else {
-                    listRelations(a);
-                }
-            });
+    console.log (a + " " + b);
+    if (a === b){
+        $("#relation_error").html("Cannot make a self-referencing relation.");
+    } else {
+        $.ajax({
+            method: "POST",
+            url: "relations.php",
+            data: {function_to_be_called: "create", a: a, b: b}
+        })
+                .done(function (result) {
+                    if (result.substr(0, 1) == "0") {
+                        $("#relation_error").html(result.substr(2, result.length));
+                    } else {
+                        listRelations(a);
+                    }
+                });
+    } 
 }
 function CreateRequirement(required_for, required_by, type) {
     if (required_for != required_by) {
@@ -84,7 +89,7 @@ function CreateRequirement(required_for, required_by, type) {
 }
 
 
-function DeleteAction(id, achievement_id){
+function DeleteAction(id, achievement_id) {
     if (window.confirm("Are you sure you want to delete this action?")) {
         $.ajax({
             method: "POST",
@@ -94,7 +99,7 @@ function DeleteAction(id, achievement_id){
                 .done(function (result) {
                     listActions(achievement_id);
                 });
-    }    
+    }
 }
 function DeleteNote(id, achievement_id) {
     if (window.confirm("Are you sure you want to delete this as a relationship?")) {
@@ -135,27 +140,27 @@ function DeleteRequirement(id, achievement_id) {
 }
 
 
-function listActions(achievement_id){
-        $.ajax({
+function listActions(achievement_id) {
+    $.ajax({
         method: "POST",
         url: "work/work.php",
-        data: {function_to_be_called: "list_actions", achievement_id:achievement_id}
+        data: {function_to_be_called: "list_actions", achievement_id: achievement_id}
     })
             .done(function (result) {
                 $("#actions" + achievement_id).html(result);
             });
 }
-function listCurrentActions(achievement_id){
+function listCurrentActions(achievement_id) {
     console.log(achievement_id);
-        $.ajax({
+    $.ajax({
         method: "POST",
         url: "work/work.php",
-        data: {function_to_be_called: "list_current_actions", achievement_id:achievement_id}
+        data: {function_to_be_called: "list_current_actions", achievement_id: achievement_id}
     })
             .done(function (result) {
                 console.log(result);
                 $("#list_of_current_actions" + achievement_id).html(result);
-            });    
+            });
 }
 function listNewRelations(id) {
     $.ajax({
