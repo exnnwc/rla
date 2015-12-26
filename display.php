@@ -66,7 +66,7 @@ $achievement = $statement->fetchObject();
     if ($achievement->parent == 0) {
         echo "Top level";
     } else {
-        echo "<a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
+        echo "<a href='".SITE_ROOT."/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
     }
     ?>
 </div>
@@ -308,7 +308,7 @@ function display_nav_menu($id, $rank, $parent) {
         $statement->execute();
         $prev_achievement = $statement->fetchObject();
         echo "<div title='$prev_achievement->name' style='float:left'>
-                <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$prev_achievement->id'>Previous</a>
+                <a href='". SITE_ROOT . "/?rla=$prev_achievement->id'>Previous</a>
               </div>";
     } else {
         echo "<div style='float:left;'>Previous</div>";
@@ -336,7 +336,7 @@ function display_nav_menu($id, $rank, $parent) {
         $statement->execute();
         $next_achievement = $statement->fetchObject();
         echo "<div title='$next_achievement->name' style='float:right'>
-                <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$next_achievement->id'>Next</a>
+                <a href='". SITE_ROOT ."/?rla=$next_achievement->id'>Next</a>
               </div>";
     } else {
         echo "<div class='right'>Next</div>";

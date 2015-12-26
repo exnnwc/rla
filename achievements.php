@@ -268,7 +268,7 @@ function list_achievements($sort_by) {
         echo "<tr>"
         .display_achievement_listing_menu($achievement, false)
             ."<td style='text-align:left'>
-              <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='";
+              <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
         if ($achievement->work) {
             echo "color:green;";
         } else {

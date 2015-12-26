@@ -1,5 +1,5 @@
 <?php
-
+include ("../config.php");
 $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
 
 switch (filter_input(INPUT_POST,"function_to_be_called", FILTER_SANITIZE_STRING)) {
@@ -85,7 +85,7 @@ function display_achievement($achievement) {
     echo "<div style='margin-left:32px;border-left:1px solid black;border-top:1px solid black;padding:8px;'>";
 
 
-    echo "<div><div> <a style='color:black;text-decoration:none;' href='http://".$_SERVER['SERVER_NAME'] ."/rla/?rla=$achievement->id';\">$achievement->name</a>";
+    echo "<div><div> <a style='color:black;text-decoration:none;' href='" . SITE_ROOT ."/?rla=$achievement->id';\">$achievement->name</a>";
 
     echo "</div><div>";    
     if ($achievement->work != 2 && $achievement->parent == 0) {

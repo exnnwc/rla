@@ -1,8 +1,12 @@
+<?php
+include ("../config.php");
+?>
+
 <html><body onload="ListAllWork();DisplayWorkHistory();">
             <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
         <script src="work.js"></script>
-        <a href="http://<?php echo $_SERVER['SERVER_NAME']; ?>/rla/">Back To Achievements List</a>
+        <a href="<?php echo SITE_ROOT; ?>">Back To Achievements List</a>
         <h1 style="text-align:center;">Queue</h1>
             
         <div>
