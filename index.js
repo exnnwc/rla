@@ -1,5 +1,8 @@
+var SITE_NAME="Real Life Achievements";
+
 $(document.body).ready(function () {
     if ($(document.body).attr('id') === "AchievementsList") {
+        document.title=SITE_NAME + " - Achievements List";
         listAchievements("default");
         $('#new_achievement_text_input').keypress(function (event) {
             if (event.which === 13) {
@@ -46,6 +49,8 @@ $(document.body).ready(function () {
         
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
         var achievement_id = $(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19);
+        document.title=SITE_NAME + " - #" + achievement_id;
+
         displayAchievement(achievement_id);
     } else {
     }

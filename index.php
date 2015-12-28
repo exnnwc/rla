@@ -1,14 +1,17 @@
+<?php include ("config.php"); ?>
+
 <html>
     <head>
-    <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="index.js"></script>
-    <script src="achievements.js"></script>
-    <script src="rla.js"></script>
-    <style>
-        .delete_button{
-            //background-color: blue;
-        }
-    </style>
+        <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+        <script src="index.js"></script>
+        <script src="achievements.js"></script>
+        <script src="rla.js"></script>
+        <style>
+            .delete_button{
+                //background-color: blue;
+            }
+        </style>
+        <title><?PHP echo SITE_NAME ?></title>
     </head>
 
     <?php
@@ -45,5 +48,6 @@
             <div id="error"></div>
             <div id="achievement_profile"></div>
         <?php endif; ?>
+
     </body>
 </html>

@@ -166,16 +166,16 @@ $achievement = $statement->fetchObject();
 
 <h2 style='text-align:center;'>
     Other Achievements
-    <input id="hide_other_achievements" type="button" value="-" style="float:left;display:none;"
+    <input id="hide_other_achievements" type="button" value="-" style="float:left;"
            onclick="$('#other_achievements<?php echo $achievement->id ?>').hide();
                    $('#hide_other_achievements').hide();
                    $('#show_other_achievements').show();" />
-    <input id="show_other_achievements" type="button" value="+" style="float:left;" 
+    <input id="show_other_achievements" type="button" value="+" style="float:left;display:none;" 
            onclick="$('#other_achievements<?php echo $achievement->id ?>').show();
                    $('#hide_other_achievements').show();
                    $('#show_other_achievements').hide();" />
 </h2>
-<div id="other_achievements<?php echo $achievement->id ?>" style="display:none;">
+<div id="other_achievements<?php echo $achievement->id ?>" style="">
 
     <h3>
         Required For Completion

@@ -188,11 +188,11 @@ function display_achievement_listing_menu($achievement, $child) {
         $string = $string . "</td><td>
                     $achievement->power
                     </td><td>";
-        $string = $string . ($achievement->work ?
+/*        $string = $string . ($achievement->work ?
                 "<input id='turn_work_off_$achievement->id' type='button' class='change_work_button' value='Off' 
                     onclick=\"changeWorkStatus($achievement->id, 0, $achievement->parent);\"/>" :
                 "<input id='turn_work_on_$achievement->id' type='button' class='change_work_button' value='On' 
-                    onclick=\"changeWorkStatus($achievement->id, 1, $achievement->parent);\"/>");
+                    onclick=\"changeWorkStatus($achievement->id, 1, $achievement->parent);\"/>");*/
         $string = $string . "</td>";
     }
     return $string;
@@ -258,9 +258,9 @@ function is_it_active($id) {
 function list_achievements($sort_by) {
 
     echo "<table style='text-align:center;'>"
-    . "<tr><td>X</td><td>Rank</td><td>Power</td><td>
-            <a href='" . SITE_ROOT . "/work/' style='color:black;'>Work</a>
-                </td><td>Achievement Name</td></tr>";
+    . "<tr><td>X</td><td>Rank</td><td>Power</td><td>".
+            //<a href='" . SITE_ROOT . "/work/' style='color:black;'>Work</a>
+                "</td><td>Achievement Name</td></tr>";
     global $connection;
     $query = "select * from achievements where active=1 and parent=0" . fetch_order_query($sort_by);
     $statement = $connection->query($query);
