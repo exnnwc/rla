@@ -29,8 +29,13 @@ include ("../config.php");
         Unassigned
             </h3>
             <div id="unassigned"> </div>
-        <div>
-        </div>
+
+        </div><div>
+            <h3>
+        Inactive
+            </h3>
+            <div id="inactive"> </div>
+
         </div>
         <h1 style="text-align:center;">History</h1>
         <div id="work_history">

@@ -1,4 +1,6 @@
-
+function associateAchievementWithAction (achievement_id, action_id){
+    console.log(achievement_id + " " + action_id);
+}
 
 function ChangeWork(id, work) {
     //console.log(id + " " + work);
@@ -11,7 +13,17 @@ function ChangeWork(id, work) {
                 ListAllWork();
             });
 }
-
+function changeWorkStatusOfAction(id, work) {
+    //console.log(id + " " + work);
+    $.ajax({
+        method: "POST",
+        url: "work.php",
+        data: {function_to_be_called: "change_work_status_of_action", id: id, work: work}
+    })
+            .done(function (result) {
+                ListAllWork();
+            });
+}
 function CancelWork(achievement_id) {
     console.log(achievement_id);
         $.ajax({
@@ -38,7 +50,7 @@ function DisplayWorkHistory() {
 }
 
 function ListAllWork(){
-    for (work=1;work<5;work++){
+    for (work=0;work<5;work++){
         ListWork(work);
     }
     
@@ -60,6 +72,8 @@ function ListWork(work) {
                     $("#weekly").html(result);
                 }else if (work==4){
                     $("#monthly").html(result);
+                } else if (work==0){
+                    $("#inactive").html(result);
                 }
             });
 }
