@@ -1,6 +1,12 @@
 function associateAchievementWithAction (achievement_id, action_id){
-    console.log(achievement_id + " " + action_id);
-}
+    $.ajax({
+        method: "POST",
+        url: "work.php",
+        data: {function_to_be_called: "associate", achievement_id: achievement_id, action_id: action_id}
+    })
+            .done(function (result) {
+                ListAllWork();
+            });}
 
 function ChangeWork(id, work) {
     //console.log(id + " " + work);
@@ -36,7 +42,19 @@ function CancelWork(achievement_id) {
                 ListAllWork();
             });
 }
-
+function DeleteAction(id) {
+    if (window.confirm("Are you sure you want to delete this action?")) {
+        $.ajax({
+            method: "POST",
+            url: "work.php",
+            data: {function_to_be_called: "delete_action", id: id}
+        })
+                .done(function (result) {
+                    console.log(result);
+                    ListAllWork();
+                        });
+    }
+}
 function DisplayWorkHistory() {
     
         $.ajax({

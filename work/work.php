@@ -4,6 +4,9 @@ include ("../config.php");
 $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
 
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
+    case "associate":
+        associate(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
+        break;
     case "cancel_work":
         cancel_work(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -34,6 +37,25 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "list_work":
         list_work(filter_input(INPUT_POST, 'work', FILTER_SANITIZE_NUMBER_INT));
         break;
+}
+
+function associate($achievement_id, $action_id) {
+    global $connection;
+    $action=fetch_action($action_id);
+    if ($action->achievement_id==0){
+        $statement = $connection->prepare("insert into actions (name, work, achievement_id, reference) values('" . $action->name . "', $action->work, ?, 0)");
+        $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+        $statement->execute();
+        $statement = $connection->prepare ("update actions set active=0 where id=?");
+        $statement->bindValue(1, $action_id, PDO::PARAM_INT);
+        $statement->execute();
+        
+    } else {
+    $statement = $connection->prepare("insert into actions (name, work, achievement_id, reference) values('" . $action->name . "', $action->work, ?, ?)");
+        $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+        $statement->bindValue(2, $action_id, PDO::PARAM_INT);
+        $statement->execute();
+    }
 }
 
 function cancel_work($action_id) {
@@ -84,9 +106,29 @@ function create_work($action_id) {
 
 function delete_action($id) {
     global $connection;
-    $statement = $connection->prepare("update actions set active=0 where id=?");
-    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $action = fetch_action($id);
+    $statement = $connection->query("select count(*) from actions where active=1 and (id=$action->id or reference=$action->id)");
     $statement->execute();
+    $num_of_achievements = $statement->fetchColumn();
+    if ($num_of_achievements == 1) {
+        $connection->exec("insert into actions (name, achievement_id, reference) values ('$action->name', 0, 0)");
+        $connection->exec("update actions set active=0 where id=$id");
+    } else if ($num_of_achievements > 1) {
+        if ($action->reference == 0) {
+            $statement=$connection->query("select id from actions where active=1 and reference=$action->id limit 1");
+            $next_action_id=$statement->fetchColumn();
+            $connection->exec("update actions set active=0 where id=$id");
+            $connection->exec("update actions set reference=0 where id=$next_action_id");
+            $connection->exec("update actions set reference=$next_action_id where reference=$id");
+
+        } else {
+                   $statement = $connection->prepare("update actions set active=0 where id=?");
+              $statement->bindValue(1, $id, PDO::PARAM_INT);
+              $statement->execute();            
+        }
+    } else {
+        //ERROR
+    }
 }
 
 function display_achievement($achievement) {
@@ -171,13 +213,15 @@ function display_new_action_options($id) {
 
 function list_achievements_for_action($id) {
     global $connection;
-    $query = "select * from achievements where active=1 and id in (select achievement_id from actions where active=1 and (id=? or reference=?)) order by name";
+    $query = "select actions.id, achievements.name from achievements inner join actions on achievements.id = actions.achievement_id 
+        where achievements.active=1 and actions.active=1 and (actions.id=? or actions.reference=?) order by achievements.name";
     $statement = $connection->prepare($query);
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
-    while ($achievement = $statement->fetchObject()) {
-        echo "<div>$achievement->name</div>";
+    
+    while ($result = $statement->fetch()) {
+        echo "<div><input type='button' value='X' onclick=\"DeleteAction($result[0])\"/>$result[1]</div>";
     }
 }
 
@@ -205,7 +249,7 @@ function list_actions($achievement_id) {
 
 function list_work($work) {
     global $connection;
-    $statement = $connection->prepare("select * from actions where active=1 and work=? order by name");
+    $statement = $connection->prepare("select * from actions where active=1 and work=? and reference=0 order by name");
     $statement->bindValue(1, $work, PDO::PARAM_INT);
     $statement->execute();
     echo $work;
