@@ -30,24 +30,42 @@ function changeWorkStatusOfAction(id, work) {
                 ListAllWork();
             });
 }
-function CancelWork(achievement_id) {
+function CancelWork(action_id) {
     console.log(achievement_id);
         $.ajax({
         method: "POST",
         url: "work.php",
-        data: {function_to_be_called: "cancel_work", achievement_id:achievement_id}
+        data: {function_to_be_called: "cancel_work", action_id:action_id}
     })
             .done(function (result) {
                 console.log(result);
                 ListAllWork();
             });
 }
-function DeleteAction(id) {
+
+function createNewAction (action){
+    console.log(action);
+        $.ajax({
+        method: "POST",
+        url: "work.php",
+        data: {function_to_be_called: "create_new_action", action:action}
+    })
+            .done(function (result) {
+                console.log(result);
+                ListAllWork();
+            });        
+}
+function DeleteAction(id, top) {
     if (window.confirm("Are you sure you want to delete this action?")) {
+        if (top){
+            function_name="delete_top_action";
+        } else {
+            function_name="delete_action";            
+        }
         $.ajax({
             method: "POST",
             url: "work.php",
-            data: {function_to_be_called: "delete_action", id: id}
+            data: {function_to_be_called: function_name, id: id}
         })
                 .done(function (result) {
                     console.log(result);
@@ -96,11 +114,11 @@ function ListWork(work) {
             });
 }
 
-function CreateWork(achievement_id){
+function createWork(action_id){
     $.ajax({
         method:"POST",
         url:"work.php",
-        data:{function_to_be_called:"create_work", achievement_id:achievement_id}
+        data:{function_to_be_called:"create_work", action_id:action_id}
     })
             .done (function (result){
                 ListAllWork();

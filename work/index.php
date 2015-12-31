@@ -7,6 +7,9 @@ include ("../config.php");
 
         <script src="work.js"></script>
         <a href="<?php echo SITE_ROOT; ?>">Back To Achievements List</a>
+        <input id="new_action_input_top" type="text" /> 
+        <input type="button" value="Create New Action" 
+            onclick="createNewAction($('#new_action_input_top').val());" />
         <h1 style="text-align:center;">Queue</h1>
             
         <div>
@@ -37,6 +40,10 @@ include ("../config.php");
             <div id="inactive"> </div>
 
         </div>
+        
+        <input id="new_action_input_bottom" type="text" /> 
+        <input type="button" value="Create New Action" 
+            onclick="createNewAction($('#new_action_input_bottom').val());" />
         <h1 style="text-align:center;">History</h1>
         <div id="work_history">
             

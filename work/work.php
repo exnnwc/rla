@@ -8,7 +8,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         associate(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "cancel_work":
-        cancel_work(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
+        cancel_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "change_work":
         change_work(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'work', FILTER_SANITIZE_NUMBER_INT));
@@ -19,8 +19,14 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "create_action":
         create_action(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'reference', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "create_new_action":
+        create_new_action(filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING));
+        break;
     case "create_work":
-        create_work(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
+        create_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
+        break;
+    case "delete_top_action":
+        delete_top_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "delete_action":
         delete_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
@@ -41,17 +47,16 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
 
 function associate($achievement_id, $action_id) {
     global $connection;
-    $action=fetch_action($action_id);
-    if ($action->achievement_id==0){
+    $action = fetch_action($action_id);
+    if ($action->achievement_id == 0) {
         $statement = $connection->prepare("insert into actions (name, work, achievement_id, reference) values('" . $action->name . "', $action->work, ?, 0)");
         $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
         $statement->execute();
-        $statement = $connection->prepare ("update actions set active=0 where id=?");
+        $statement = $connection->prepare("update actions set active=0 where id=?");
         $statement->bindValue(1, $action_id, PDO::PARAM_INT);
         $statement->execute();
-        
     } else {
-    $statement = $connection->prepare("insert into actions (name, work, achievement_id, reference) values('" . $action->name . "', $action->work, ?, ?)");
+        $statement = $connection->prepare("insert into actions (name, work, achievement_id, reference) values('" . $action->name . "', $action->work, ?, ?)");
         $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
         $statement->bindValue(2, $action_id, PDO::PARAM_INT);
         $statement->execute();
@@ -77,9 +82,10 @@ function change_work($id, $work) {
 
 function change_work_status_of_action($id, $work) {
     global $connection;
-    $statement = $connection->prepare("update actions set work=? where id=?");
+    $statement = $connection->prepare("update actions set work=? where active=1 and (id=? or reference=?)");
     $statement->bindvalue(1, $work, PDO::PARAM_INT);
     $statement->bindvalue(2, $id, PDO::PARAM_INT);
+    $statement->bindvalue(3, $id, PDO::PARAM_INT);
     $statement->execute();
 }
 
@@ -104,6 +110,13 @@ function create_work($action_id) {
     $statement->execute();
 }
 
+function create_new_action($action) {
+    global $connection;
+    $statement = $connection->prepare("insert into actions (name, achievement_id) values (?, 0)");
+    $statement->bindValue(1, $action, PDO::PARAM_STR);
+    $statement->execute();
+}
+
 function delete_action($id) {
     global $connection;
     $action = fetch_action($id);
@@ -115,20 +128,26 @@ function delete_action($id) {
         $connection->exec("update actions set active=0 where id=$id");
     } else if ($num_of_achievements > 1) {
         if ($action->reference == 0) {
-            $statement=$connection->query("select id from actions where active=1 and reference=$action->id limit 1");
-            $next_action_id=$statement->fetchColumn();
+            $statement = $connection->query("select id from actions where active=1 and reference=$action->id limit 1");
+            $next_action_id = $statement->fetchColumn();
             $connection->exec("update actions set active=0 where id=$id");
             $connection->exec("update actions set reference=0 where id=$next_action_id");
             $connection->exec("update actions set reference=$next_action_id where reference=$id");
-
         } else {
-                   $statement = $connection->prepare("update actions set active=0 where id=?");
-              $statement->bindValue(1, $id, PDO::PARAM_INT);
-              $statement->execute();            
+            $statement = $connection->prepare("update actions set active=0 where id=?");
+            $statement->bindValue(1, $id, PDO::PARAM_INT);
+            $statement->execute();
         }
     } else {
         //ERROR
     }
+}
+
+function delete_top_action($id) {
+    global $connection;
+    $statement = $connection->prepare("update actions set active=0 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
 }
 
 function display_achievement($achievement) {
@@ -219,9 +238,9 @@ function list_achievements_for_action($id) {
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
-    
+
     while ($result = $statement->fetch()) {
-        echo "<div><input type='button' value='X' onclick=\"DeleteAction($result[0])\"/>$result[1]</div>";
+        echo "<div><input type='button' value='X' onclick=\"DeleteAction($result[0], false)\"/>$result[1]</div>";
     }
 }
 
@@ -254,9 +273,29 @@ function list_work($work) {
     $statement->execute();
     echo $work;
     while ($action = $statement->fetchObject()) {
-        echo "<div style='margin-bottom:20px'><div>$action->name</div>
-                <div>";
-
+        echo "  <div>
+                    <input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
+                </div>
+                <div style='margin-left:20px;'>
+                    <div style='cursor:pointer; ";
+        if ($action->work > 0) {
+           
+            if (has_it_been_worked_on($action->id)) {
+                echo "text-decoration:line-through;' title='Cancel work'  onmouseover=\"$(this).css('text-decoration', 'none');\"  onmouseleave=\"$(this).css('text-decoration', 'line-through');\" onclick=\"cancelWork($action->id);\"";
+            } else {
+                echo "color:green;' onmouseover=\"$(this).css('text-decoration', 'line-through');\" onmouseleave=\"$(this).css('text-decoration', 'none');\" onclick=\"createWork($action->id);\"";
+            }
+        } else {
+            echo "'";
+            
+        }
+        echo "  >$action->name</div>                           
+                
+                    <input id='show_action_options$action->id' type='button' value='+' style=''
+                        onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
+                <div id='action_options$action->id' style='display:none'><div>
+                    <input type='button' value='-' 
+                        onclick=\" $('#action_options$action->id').hide();$('#show_action_options$action->id').show();\" \>";
 
         if ($work == 0) {
             echo "<input type='button' value='On'  onclick=\"changeWorkStatusOfAction($action->id, 1);\" />";
@@ -288,12 +327,10 @@ function list_work($work) {
     }
 }
 
-function has_it_been_worked_on($action_id, $achievement_work) {
+function has_it_been_worked_on($action_id) {
     global $connection;
-    if (!$achievement_work) {
-        return 0;
-    }
-    switch ($achievement_work) {
+    $action = fetch_action($action_id);
+    switch ($action->work) {
         case 1:
             $time_interval = "and work.updated=0";
             break;
@@ -307,7 +344,6 @@ function has_it_been_worked_on($action_id, $achievement_work) {
             $time_interval = "and work.created>=now()-interval 30 day";
             break;
     }
-    //This is only for today
     $statement = $connection->prepare("select count(*) from actions inner join work on actions.id=work.action_id 
         where work.active=1 $time_interval and actions.id=? limit 1");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
@@ -337,7 +373,7 @@ function display_work_history() {
 
         //var_dump (strtotime($work->updated));
         echo "<div>Finished";
-        switch ($achievement->work) {
+        switch ($action->work) {
             case 2:
                 echo " daily ";
                 break;
