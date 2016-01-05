@@ -40,8 +40,9 @@ include ("../config.php");
             <div id="inactive"> </div>
 
         </div>
-        
+        <hr />        
         <input id="new_action_input_bottom" type="text" /> 
+
         <input type="button" value="Create New Action" 
             onclick="createNewAction($('#new_action_input_bottom').val());" />
         <h1 style="text-align:center;">History</h1>

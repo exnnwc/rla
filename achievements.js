@@ -171,10 +171,20 @@ function changeWorkStatus(id, status, parent) {
         data: {function_to_be_called: "change_work_status", id: id, status: status}
     })
             .done(function (result) {
-                if (parent == 0) {
+                if ($(document.body).attr('id') === "AchievementsList") {
                     listAchievements("default");
                 } else {
-
+                    displayAchievement(id);
                 }
             });
+}
+
+function toggleWorkStatus(id, status, parent){
+    if (status==4){
+        status=0;
+    } else {
+        status++;
+    }
+    changeWorkStatus(id, status, parent);
+    
 }

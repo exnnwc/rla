@@ -275,6 +275,8 @@ function list_work($work) {
     while ($action = $statement->fetchObject()) {
         echo "  <div>
                     <input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
+                                            <input id='show_action_options$action->id' type='button' value='+' style=''
+                        onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
                 </div>
                 <div style='margin-left:20px;'>
                     <div style='cursor:pointer; ";
@@ -291,8 +293,7 @@ function list_work($work) {
         }
         echo "  >$action->name</div>                           
                 
-                    <input id='show_action_options$action->id' type='button' value='+' style=''
-                        onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
+
                 <div id='action_options$action->id' style='display:none'><div>
                     <input type='button' value='-' 
                         onclick=\" $('#action_options$action->id').hide();$('#show_action_options$action->id').show();\" \>";
@@ -323,7 +324,7 @@ function list_work($work) {
               <div id='list_of_achievements_for_action$action->id'>";
         list_achievements_for_action($action->id);
         echo "</div>
-              </div>";
+              </div></div>";
     }
 }
 

@@ -90,7 +90,31 @@ $achievement = $statement->fetchObject();
     <div>
         Power:<?php echo $achievement->power; ?>
     </div>
-
+    <div>
+        Work: 
+        <?php 
+        echo "$achievement->work (";
+        switch ($achievement->work){
+        case 0:
+            echo "Off";
+            break;
+        case 1:
+            echo "Unassigned";
+            break;
+        case 2:
+            echo "Daily";
+            break;
+        case 3:
+            echo "Weekly";
+            break;
+        case 4:
+            echo "Monthly";
+            break;            
+        }
+        ?>
+        ) <input type="button" value="Toggle work status" 
+                 onclick="toggleWorkStatus(<?php echo "$achievement->id, $achievement->work, $achievement->parent"; ?>);" />
+    </div>
     <div>
 
         <?php

@@ -20,7 +20,6 @@ function ChangeWork(id, work) {
             });
 }
 function changeWorkStatusOfAction(id, work) {
-    //console.log(id + " " + work);
     $.ajax({
         method: "POST",
         url: "work.php",
@@ -30,8 +29,8 @@ function changeWorkStatusOfAction(id, work) {
                 ListAllWork();
             });
 }
-function CancelWork(action_id) {
-    console.log(achievement_id);
+function cancelWork(action_id) {
+    console.log(action_id);
         $.ajax({
         method: "POST",
         url: "work.php",
