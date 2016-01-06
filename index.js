@@ -4,6 +4,7 @@ $(document.body).ready(function () {
     if ($(document.body).attr('id') === "AchievementsList") {
         document.title=SITE_NAME + " - Achievements List";
         listAchievements("default");
+	countAchievements();
         $('#new_achievement_text_input').keypress(function (event) {
             if (event.which === 13) {
                 createAchievement(0, $('#new_achievement_text_input').val());

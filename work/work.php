@@ -95,8 +95,11 @@ function create_action($achievement_id, $action, $reference) {
     if ($reference != 0) {
         $action = fetch_action($reference)->name;
     }
-    // echo "insert into actions(achievement_id, name, reference) values ($achievement_id, $action, $reference)";
-    $statement = $connection->prepare("insert into actions(achievement_id, name, reference) values (?, ?, ?)");
+    $statement = $connection->prepare("select work from achievements where id=?");
+	$statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+	$statement->execute();
+	$work=$statement->fetchColumn();
+    $statement = $connection->prepare("insert into actions(achievement_id, name, reference, work) values (?, ?, ?, $work)");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->bindValue(2, $action, PDO::PARAM_STR);
     $statement->bindValue(3, $reference, PDO::PARAM_INT);

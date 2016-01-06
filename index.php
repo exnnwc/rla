@@ -44,6 +44,8 @@
                 <input id="sort_work_button"  class="sort_button" type="button" value="Work &#8595;" />
                 <input id="sort_workrev_button"  class="sort_button" type="button" value="Work &#8593;"  style="display:none"/>
             </span>
+            <span>Total: <span id="achievement_count"></span></span>
+
             <div id="list_of_achievements"></div>
         <?php elseif ($rla > 0): ?>
         <body id="achievement_number_<?php echo $rla; ?>" >

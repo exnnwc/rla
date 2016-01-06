@@ -19,6 +19,9 @@ switch (filter_input(INPUT_POST, 'function_to_be_called', FILTER_SANITIZE_STRING
     case "change_rank":
         change_rank(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_rank', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "count_achievements":
+	count_achievements();
+	break;
     case "create_achievement":
         create_achievement(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'parent', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -153,7 +156,21 @@ function create_achievement($name, $parent) {
         echo "0 This achievement already exists."; //Maybe reference the specific achievements.
     }
 }
+function count_achievements(){
+	global $connection;
+	$query="select count(*) from achievements where active=1 and parent=0 and  work>0";
+	$statement=$connection->query($query);
+	$statement->execute();
+	$num_of_working_achievements=(int)$statement->fetchColumn();
+	$query="select count(*) from achievements where active=1 and parent=0";
+	$statement=$connection->query($query);
+	$statement->execute();
+	$num_of_achievements=(int)$statement->fetchColumn();
+	$num_of_nonworking_achievements=$num_of_achievements-$num_of_working_achievements;
+	echo "$num_of_achievements(<span style='color:green'>$num_of_working_achievements</span>/
+         <span style='color:red'>$num_of_nonworking_achievements</span>)";
 
+}
 function delete_achievement($id) {
     global $connection;
     $statement = $connection->prepare("update achievements set active=0 where id=?");

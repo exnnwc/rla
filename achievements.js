@@ -54,15 +54,28 @@ function changeRank(id, new_rank, fromProfile, parent) {
             data: {function_to_be_called: "change_rank", id: id, new_rank: new_rank}
         })
                 .done(function (result) {
+			console.log(result);
                     if (fromProfile) {
                         displayChildren(parent);
                     } else {
+			console.log("NO PROFILE");
                         listAchievements("default");
                     }
                 });
     }
 }
 
+function countAchievements(){
+	$.ajax({
+		method:"POST",
+		url:"achievements.php",
+		data:{function_to_be_called:"count_achievements"}
+	})
+		.done (function (result){
+			console.log(result);
+			$("#achievement_count").html(result);
+		});
+}
 function createAchievement(parent, name) {
     if (name.length > 255) {
         $("#error").html("This has too many characters.");
