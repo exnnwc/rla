@@ -41,6 +41,8 @@
                 <input id="sort_namerev_button"  class="sort_button" type="button" value="Name &#8593;"  style="display:none"/>
                 <input id="sort_created_button"  class="sort_button" type="button" value="Time &#8595;" />
                 <input id="sort_createdrev_button"  class="sort_button" type="button" value="Time &#8593;"  style="display:none"/>
+                <input id="sort_work_button"  class="sort_button" type="button" value="Work &#8595;" />
+                <input id="sort_workrev_button"  class="sort_button" type="button" value="Work &#8593;"  style="display:none"/>
             </span>
             <div id="list_of_achievements"></div>
         <?php elseif ($rla > 0): ?>

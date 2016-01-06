@@ -102,7 +102,7 @@ function DeleteAction(id, achievement_id) {
     }
 }
 function DeleteNote(id, achievement_id) {
-    if (window.confirm("Are you sure you want to delete this as a relationship?")) {
+    if (window.confirm("Are you sure you want to delete this as a note?")) {
         $.ajax({
             method: "POST",
             url: "notes.php",

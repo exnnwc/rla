@@ -281,7 +281,7 @@ function list_work($work) {
                 <div style='margin-left:20px;'>
                     <div style='cursor:pointer; ";
         if ($action->work > 0) {
-           
+
             if (has_it_been_worked_on($action->id)) {
                 echo "text-decoration:line-through;' title='Cancel work'  onmouseover=\"$(this).css('text-decoration', 'none');\"  onmouseleave=\"$(this).css('text-decoration', 'line-through');\" onclick=\"cancelWork($action->id);\"";
             } else {
@@ -289,7 +289,6 @@ function list_work($work) {
             }
         } else {
             echo "'";
-            
         }
         echo "  >$action->name</div>                           
                 
@@ -353,12 +352,46 @@ function has_it_been_worked_on($action_id) {
     return $work_created;
 }
 
+function should_it_have_been_worked_on($id) {
+    global $connection;
+    $action = fetch_action($id);
+    $statement = $connection->query("select datediff(curdate(), created) as days from work where action_id=$id and active=1 order by created desc limit 1");
+    $statement->execute();
+    $days_since_last_work = $statement->fetchColumn();
+
+    if (!$days_since_last_work){
+        return false;
+        //deal with when it has no previous work history
+    } else {
+        if ($action->work==2 && $days_since_last_work>0){
+            return true;
+        } else if ($action->work==3 && $days_since_last_work>6){
+            return true;
+        } else if ($action->work==4 && $days_since_last_work>28){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+}
+
+function display_all_unfinished_actions($begin, $end) {
+    global $connection;
+    $begin = date('Y-m-d H:i:s', strtotime(str_replace('-', '/', $begin)));
+    $end = date('Y-m-d H:i:s', strtotime(str_replace('-', '/', $end)));
+    $query = "select name, created, updated from actions where id not in (select action_id from work where created>'$begin' and created<'$end')";
+    //$statement=$connection->query()
+    echo $query;
+}
+
 function display_work_history() {
     global $connection;
     $statement = $connection->query("select * from work order by created desc");
     $statement->execute();
     $today = 0;
     $last_time = 0;
+    check_work();
     while ($work = $statement->fetchObject()) {
         $action = fetch_action($work->action_id);
         $achievement = fetch_achievement($action->achievement_id);
@@ -391,5 +424,17 @@ function display_work_history() {
             echo " then cancelled at " . date("H:i:s", strtotime($work->created));
         }
         echo "</div>";
+    }
+}
+
+function check_work() {
+    //check work for just daily
+    global $connection;
+    $statement = $connection->query("select * from actions where active=1 and work>1");
+    $statement->execute();
+    while ($action = $statement->fetchObject()) {
+        echo "$action->id - $action->name ";
+        var_dump(should_it_have_been_worked_on($action->id));
+        echo "<BR \>";
     }
 }

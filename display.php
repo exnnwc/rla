@@ -299,7 +299,8 @@ $achievement = $statement->fetchObject();
                        onclick="  CreateNote($('#new_note_inputted').val(), <?php echo $achievement->id; ?>, 0);
                                $('#new_notes').hide();
                                $('#hide_new_notes').hide();
-                               $('#show_new_notes').show();" />
+                               $('#show_new_notes').show();
+                                $('#new_note_inputted').val('');" />
             </div>
         </div>
         <div id="list_of_notes<?php echo $achievement->id; ?>"></div>

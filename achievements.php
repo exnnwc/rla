@@ -266,6 +266,12 @@ function fetch_order_query($sort_by) {
         case "namerev":
             $order_by = " order by name desc";
             break;
+        case "work":
+            $order_by = " order by work";
+            break;
+        case "workrev":
+            $order_by = " order by work desc";
+            break;
     }
     return $order_by;
 }
