@@ -221,6 +221,13 @@ function fetch_action($id) {
     return $statement->fetchObject();
 }
 
+function days_since_last_worked($action_id){
+    global $connection;
+    $statement = $connection->prepare("select datediff(curdate(), created) as days from work where action_id=? and active=1 order by created desc limit 1");
+    $statement->bindValue(1, $action_id, PDO::PARAM_INT);
+    $statement->execute();
+    return (int)$statement->fetchColumn();
+}
 function display_new_action_options($id) {
     global $connection;
     $query = "select * from achievements where active=1 and id not in (select achievement_id from actions where active=1 and (id=? or reference=?)) order by name";
@@ -232,7 +239,51 @@ function display_new_action_options($id) {
         echo "<option value='$achievement->id'>$achievement->name</option>";
     }
 }
-
+function has_it_been_worked_on($action_id) {
+    global $connection;
+    $action = fetch_action($action_id);
+    switch ($action->work==2){
+        case 2:
+            if (last_work_date($action_id)=="12/31/69" || last_work_date($action_id)!=date("m/d/y", time())) {               
+                return false;
+            } else if(days_since_last_worked($action_id)<1 ){
+                return true;
+                
+            } else {
+                return false;                
+            }
+            break;
+    }/*
+    switch ($action->work) {
+        case 1:
+            $time_interval = "and work.updated=0";
+            break;
+        case 2:
+            $time_interval = "and work.created>=now()-interval 1 day";
+            break;
+        case 3:
+            $time_interval = "and work.created>=now()-interval 7 day";
+            break;
+        case 4:
+            $time_interval = "and work.created>=now()-interval 30 day";
+            break;
+    }
+    $statement = $connection->prepare("select count(*) from actions inner join work on actions.id=work.action_id 
+        where work.active=1 $time_interval and actions.id=? limit 1");
+    $statement->bindValue(1, $action_id, PDO::PARAM_INT);
+    $statement->execute();
+    $work_created = $statement->fetchColumn();
+    return $work_created;*/
+}
+function last_work_date($action_id){
+    global $connection;
+    $statement=$connection->prepare("select created from work where updated=0 and action_id=? and active=1 and worked=1 order by created desc limit 1");
+    $statement->bindValue(1, $action_id, PDO::PARAM_INT);
+    $statement->execute();
+    return date("m/d/y", strtotime($statement->fetchColumn()));
+    
+    
+}
 function list_achievements_for_action($id) {
     global $connection;
     $query = "select actions.id, achievements.name from achievements inner join actions on achievements.id = actions.achievement_id 
@@ -276,7 +327,7 @@ function list_work($work) {
     $statement->execute();
     echo $work;
     while ($action = $statement->fetchObject()) {
-        echo "  <div>
+        echo "  <div>$action->id " . last_work_date($action->id) . " " . days_since_last_worked($action->id) . " 
                     <input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
                                             <input id='show_action_options$action->id' type='button' value='+' style=''
                         onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
@@ -330,47 +381,22 @@ function list_work($work) {
     }
 }
 
-function has_it_been_worked_on($action_id) {
-    global $connection;
-    $action = fetch_action($action_id);
-    switch ($action->work) {
-        case 1:
-            $time_interval = "and work.updated=0";
-            break;
-        case 2:
-            $time_interval = "and work.created>=now()-interval 1 day";
-            break;
-        case 3:
-            $time_interval = "and work.created>=now()-interval 7 day";
-            break;
-        case 4:
-            $time_interval = "and work.created>=now()-interval 30 day";
-            break;
-    }
-    $statement = $connection->prepare("select count(*) from actions inner join work on actions.id=work.action_id 
-        where work.active=1 $time_interval and actions.id=? limit 1");
-    $statement->bindValue(1, $action_id, PDO::PARAM_INT);
-    $statement->execute();
-    $work_created = $statement->fetchColumn();
-    return $work_created;
-}
+
 
 function should_it_have_been_worked_on($id) {
     global $connection;
     $action = fetch_action($id);
-    $statement = $connection->query("select datediff(curdate(), created) as days from work where action_id=$id and active=1 order by created desc limit 1");
-    $statement->execute();
-    $days_since_last_work = $statement->fetchColumn();
+    $days_since_last_worked=  days_since_last_worked($id);
 
-    if (!$days_since_last_work){
+    if (!$days_since_last_worked){
         return false;
         //deal with when it has no previous work history
     } else {
-        if ($action->work==2 && $days_since_last_work>0){
+        if ($action->work==2 && $days_since_last_worked>0){
             return true;
-        } else if ($action->work==3 && $days_since_last_work>6){
+        } else if ($action->work==3 && $days_since_last_worked>6){
             return true;
-        } else if ($action->work==4 && $days_since_last_work>28){
+        } else if ($action->work==4 && $days_since_last_worked>28){
             return true;
         } else {
             return false;

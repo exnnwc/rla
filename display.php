@@ -181,7 +181,8 @@ $achievement = $statement->fetchObject();
                        }"/>
         <input type="button" value="Quick Create" 
                onclick="
-                       createAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());"/>
+                       createAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());
+                       $('#new_achievement<?php echo $achievement->id; ?>').val('');"/>
 
     </div>
     <div id='child_achievements_of_<?php echo $achievement->id; ?>'></div>
