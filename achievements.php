@@ -200,7 +200,7 @@ function display_achievement_listing_menu($achievement, $child) {
                         <input id='down_rank_$achievement->id' type='button' class='down_rank_button' value='-' />
                         <input id='change_rank_$achievement->id' type='text' 
                             class='change_rank' value='$achievement->rank' style='width:32px;text-align:center;' 
-                                onkeypress=\"if (event.keyCode===13){changeRank($achievement->id, this.value, true, $achievement->parent);}\" />
+                                onkeypress=\"if (event.keyCode===13){changeRank($achievement->id, this.value, false, $achievement->parent);}\" />
                         <input id='up_rank_$achievement->id' type='button' class='up_rank_button' value='+' />";
         $string = $string . "</td><td>
                     $achievement->power

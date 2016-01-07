@@ -223,6 +223,9 @@ function fetch_action($id) {
 
 function days_since_last_worked($action_id){
     global $connection;
+	if (when_last_Worked($action_id)=="12/31/69"){
+		return false;
+	}
     $statement = $connection->prepare("select datediff(curdate(), created) as days from work where action_id=? and active=1 order by created desc limit 1");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     $statement->execute();
@@ -242,45 +245,50 @@ function display_new_action_options($id) {
 function has_it_been_worked_on($action_id) {
     global $connection;
     $action = fetch_action($action_id);
-    switch ($action->work==2){
-        case 2:
-            if (last_work_date($action_id)=="12/31/69" || last_work_date($action_id)!=date("m/d/y", time())) {               
-                return false;
-            } else if(days_since_last_worked($action_id)<1 ){
-                return true;
-                
-            } else {
-                return false;                
-            }
-            break;
-    }/*
-    switch ($action->work) {
-        case 1:
-            $time_interval = "and work.updated=0";
-            break;
-        case 2:
-            $time_interval = "and work.created>=now()-interval 1 day";
-            break;
-        case 3:
-            $time_interval = "and work.created>=now()-interval 7 day";
-            break;
-        case 4:
-            $time_interval = "and work.created>=now()-interval 30 day";
-            break;
-    }
-    $statement = $connection->prepare("select count(*) from actions inner join work on actions.id=work.action_id 
-        where work.active=1 $time_interval and actions.id=? limit 1");
-    $statement->bindValue(1, $action_id, PDO::PARAM_INT);
-    $statement->execute();
-    $work_created = $statement->fetchColumn();
-    return $work_created;*/
+	if (when_last_worked($action_id)=="12/31/69"){
+		//return false;
+	} else {
+	    switch ($action->work){
+	        case 2:
+	            if (date("z", when_last_worked($action_id))!= date("z",time())) {               
+	                return false;
+	            } else if(days_since_last_worked($action_id)<1 ){
+	                return true;
+	                
+	            } else {
+	                return false;                
+	            }
+	            break;
+		case 3:
+			if (date("W", when_last_worked($action_id))!=date("W", time())){
+	//			echo "a";
+				return false;
+			} else if (days_since_last_worked($action_id)<7){
+		//		echo "b";
+				return true;
+			} else {
+		//		echo "c";
+				return false;
+			}
+			break;
+		case 4:
+			if (date("m", when_last_worked($action_id))!=date("m", time())){
+				return false;
+			} else if (days_last_worked($action_id)<28){
+				return true;
+			} else { 
+				return false;
+			}
+			break;
+	    }	
+	}
 }
-function last_work_date($action_id){
+function when_last_worked($action_id){
     global $connection;
     $statement=$connection->prepare("select created from work where updated=0 and action_id=? and active=1 and worked=1 order by created desc limit 1");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     $statement->execute();
-    return date("m/d/y", strtotime($statement->fetchColumn()));
+    return  strtotime($statement->fetchColumn());
     
     
 }
@@ -327,7 +335,7 @@ function list_work($work) {
     $statement->execute();
     echo $work;
     while ($action = $statement->fetchObject()) {
-        echo "  <div>$action->id " . last_work_date($action->id) . " " . days_since_last_worked($action->id) . " 
+        echo "  <div>$action->id $action->work " . date("m/d/y", when_last_worked($action->id)) . " " . days_since_last_worked($action->id) . " " . has_it_been_worked_on($action->id) . " 
                     <input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
                                             <input id='show_action_options$action->id' type='button' value='+' style=''
                         onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
@@ -462,8 +470,6 @@ function check_work() {
     $statement = $connection->query("select * from actions where active=1 and work>1");
     $statement->execute();
     while ($action = $statement->fetchObject()) {
-        echo "$action->id - $action->name ";
-        var_dump(should_it_have_been_worked_on($action->id));
-        echo "<BR \>";
     }
+
 }
