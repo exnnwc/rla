@@ -480,26 +480,34 @@ function display_work_history() {
 function check_work() {
     //check work for just daily
     global $connection;
-    $statement = $connection->query("select * from actions where active=1 and work=2
-        and id not in (select action_id from work where created>DATE_SUB(NOW(), INTERVAL 2 DAY) and created<DATE_SUB(NOW(), INTERVAL 1 DAY))");
-    $statement->execute();
-    while ($action = $statement->fetchObject()) {
-        
-    }
+	$check=1;
+	while($check<4){
+	switch($check){
+		case 1:
+		    $statement = $connection->query("select * from actions where active=1 and work=2
+		        and id not in (select action_id from work 
+			where created>DATE_SUB(NOW(), INTERVAL 2 DAY) and created<DATE_SUB(NOW(), INTERVAL 1 DAY))");
+			break;
+		case 2:	
+		    if (date("D", time()) == "Sun") {
+		        $statement = $connection->query("select * from actions where active=1 and work=3 
+		            and id not in (select action_id from work 
+				where created>DATE_SUB(NOW(), INTERVAL 8 DAY) and created<DATE_SUB(NOW(), INTERVAL 1 DAY))");
+		    } 
+			break;
+		case 3:	
+			if (date("j", time()) == "1") {
+		        $statement = $connection->query("select * from actions where active=1 and work=4
+		            and id not in (select action_id from work 
+				where month(created)=month(current_date-interval 1 month)");
+		    	}
+			break;
+	}
+	    $statement->execute();
+	    while ($action = $statement->fetchObject()) {
+	       echo "$action->name has not been worked. $action->work<BR/>"; 
+	    }
+	$check++;	
+}
 
-    if (date("D", time()) = "Sun") {
-        $statement = $connection->query("select * from actions where active=1 and work=3 
-            and id not in (select action_id from work where created>DATE_SUB(NOW(), INTERVAL 8 DAY) and created<DATE_SUB(NOW(), INTERVAL 1 DAY))");
-        $statement->execute();
-        while ($action = $statement->fetchObject()) {
-            
-        }
-    } else if (date("j", time()) == "1") {
-        $statement = $connection->query("select * from actions where active=1 and work=4
-            and id not in (select action_id from work where month(created)=month(current_date-interval 1 month)");
-        $statement->execute();
-        while ($action = $statement->fetchObject()) {
-            
-        }
-    }
 }
