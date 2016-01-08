@@ -486,13 +486,13 @@ function check_work() {
 		case 1:
 		    $statement = $connection->query("select * from actions where active=1 and work=2
 		        and id not in (select action_id from work 
-			where created>DATE_SUB(NOW(), INTERVAL 2 DAY) and created<DATE_SUB(NOW(), INTERVAL 1 DAY))");
+			where date(created)=current_date-interval 1 day)");
 			break;
 		case 2:	
 		    if (date("D", time()) == "Sun") {
 		        $statement = $connection->query("select * from actions where active=1 and work=3 
 		            and id not in (select action_id from work 
-				where created>DATE_SUB(NOW(), INTERVAL 8 DAY) and created<DATE_SUB(NOW(), INTERVAL 1 DAY))");
+				where week(created)==week(now)-1)");
 		    } 
 			break;
 		case 3:	
@@ -506,6 +506,7 @@ function check_work() {
 	    $statement->execute();
 	    while ($action = $statement->fetchObject()) {
 	       echo "$action->name has not been worked. $action->work<BR/>"; 
+//		$connection->query("insert into work (action_id, 
 	    }
 	$check++;	
 }
