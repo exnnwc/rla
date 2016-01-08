@@ -96,9 +96,9 @@ function create_action($achievement_id, $action, $reference) {
         $action = fetch_action($reference)->name;
     }
     $statement = $connection->prepare("select work from achievements where id=?");
-	$statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
-	$statement->execute();
-	$work=$statement->fetchColumn();
+    $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+    $statement->execute();
+    $work = $statement->fetchColumn();
     $statement = $connection->prepare("insert into actions(achievement_id, name, reference, work) values (?, ?, ?, $work)");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->bindValue(2, $action, PDO::PARAM_STR);
@@ -221,16 +221,17 @@ function fetch_action($id) {
     return $statement->fetchObject();
 }
 
-function days_since_last_worked($action_id){
+function days_since_last_worked($action_id) {
     global $connection;
-	if (when_last_Worked($action_id)=="12/31/69"){
-		return false;
-	}
+    if (when_last_Worked($action_id) == "12/31/69") {
+        return false;
+    }
     $statement = $connection->prepare("select datediff(curdate(), created) as days from work where action_id=? and active=1 order by created desc limit 1");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     $statement->execute();
-    return (int)$statement->fetchColumn();
+    return (int) $statement->fetchColumn();
 }
+
 function display_new_action_options($id) {
     global $connection;
     $query = "select * from achievements where active=1 and id not in (select achievement_id from actions where active=1 and (id=? or reference=?)) order by name";
@@ -242,56 +243,67 @@ function display_new_action_options($id) {
         echo "<option value='$achievement->id'>$achievement->name</option>";
     }
 }
+
 function has_it_been_worked_on($action_id) {
     global $connection;
     $action = fetch_action($action_id);
-	if (when_last_worked($action_id)=="12/31/69"){
-		//return false;
-	} else {
-	    switch ($action->work){
-	        case 2:
-	            if (date("z", when_last_worked($action_id))!= date("z",time())) {               
-	                return false;
-	            } else if(days_since_last_worked($action_id)<1 ){
-	                return true;
-	                
-	            } else {
-	                return false;                
-	            }
-	            break;
-		case 3:
-			if (date("W", when_last_worked($action_id))!=date("W", time())){
-	//			echo "a";
-				return false;
-			} else if (days_since_last_worked($action_id)<7){
-		//		echo "b";
-				return true;
-			} else {
-		//		echo "c";
-				return false;
-			}
-			break;
-		case 4:
-			if (date("m", when_last_worked($action_id))!=date("m", time())){
-				return false;
-			} else if (days_last_worked($action_id)<28){
-				return true;
-			} else { 
-				return false;
-			}
-			break;
-	    }	
-	}
+    if (when_last_worked($action_id) == "12/31/69") {
+        return false;
+    } else {
+        switch ($action->work) {
+            case 2:
+                if (date("z", when_last_worked($action_id)) != date("z", time())) {
+                    return false;
+                } else if (days_since_last_worked($action_id) < 1) {
+                    return true;
+                } else {
+                    return false;
+                }
+                break;
+            case 3:
+                if (date("W", when_last_worked($action_id)) != date("W", time())) {
+                    //echo "a";
+                    return false;
+                } else if (days_since_last_worked($action_id) < 7) {
+                    //echo "b";
+                    return true;
+                } else {
+                    //echo "c";
+                    return false;
+                }
+                break;
+            case 4:
+                if (date("m", when_last_worked($action_id)) != date("m", time())) {
+                    return false;
+                } else if (days_since_last_worked($action_id) < 28) {
+                    return true;
+                } else {
+                    return false;
+                }
+                break;
+        }
+    }
 }
-function when_last_worked($action_id){
+
+function has_work_been_checked() {
     global $connection;
-    $statement=$connection->prepare("select created from work where updated=0 and action_id=? and active=1 and worked=1 order by created desc limit 1");
+    $statement = $connection->query("select created from work where action_id=0 order by created desc limit 1");
+    $statement->execute();
+    if (date("m/d/y", strtotime($statement->fetchColumn())) == date("m/d/y", time())) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function when_last_worked($action_id) {
+    global $connection;
+    $statement = $connection->prepare("select created from work where action_id=? and active=1 and worked=1 order by created desc limit 1");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     $statement->execute();
-    return  strtotime($statement->fetchColumn());
-    
-    
+    return strtotime($statement->fetchColumn());
 }
+
 function list_achievements_for_action($id) {
     global $connection;
     $query = "select actions.id, achievements.name from achievements inner join actions on achievements.id = actions.achievement_id 
@@ -335,7 +347,8 @@ function list_work($work) {
     $statement->execute();
     echo $work;
     while ($action = $statement->fetchObject()) {
-        echo "  <div>$action->id $action->work " . date("m/d/y", when_last_worked($action->id)) . " " . days_since_last_worked($action->id) . " " . has_it_been_worked_on($action->id) . " 
+        echo "  <div>$action->id $action->work " . date("m/d/y", when_last_worked($action->id)) . " " . days_since_last_worked($action->id) .
+        " " . has_it_been_worked_on($action->id) . " 
                     <input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
                                             <input id='show_action_options$action->id' type='button' value='+' style=''
                         onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
@@ -389,28 +402,25 @@ function list_work($work) {
     }
 }
 
-
-
 function should_it_have_been_worked_on($id) {
     global $connection;
     $action = fetch_action($id);
-    $days_since_last_worked=  days_since_last_worked($id);
+    $days_since_last_worked = days_since_last_worked($id);
 
-    if (!$days_since_last_worked){
+    if (!$days_since_last_worked) {
         return false;
         //deal with when it has no previous work history
     } else {
-        if ($action->work==2 && $days_since_last_worked>0){
+        if ($action->work == 2 && $days_since_last_worked > 0) {
             return true;
-        } else if ($action->work==3 && $days_since_last_worked>6){
+        } else if ($action->work == 3 && $days_since_last_worked > 6) {
             return true;
-        } else if ($action->work==4 && $days_since_last_worked>28){
+        } else if ($action->work == 4 && $days_since_last_worked > 28) {
             return true;
         } else {
             return false;
         }
     }
-    
 }
 
 function display_all_unfinished_actions($begin, $end) {
@@ -428,7 +438,10 @@ function display_work_history() {
     $statement->execute();
     $today = 0;
     $last_time = 0;
-    check_work();
+    if (!has_work_been_checked()) {
+
+        check_work();
+    }
     while ($work = $statement->fetchObject()) {
         $action = fetch_action($work->action_id);
         $achievement = fetch_achievement($action->achievement_id);
@@ -467,9 +480,26 @@ function display_work_history() {
 function check_work() {
     //check work for just daily
     global $connection;
-    $statement = $connection->query("select * from actions where active=1 and work>1");
+    $statement = $connection->query("select * from actions where active=1 and work=2
+        and id not in (select action_id from work where created>DATE_SUB(NOW(), INTERVAL 2 DAY) and created<DATE_SUB(NOW(), INTERVAL 1 DAY))");
     $statement->execute();
     while ($action = $statement->fetchObject()) {
+        
     }
 
+    if (date("D", time()) = "Sun") {
+        $statement = $connection->query("select * from actions where active=1 and work=3 
+            and id not in (select action_id from work where created>DATE_SUB(NOW(), INTERVAL 8 DAY) and created<DATE_SUB(NOW(), INTERVAL 1 DAY))");
+        $statement->execute();
+        while ($action = $statement->fetchObject()) {
+            
+        }
+    } else if (date("j", time()) == "1") {
+        $statement = $connection->query("select * from actions where active=1 and work=4
+            and id not in (select action_id from work where month(created)=month(current_date-interval 1 month)");
+        $statement->execute();
+        while ($action = $statement->fetchObject()) {
+            
+        }
+    }
 }
