@@ -490,9 +490,9 @@ function check_work() {
 			break;
 		case 2:	
 		    if (date("D", time()) == "Sun") {
-		        $statement = $connection->query("select * from actions where active=1 and work=3 
-		            and id not in (select action_id from work 
-				where week(created)==week(now)-1)");
+		        $statement = $connection->query("select * from actions 
+                            where active=1 and work=3 and id not in (select action_id from work 
+				where week(created)=week(current_date-interval 1 week))");
 		    } 
 			break;
 		case 3:	

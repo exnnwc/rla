@@ -204,6 +204,8 @@ function display_achievement_listing_menu($achievement, $child) {
                         <input id='up_rank_$achievement->id' type='button' class='up_rank_button' value='+' />";
         $string = $string . "</td><td>
                     $achievement->power
+                    </td><td>
+                    $achievement->power_adj
                     </td><td>";
         $string = $string . 
                 "<input id='turn_work_on_$achievement->id' type='button' class='change_work_button' value='". display_current_work_status($achievement->id) . "' 
@@ -265,6 +267,12 @@ function fetch_order_query($sort_by) {
         case "powerrev":
             $order_by = " order by power desc, rank asc";
             break;
+        case "power_adj":
+            $order_by = " order by power_adj asc";
+            break;
+        case "power_adjrev":
+            $order_by = " order by power_adj desc, rank asc";
+            break;        
         case "rank":
             $order_by = " order by rank asc";
             break;
@@ -304,7 +312,7 @@ function is_it_active($id) {
 function list_achievements($sort_by) {
 
     echo "<table style='text-align:center;'>"
-    . "<tr><td>X</td><td>Rank</td><td>Power</td><td>
+    . "<tr><td>X</td><td>Rank</td><td>Power</td><td>Power (Adj)</td><td>
             <a href='" . SITE_ROOT . "/work/' style='color:black;'>Work</a>
                 </td><td>Achievement Name</td></tr>";
     global $connection;
@@ -369,3 +377,4 @@ function update_rank($id, $new_rank) {
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
+

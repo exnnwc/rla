@@ -37,6 +37,8 @@
                 <input id="sort_rankrev_button" class="sort_button"  type='button' value="Rank &#8593;"  style="display:none" />
                 <input id="sort_power_button" class="sort_button"  type="button" value="Power &#8595;" />
                 <input id="sort_powerrev_button" class="sort_button"  type="button" value="Power &#8593;" style="display:none"/>
+                <input id="sort_power_adj_button" class="sort_button"  type="button" value="Power (Adj) &#8595;" />
+                <input id="sort_power_adjrev_button" class="sort_button"  type="button" value="Power (Adj) &#8593;" style="display:none"/>
                 <input id="sort_name_button"  class="sort_button" type="button" value="Name &#8595;" />
                 <input id="sort_namerev_button"  class="sort_button" type="button" value="Name &#8593;"  style="display:none"/>
                 <input id="sort_created_button"  class="sort_button" type="button" value="Time &#8595;" />
