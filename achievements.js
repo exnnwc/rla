@@ -46,6 +46,20 @@ function changePower(id, new_power, fromProfile) {
             });
 
 }
+
+
+function changeQuality(id, new_quality){
+	$.ajax({
+		method:"POST",
+		url:"achievements.php",
+		data:{function_to_be_called:"change_quality", id:id, new_quality:new_quality}
+	})
+		.done(function(result){
+			console.log(result);
+			listAchievements("default");
+		});
+}
+
 function changeRank(id, new_rank, fromProfile, parent) {
     if (new_rank > 0) {
         $.ajax({
@@ -193,7 +207,7 @@ function changeWorkStatus(id, status, parent) {
 }
 
 function toggleWorkStatus(id, status, parent){
-    if (status==4){
+    if (status==5){
         status=0;
     } else {
         status++;

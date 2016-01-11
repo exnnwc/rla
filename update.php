@@ -22,7 +22,7 @@
             while ($required_for = $statement2->fetchColumn()) {
                 $requirement=fetch_achievement($required_for);
                 echo "<div style='background-color:red;margin-left:32px'>$requirement->id $requirement->name ->$requirement->power</div>";
-                $connection->exec("update achievements set power_adj=power_adj-$requirement->power where id=$requirement->id");
+                $connection->exec("update achievements set power_adj=power_adj-$requirement->power_adj where id=$requirement->id");
             }
             echo "</div>";
         }

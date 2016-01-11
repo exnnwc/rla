@@ -16,6 +16,10 @@ switch (filter_input(INPUT_POST, 'function_to_be_called', FILTER_SANITIZE_STRING
     case "change_power":
         change_power(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_power', FILTER_SANITIZE_NUMBER_INT));
         break;
+	case "change_quality":
+		change_quality(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST,'new_quality', FILTER_VALIDATE_BOOLEAN));
+
+		break;
     case "change_rank":
         change_rank(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_rank', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -158,16 +162,20 @@ function create_achievement($name, $parent) {
 }
 function count_achievements(){
 	global $connection;
-	$query="select count(*) from achievements where active=1 and parent=0 and  work>0";
+	$query="select count(*) from achievements where quality=false and active=1 and parent=0 and  work>0";
 	$statement=$connection->query($query);
 	$statement->execute();
 	$num_of_working_achievements=(int)$statement->fetchColumn();
+	$statement=$connection->query("select count(*) from achievements where active=1 and quality=true");
+	$statement->execute();
+	$num_of_qualities=(int)$statement->fetchColumn();
 	$query="select count(*) from achievements where active=1 and parent=0";
 	$statement=$connection->query($query);
 	$statement->execute();
 	$num_of_achievements=(int)$statement->fetchColumn();
-	$num_of_nonworking_achievements=$num_of_achievements-$num_of_working_achievements;
-	echo "$num_of_achievements(<span style='color:green'>$num_of_working_achievements</span>/
+	$num_of_nonworking_achievements=$num_of_achievements-$num_of_working_achievements-$num_of_qualities;
+	echo "$num_of_achievements([<span style='color:green'>$num_of_working_achievements</span> + 
+	 <span style='color:gray;'>$num_of_qualities</span>]/
          <span style='color:red'>$num_of_nonworking_achievements</span>)";
 
 }
@@ -209,7 +217,11 @@ function display_achievement_listing_menu($achievement, $child) {
                     </td><td>";
         $string = $string . 
                 "<input id='turn_work_on_$achievement->id' type='button' class='change_work_button' value='". display_current_work_status($achievement->id) . "' 
-                    onclick=\"toggleWorkStatus($achievement->id, $achievement->work, $achievement->parent);\"/>";
+                    onclick=\"toggleWorkStatus($achievement->id, $achievement->work, $achievement->parent);\"/></td><td>";
+	$achievement->quality ? $string = $string . "<input type='button' value='On' 
+							onclick=\"changeQuality($achievement->id, false);\"/>" 
+		: $string = $string . "<input type='button' value='Off' 
+					   onclick=\"changeQuality($achievement->id, true);\"/>";
         $string = $string . "</td>";
     }
     return $string;
@@ -226,7 +238,7 @@ function display_current_work_status($id){
             return "Off";
             break;
         case 1:
-            return "Unassigned";
+            return "Instant";
             break;
         case 2:
             return "Daily";
@@ -237,6 +249,9 @@ function display_current_work_status($id){
         case 4:
             return "Monthly";
             break;
+	case 5:
+		return "Work";
+		break;
     }
 
 }
@@ -259,7 +274,7 @@ function fetch_rank($parent) {
 function fetch_order_query($sort_by) {
     switch ($sort_by) {
         case "default":
-            $order_by = " order by rank asc";
+            $order_by = " order by quality asc, rank asc";
             break;
         case "power":
             $order_by = " order by power asc";
@@ -314,7 +329,9 @@ function list_achievements($sort_by) {
     echo "<table style='text-align:center;'>"
     . "<tr><td>X</td><td>Rank</td><td>Power</td><td>Power (Adj)</td><td>
             <a href='" . SITE_ROOT . "/work/' style='color:black;'>Work</a>
-                </td><td>Achievement Name</td></tr>";
+                </td><td>
+			Quality
+		</td><td>Achievement Name</td></tr>";
     global $connection;
     $query = "select * from achievements where active=1 and parent=0" . fetch_order_query($sort_by);
     $statement = $connection->query($query);
@@ -323,7 +340,9 @@ function list_achievements($sort_by) {
         .display_achievement_listing_menu($achievement, false)
             ."<td style='text-align:left'>
               <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
-        if ($achievement->work) {
+	if ($achievement->quality){
+		echo "color:gray;";
+	} else if ($achievement->work) {
             echo "color:green;";
         } else {
             echo "color:red;";
@@ -368,6 +387,13 @@ function rank_table_in_order($query, $parent) {
         $connection->exec("update achievements set rank=$rank where id=$achievement->id");
         $rank++;
     }
+}
+function change_quality($id, $quality){
+	global $connection;
+	$statement=$connection->prepare("update achievements set quality=? where id=?");
+	$statement->bindValue(1, $quality, PDO::PARAM_BOOL);
+	$statement->bindValue(2, $id, PDO::PARAM_INT);
+	$statement->execute();
 }
 
 function update_rank($id, $new_rank) {
