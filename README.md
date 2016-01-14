@@ -5,3 +5,9 @@ I'm trying to avoid any kind of overt gamification like some of the other implem
 
 
 One of the most important features that I would like to develop for RLA is to be able to track the progress of a particular achievement. That is paramount, especially in larger achievements that may take years. Being able to track your progress helps to not become disheartened. 
+
+TODO
+
+FEATURES
+Double click on Achievement Profile name to change it.
+
