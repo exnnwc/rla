@@ -480,35 +480,37 @@ function display_work_history() {
 function check_work() {
     //check work for just daily
     global $connection;
-	$check=1;
-	while($check<4){
-	switch($check){
-		case 1:
-		    $statement = $connection->query("select * from actions where active=1 and work=2
+    $check = 1;
+    while ($check < 4) {
+        $statement = false;
+        switch ($check) {
+            case 1:
+                $statement = $connection->query("select * from actions where active=1 and work=2
 		        and id not in (select action_id from work 
 			where date(created)=current_date-interval 1 day)");
-			break;
-		case 2:	
-		    if (date("D", time()) == "Sun") {
-		        $statement = $connection->query("select * from actions 
+                break;
+            case 2:
+                if (date("D", time()) == "Sun") {
+                    $statement = $connection->query("select * from actions 
                             where active=1 and work=3 and id not in (select action_id from work 
 				where week(created)=week(current_date-interval 1 week))");
-		    } 
-			break;
-		case 3:	
-			if (date("j", time()) == "1") {
-		        $statement = $connection->query("select * from actions where active=1 and work=4
+                }
+                break;
+            case 3:
+                if (date("j", time()) == "1") {
+                    $statement = $connection->query("select * from actions where active=1 and work=4
 		            and id not in (select action_id from work 
 				where month(created)=month(current_date-interval 1 month)");
-		    	}
-			break;
-	}
-	    $statement->execute();
-	    while ($action = $statement->fetchObject()) {
-	       echo "$action->name has not been worked. $action->work<BR/>"; 
+                }
+                break;
+        }
+        if ($statement) {
+            $statement->execute();
+            while ($action = $statement->fetchObject()) {
+                echo "$action->name has not been worked. $action->work<BR/>";
 //		$connection->query("insert into work (action_id, 
-	    }
-	$check++;	
-}
-
+            }
+        }
+        $check++;
+    }
 }

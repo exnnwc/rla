@@ -78,7 +78,22 @@ function changeRank(id, new_rank, fromProfile, parent) {
                 });
     }
 }
-
+function changeWorkStatus(id, status, parent) {
+    $.ajax({
+        method: "POST",
+        url: "achievements.php",
+        data: {function_to_be_called: "change_work_status", id: id, status: status}
+    })
+            .done(function (result) {
+                if ($(document.body).attr('id') === "AchievementsList") {
+                    countAchievements();
+                    listAchievements("default");
+                } else {
+                    
+                    displayAchievement(id);
+                }
+            });
+}
 function countAchievements(){
 	$.ajax({
 		method:"POST",
@@ -86,7 +101,6 @@ function countAchievements(){
 		data:{function_to_be_called:"count_achievements"}
 	})
 		.done (function (result){
-			console.log(result);
 			$("#achievement_count").html(result);
 		});
 }
@@ -191,20 +205,7 @@ function listAchievements(sort_by) {
             });
 }
 
-function changeWorkStatus(id, status, parent) {
-    $.ajax({
-        method: "POST",
-        url: "achievements.php",
-        data: {function_to_be_called: "change_work_status", id: id, status: status}
-    })
-            .done(function (result) {
-                if ($(document.body).attr('id') === "AchievementsList") {
-                    listAchievements("default");
-                } else {
-                    displayAchievement(id);
-                }
-            });
-}
+
 
 function toggleWorkStatus(id, status, parent){
     if (status==5){
