@@ -34,6 +34,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "display_work_history";
         display_work_history();
         break;
+    case "list_achievements_needing_work":
+        list_achievements_needing_work();
+        break;
     case "list_actions":
         list_actions(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -232,6 +235,62 @@ function days_since_last_worked($action_id) {
     return (int) $statement->fetchColumn();
 }
 
+function display_action($action) {
+    echo "  <div>$action->id $action->work " . date("m/d/y", when_last_worked($action->id)) . " " . days_since_last_worked($action->id) .
+    " " . has_it_been_worked_on($action->id) . " 
+                    <input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
+                                            <input id='show_action_options$action->id' type='button' value='+' style=''
+                        onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
+                </div>
+                <div style='margin-left:20px;'>
+                    <div style='cursor:pointer; ";
+    if ($action->work > 0) {
+
+        if (has_it_been_worked_on($action->id)) {
+            echo "text-decoration:line-through;' title='Cancel work'  onmouseover=\"$(this).css('text-decoration', 'none');\"  onmouseleave=\"$(this).css('text-decoration', 'line-through');\" onclick=\"cancelWork($action->id);\"";
+        } else {
+            echo "color:green;' onmouseover=\"$(this).css('text-decoration', 'line-through');\" onmouseleave=\"$(this).css('text-decoration', 'none');\" onclick=\"createWork($action->id);\"";
+        }
+    } else {
+        echo "'";
+    }
+    echo "  >$action->name</div>                           
+                
+
+                <div id='action_options$action->id' style='display:none'><div>
+                    <input type='button' value='-' 
+                        onclick=\" $('#action_options$action->id').hide();$('#show_action_options$action->id').show();\" \>";
+
+    if ($action->work == 0) {
+       
+        echo "<input type='button' value='On'  onclick=\"changeWorkStatusOfAction($action->id, 1);\" />";
+    } else {
+        echo "<input type='button' value='Off' onclick=\"changeWorkStatusOfAction($action->id, 0);\"  />";
+        if ($action->work != 1) {
+            echo "<input type='button' value='Unassign' onclick=\"changeWorkStatusOfAction($action->id, 1);\"  />";
+        }
+        if ($action->work != 2) {
+            echo "<input type='button' value='Daily' onclick=\"changeWorkStatusOfAction($action->id, 2);\"  />";
+        }
+        if ($action->work != 3) {
+            echo "<input type='button' value='Weekly' onclick=\"changeWorkStatusOfAction($action->id, 3);\"  />";
+        }
+        if ($action->work != 4) {
+            echo "<input type='button' value='Monthly' onclick=\"changeWorkStatusOfAction($action->id, 4);\" />";
+        }
+    }
+
+    echo "</div><div><select id='new_achievement_for_action$action->id'>
+              <option value=''>Please select an achievement to associate with this action here.</option>";
+    display_new_action_options($action->id);
+    echo "</select><input type='button' value='Associate' 
+            onclick=\"associateAchievementWithAction($('#new_achievement_for_action$action->id').val(), $action->id);\"/></div>
+              <div id='list_of_achievements_for_action$action->id'>";
+    list_achievements_for_action($action->id);
+    echo "</div>
+              </div></div>";
+}
+
 function display_new_action_options($id) {
     global $connection;
     $query = "select * from achievements where active=1 and id not in (select achievement_id from actions where active=1 and (id=? or reference=?)) order by name";
@@ -243,6 +302,7 @@ function display_new_action_options($id) {
         echo "<option value='$achievement->id'>$achievement->name</option>";
     }
 }
+
 
 function has_it_been_worked_on($action_id) {
     global $connection;
@@ -318,6 +378,23 @@ function list_achievements_for_action($id) {
     }
 }
 
+function list_achievements_needing_work() {
+    global $connection;
+    $statement = $connection->query("select * from achievements where active=1 and quality=false and work>0 order by work asc");
+    $statement->execute();
+    while ($achievement = $statement->fetchObject()) {
+        echo "<div><div>$achievement->name</div>";
+            $action_statement=$connection->query("select * from actions where active=1 and achievement_id=$achievement->id");
+            $action_statement->execute();
+            while ($action=$action_statement->fetchObject()){
+                echo "<div style='margin-left:16px;'>";
+                display_action($action);
+                echo "</div>";
+            }
+        echo "</div>";
+    }
+}
+
 function list_current_actions() {
     global $connection;
     $statement = $connection->query("select * from actions where reference=0 and active=1");
@@ -345,60 +422,8 @@ function list_work($work) {
     $statement = $connection->prepare("select * from actions where active=1 and work=? and reference=0 order by name");
     $statement->bindValue(1, $work, PDO::PARAM_INT);
     $statement->execute();
-    echo $work;
     while ($action = $statement->fetchObject()) {
-        echo "  <div>$action->id $action->work " . date("m/d/y", when_last_worked($action->id)) . " " . days_since_last_worked($action->id) .
-        " " . has_it_been_worked_on($action->id) . " 
-                    <input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
-                                            <input id='show_action_options$action->id' type='button' value='+' style=''
-                        onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
-                </div>
-                <div style='margin-left:20px;'>
-                    <div style='cursor:pointer; ";
-        if ($action->work > 0) {
-
-            if (has_it_been_worked_on($action->id)) {
-                echo "text-decoration:line-through;' title='Cancel work'  onmouseover=\"$(this).css('text-decoration', 'none');\"  onmouseleave=\"$(this).css('text-decoration', 'line-through');\" onclick=\"cancelWork($action->id);\"";
-            } else {
-                echo "color:green;' onmouseover=\"$(this).css('text-decoration', 'line-through');\" onmouseleave=\"$(this).css('text-decoration', 'none');\" onclick=\"createWork($action->id);\"";
-            }
-        } else {
-            echo "'";
-        }
-        echo "  >$action->name</div>                           
-                
-
-                <div id='action_options$action->id' style='display:none'><div>
-                    <input type='button' value='-' 
-                        onclick=\" $('#action_options$action->id').hide();$('#show_action_options$action->id').show();\" \>";
-
-        if ($work == 0) {
-            echo "<input type='button' value='On'  onclick=\"changeWorkStatusOfAction($action->id, 1);\" />";
-        } else {
-            echo "<input type='button' value='Off' onclick=\"changeWorkStatusOfAction($action->id, 0);\"  />";
-            if ($work != 1) {
-                echo "<input type='button' value='Unassign' onclick=\"changeWorkStatusOfAction($action->id, 1);\"  />";
-            }
-            if ($work != 2) {
-                echo "<input type='button' value='Daily' onclick=\"changeWorkStatusOfAction($action->id, 2);\"  />";
-            }
-            if ($work != 3) {
-                echo "<input type='button' value='Weekly' onclick=\"changeWorkStatusOfAction($action->id, 3);\"  />";
-            }
-            if ($work != 4) {
-                echo "<input type='button' value='Monthly' onclick=\"changeWorkStatusOfAction($action->id, 4);\" />";
-            }
-        }
-
-        echo "</div><div><select id='new_achievement_for_action$action->id'>
-              <option value=''>Please select an achievement to associate with this action here.</option>";
-        display_new_action_options($action->id);
-        echo "</select><input type='button' value='Associate' 
-            onclick=\"associateAchievementWithAction($('#new_achievement_for_action$action->id').val(), $action->id);\"/></div>
-              <div id='list_of_achievements_for_action$action->id'>";
-        list_achievements_for_action($action->id);
-        echo "</div>
-              </div></div>";
+        display_action($action);
     }
 }
 

@@ -84,7 +84,19 @@ function DisplayWorkHistory() {
             });
 }
 
+function listAchievementsNeedingWork(){
+    $.ajax({
+      method:"POST",
+      url:"work.php",
+      data:{function_to_be_called:"list_achievements_needing_work"}
+    })
+            .done(function(result){
+                console.log(result);
+                $("#work_content").html(result);
+            });
+}
 function ListAllWork(){
+    
     for (work=0;work<5;work++){
         ListWork(work);
     }

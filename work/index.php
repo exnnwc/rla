@@ -2,7 +2,7 @@
 include ("../config.php");
 ?>
 
-<html><body onload="ListAllWork();DisplayWorkHistory();">
+<html><body onload="listAchievementsNeedingWork();DisplayWorkHistory();">
             <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
         <script src="work.js"></script>
@@ -11,7 +11,8 @@ include ("../config.php");
         <input type="button" value="Create New Action" 
             onclick="createNewAction($('#new_action_input_top').val());" />
         <h1 style="text-align:center;">Queue</h1>
-            
+        <div id="work_content"></div>
+        <!--    
         <div>
             <h3>
         Daily
@@ -39,7 +40,7 @@ include ("../config.php");
             </h3>
             <div id="inactive"> </div>
 
-        </div>
+        </div>-->
         <hr />        
         <input id="new_action_input_bottom" type="text" /> 
 
