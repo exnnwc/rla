@@ -236,9 +236,9 @@ function days_since_last_worked($action_id) {
 }
 
 function display_action($action) {
-    echo "  <div>$action->id $action->work " . date("m/d/y", when_last_worked($action->id)) . " " . days_since_last_worked($action->id) .
-    " " . has_it_been_worked_on($action->id) . " 
-                    <input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
+    echo /*"  <div>$action->id $action->work " . date("m/d/y", when_last_worked($action->id)) . " " . days_since_last_worked($action->id) .
+    " " . has_it_been_worked_on($action->id) . " */
+                    "<input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
                                             <input id='show_action_options$action->id' type='button' value='+' style=''
                         onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
                 </div>
