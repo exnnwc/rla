@@ -1,7 +1,7 @@
 function associateAchievementWithAction (achievement_id, action_id){
     $.ajax({
         method: "POST",
-        url: "work.php",
+        url: "ajax.php",
         data: {function_to_be_called: "associate", achievement_id: achievement_id, action_id: action_id}
     })
             .done(function (result) {
@@ -12,7 +12,7 @@ function ChangeWork(id, work) {
     //console.log(id + " " + work);
     $.ajax({
         method: "POST",
-        url: "work.php",
+        url: "ajax.php",
         data: {function_to_be_called: "change_work", id: id, work: work}
     })
             .done(function (result) {
@@ -22,7 +22,7 @@ function ChangeWork(id, work) {
 function changeWorkStatusOfAction(id, work) {
     $.ajax({
         method: "POST",
-        url: "work.php",
+        url: "ajax.php",
         data: {function_to_be_called: "change_work_status_of_action", id: id, work: work}
     })
             .done(function (result) {
@@ -33,7 +33,7 @@ function cancelWork(action_id) {
     console.log(action_id);
         $.ajax({
         method: "POST",
-        url: "work.php",
+        url: "ajax.php",
         data: {function_to_be_called: "cancel_work", action_id:action_id}
     })
             .done(function (result) {
@@ -46,7 +46,7 @@ function createNewAction (action){
     console.log(action);
         $.ajax({
         method: "POST",
-        url: "work.php",
+        url: "ajax.php",
         data: {function_to_be_called: "create_new_action", action:action}
     })
             .done(function (result) {
@@ -63,7 +63,7 @@ function DeleteAction(id, top) {
         }
         $.ajax({
             method: "POST",
-            url: "work.php",
+            url: "ajax.php",
             data: {function_to_be_called: function_name, id: id}
         })
                 .done(function (result) {
@@ -76,7 +76,7 @@ function DisplayWorkHistory() {
     
         $.ajax({
         method: "POST",
-        url: "work.php",
+        url: "ajax.php",
         data: {function_to_be_called: "display_work_history"}
     })
             .done(function (result) {
@@ -84,11 +84,11 @@ function DisplayWorkHistory() {
             });
 }
 
-function listAchievementsNeedingWork(){
+function displayQueue(){
     $.ajax({
       method:"POST",
-      url:"work.php",
-      data:{function_to_be_called:"list_achievements_needing_work"}
+      url:"ajax.php",
+      data:{function_to_be_called:"display_queue"}
     })
             .done(function(result){
                 console.log(result);
@@ -106,7 +106,7 @@ function ListWork(work) {
     //console.log(work);
     $.ajax({
         method: "POST",
-        url: "work.php",
+        url: "ajax.php",
         data: {function_to_be_called: "list_work", work:work}
     })
             .done(function (result) {
@@ -128,7 +128,7 @@ function ListWork(work) {
 function createWork(action_id){
     $.ajax({
         method:"POST",
-        url:"work.php",
+        url:"ajax.php",
         data:{function_to_be_called:"create_work", action_id:action_id}
     })
             .done (function (result){
