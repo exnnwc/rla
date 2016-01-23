@@ -30,8 +30,8 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "delete_action":
         delete_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
-    case "display_work_history";
-        display_work_history();
+    case "display_history";
+        display_history();
         break;
     case "display_queue":
         display_queue();

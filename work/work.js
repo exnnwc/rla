@@ -38,7 +38,7 @@ function cancelWork(action_id) {
     })
             .done(function (result) {
                 console.log(result);
-                ListAllWork();
+                listAchievementsNeedingWork();
             });
 }
 
@@ -77,7 +77,7 @@ function DisplayWorkHistory() {
         $.ajax({
         method: "POST",
         url: "ajax.php",
-        data: {function_to_be_called: "display_work_history"}
+        data: {function_to_be_called: "display_history"}
     })
             .done(function (result) {
                 $("#work_history").html(result);

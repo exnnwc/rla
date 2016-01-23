@@ -55,12 +55,12 @@ function display_achievement($achievement) {
 
 function display_action($action) {
     echo /*"  <div>$action->id $action->work " . date("m/d/y", when_last_worked($action->id)) . " " . days_since_last_worked($action->id) .
-    " " . has_action_been_worked_on($action->id) . " */
+    " " . has_action_been_worked_on($action->id) . " 
                     "<input type='button' value='X' onclick=\"DeleteAction($action->id, true);\"/>
                                             <input id='show_action_options$action->id' type='button' value='+' style=''
                         onclick=\" $('#action_options$action->id').show();$('#show_action_options$action->id').hide();\"/>
-                </div>
-                <div style='margin-left:20px;'>
+                </div>*/
+                "<div style='margin-left:20px;'>
                     <div style='cursor:pointer; ";
     if ($action->work > 0) {
 
@@ -120,6 +120,52 @@ function list_achievements_for_action($id) {
 
     while ($result = $statement->fetch()) {
         echo "<div><input type='button' value='X' onclick=\"DeleteAction($result[0], false)\"/>$result[1]</div>";
+    }
+}
+function display_history() {
+    global $connection;
+    $statement = $connection->query("select * from work order by created desc");
+    $statement->execute();
+    $today = 0;
+    $last_time = 0;
+    if (!has_work_been_checked()) {
+
+        check_work();
+    }
+    while ($work = $statement->fetchObject()) {
+        $action = fetch_action($work->action_id);
+        $achievement = fetch_achievement($action->achievement_id);
+
+        if ($today != date("m/d/y", strtotime($work->created))) {
+            echo "<h2>" . date("m/d/y", strtotime($work->created)) . "</h2>";
+            $today = date("m/d/y", strtotime($work->created));
+        }
+        if ($last_time != date("H:i", strtotime($work->created))) {
+            echo "<div>" . date("H:i", strtotime($work->created)) . "</div>";
+            $last_time = date("H:i", strtotime($work->created));
+        }
+
+        //var_dump (strtotime($work->updated));
+        echo "<div>Finished";
+        switch ($action->work) {
+            case 2:
+                echo " daily ";
+                break;
+            case 3:
+                echo " weekly ";
+                break;
+            case 4:
+                echo " monthly ";
+                break;
+        }
+        echo "work on \"$action->name\"";
+
+        if (strtotime($work->updated)) {
+            echo " then cancelled at " . date("H:i:s", strtotime($work->created));
+        } else {
+            echo "";
+        }
+        echo "</div>";
     }
 }
 
@@ -184,47 +230,3 @@ function display_all_unfinished_actions($begin, $end) {
     echo $query;
 }
 
-function display_work_history() {
-    global $connection;
-    $statement = $connection->query("select * from work order by created desc");
-    $statement->execute();
-    $today = 0;
-    $last_time = 0;
-    if (!has_work_been_checked()) {
-
-        check_work();
-    }
-    while ($work = $statement->fetchObject()) {
-        $action = fetch_action($work->action_id);
-        $achievement = fetch_achievement($action->achievement_id);
-
-        if ($today != date("m/d/y", strtotime($work->created))) {
-            echo "<h2>" . date("m/d/y", strtotime($work->created)) . "</h2>";
-            $today = date("m/d/y", strtotime($work->created));
-        }
-        if ($last_time != date("H:i", strtotime($work->created))) {
-            echo "<div>" . date("H:i", strtotime($work->created)) . "</div>";
-            $last_time = date("H:i", strtotime($work->created));
-        }
-
-        //var_dump (strtotime($work->updated));
-        echo "<div>Finished";
-        switch ($action->work) {
-            case 2:
-                echo " daily ";
-                break;
-            case 3:
-                echo " weekly ";
-                break;
-            case 4:
-                echo " monthly ";
-                break;
-        }
-        echo "work on \"$action->name\"";
-
-        if (strtotime($work->updated)) {
-            echo " then cancelled at " . date("H:i:s", strtotime($work->created));
-        }
-        echo "</div>";
-    }
-}
