@@ -38,7 +38,7 @@ function cancelWork(action_id) {
     })
             .done(function (result) {
                 console.log(result);
-                listAchievementsNeedingWork();
+                displayQueue();
             });
 }
 
@@ -53,6 +53,16 @@ function createNewAction (action){
                 console.log(result);
                 ListAllWork();
             });        
+}
+function createWork(action_id){
+    $.ajax({
+        method:"POST",
+        url:"ajax.php",
+        data:{function_to_be_called:"create_work", action_id:action_id}
+    })
+            .done (function (result){
+                displayQueue();
+            });
 }
 function DeleteAction(id, top) {
     if (window.confirm("Are you sure you want to delete this action?")) {
@@ -125,14 +135,5 @@ function ListWork(work) {
             });
 }
 
-function createWork(action_id){
-    $.ajax({
-        method:"POST",
-        url:"ajax.php",
-        data:{function_to_be_called:"create_work", action_id:action_id}
-    })
-            .done (function (result){
-                ListAllWork();
-            });
-}
+
       
