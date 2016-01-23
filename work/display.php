@@ -88,12 +88,11 @@ function list_achievements_for_action($id) {
 
 function display_history() {
     global $connection;
-    $statement = $connection->query("select * from work order by created desc");
+    $statement = $connection->query("select * from work where action_id!=0 order by created desc");
     $statement->execute();
     $today = 0;
     $last_time = 0;
     if (!has_work_been_checked()) {
-
         check_work();
     }
     while ($work = $statement->fetchObject()) {
@@ -105,7 +104,11 @@ function display_history() {
             $today = date("m/d/y", strtotime($work->created));
         }
         if ($last_time != date("H:i", strtotime($work->created))) {
+            if (date("H:i", strtotime($work->created))=="00:00"){
+                echo "<h3 style='font-weight:bold;color:red;'> Incomplete </h3>";
+            } else {
             echo "<div>" . date("H:i", strtotime($work->created));
+            }
             if (!strtotime($work->updated)) {
                 echo " - <span style='color:red;cursor:pointer;' 
                 onmouseover=\"$(this).css('text-decoration', 'underline');\"  
@@ -119,19 +122,7 @@ function display_history() {
         //var_dump (strtotime($work->updated));
         echo "<div>";
 
-        echo "Finished";
-        switch ($action->work) {
-            case 2:
-                echo " daily ";
-                break;
-            case 3:
-                echo " weekly ";
-                break;
-            case 4:
-                echo " monthly ";
-                break;
-        }
-        echo "work on \"$action->name\"";
+        echo "Finished [$action->work] work on \"$action->name\"";
 
         if (strtotime($work->updated)) {
             echo " then cancelled at " . date("H:i:s", strtotime($work->created));

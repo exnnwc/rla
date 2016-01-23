@@ -23,6 +23,7 @@ function change_work($id, $work) {
 }
 
 function check_work() {
+//Weekly and monthly check only work on Sunday or 1st day of the month. Need to check if it hasn't been checked before.
     global $connection;
     $check = 1;
     while ($check < 4) {
@@ -31,29 +32,37 @@ function check_work() {
             case 1:
                 $statement = $connection->query("select * from actions where active=1 and work=2
 		        and id not in (select action_id from work 
-			where date(created)=current_date-interval 1 day)");
+			where worked=true and date(created)=current_date-interval 1 day)");
                 break;
             case 2:
                 if (date("D", time()) == "Sun") {
                     $statement = $connection->query("select * from actions 
                             where active=1 and work=3 and id not in (select action_id from work 
-				where week(created)=week(current_date-interval 1 week))");
+				where  worked=true and week(created)=week(current_date-interval 1 week))");
                 }
                 break;
             case 3:
                 if (date("j", time()) == "1") {
                     $statement = $connection->query("select * from actions where active=1 and work=4
 		            and id not in (select action_id from work 
-				where month(created)=month(current_date-interval 1 month)");
+				where worked=true and  month(created)=month(current_date-interval 1 month)");
                 }
                 break;
         }
         if ($statement) {
             $statement->execute();
             while ($action = $statement->fetchObject()) {
-                echo "$action->name has not been worked. $action->work<BR/>";
-//		$connection->query("insert into work (action_id, 
+                $work=$action->work;
+                //This only works for the daily checks. Not weekly or monthly.
+                if ($work==2){
+                    $created="(current_date-interval 1 day)";
+                } else {
+                    $created="current_date";
+                }
+                echo "<div style='color:grey;'>'$action->name' has not been worked. Creating fail record in work log... $action->work</div>";
+		$connection->exec("insert into work (action_id, work, created, worked, summary) values ($action->id, $action->work, $created, false, 'test')");
             }
+            $connection->exec("insert into work (action_id, work, created, worked, summary) values (0, $work, current_date, false, 'test')");
         }
         $check++;
     }
@@ -166,7 +175,7 @@ function has_action_been_worked_on($action_id) {
 
 function has_work_been_checked() {
     global $connection;
-    $statement = $connection->query("select created from work where action_id=0 order by created desc limit 1");
+    $statement = $connection->query("select created from work where action_id=0 and active=1 order by created desc limit 1");
     $statement->execute();
     if (date("m/d/y", strtotime($statement->fetchColumn())) == date("m/d/y", time())) {
         return true;
