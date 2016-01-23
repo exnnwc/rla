@@ -56,19 +56,19 @@ function display_action($action) {
     echo
     "<div style='margin-left:20px;'>
         <div  style='cursor:pointer;";
-    
-        if (has_action_been_worked_on($action->id)) {
-            echo "color:grey;text-decoration:line-through;' 
+
+    if (has_action_been_worked_on($action->id)) {
+        echo "color:grey;text-decoration:line-through;' 
                 title='Cancel work'  
                 onmouseover=\"$(this).css('text-decoration', 'none');\"  
                 onmouseleave=\"$(this).css('text-decoration', 'line-through');\" 
                 onclick=\"cancelWork($action->id);\"";
-        } else {
-            echo "' title='Click to indicate action worked.' 
+    } else {
+        echo "' title='Click to indicate action worked.' 
                 onmouseover=\"$(this).css('text-decoration', 'line-through');\" 
                 onmouseleave=\"$(this).css('text-decoration', 'none');\" 
                 onclick=\"createWork($action->id);\"";
-        }
+    }
     echo "> $action->name</div></div>";
 }
 
@@ -105,12 +105,21 @@ function display_history() {
             $today = date("m/d/y", strtotime($work->created));
         }
         if ($last_time != date("H:i", strtotime($work->created))) {
-            echo "<div>" . date("H:i", strtotime($work->created)) . "</div>";
+            echo "<div>" . date("H:i", strtotime($work->created));
+            if (!strtotime($work->updated)) {
+                echo " - <span style='color:red;cursor:pointer;' 
+                onmouseover=\"$(this).css('text-decoration', 'underline');\"  
+                onmouseleave=\"$(this).css('text-decoration', 'none');\" 
+                onclick=\"cancelWork($action->id);\" >Cancel</span>";
+            }
+            echo"</div>";
             $last_time = date("H:i", strtotime($work->created));
         }
 
         //var_dump (strtotime($work->updated));
-        echo "<div>Finished";
+        echo "<div>";
+
+        echo "Finished";
         switch ($action->work) {
             case 2:
                 echo " daily ";
@@ -126,9 +135,8 @@ function display_history() {
 
         if (strtotime($work->updated)) {
             echo " then cancelled at " . date("H:i:s", strtotime($work->created));
-        } else {
-            echo "";
         }
+
         echo "</div>";
     }
 }
@@ -138,15 +146,17 @@ function display_queue() {
     $statement = $connection->query("select * from achievements where active=1 and quality=false and work>0 order by work asc");
     $statement->execute();
     while ($achievement = $statement->fetchObject()) {
-        echo "<div><div style='font-weight:bold;'>$achievement->name</div>";
-        $action_statement = $connection->query("select * from actions where active=1 and achievement_id=$achievement->id");
-        $action_statement->execute();
-        while ($action = $action_statement->fetchObject()) {
-            echo "<div style='margin-left:16px;'>";
-            display_action($action);
+        if (!has_achievement_been_worked_on($achievement->id)) {
+            echo "<div><div style='font-weight:bold;'>$achievement->name</div>";
+            $action_statement = $connection->query("select * from actions where active=1 and achievement_id=$achievement->id");
+            $action_statement->execute();
+            while ($action = $action_statement->fetchObject()) {
+                echo "<div style='margin-left:16px;'>";
+                display_action($action);
+                echo "</div>";
+            }
             echo "</div>";
         }
-        echo "</div>";
     }
 }
 

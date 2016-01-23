@@ -105,6 +105,12 @@ function display_new_action_options($id) {
 function has_achievement_been_worked_on($id){
 	global $connection;
 	$achievement=fetch_achievement($id);
+        $statement=$connection->prepare("select count(*) from actions where achievement_id=? and active=1");
+	$statement->bindValue(1, $id, PDO::PARAM_INT);
+	$statement->execute();
+        if ($statement->fetchColumn()==0){
+            return false;                
+        }
 	$statement=$connection->prepare("select * from actions where achievement_id=? and active=1");
 	$statement->bindValue(1, $id, PDO::PARAM_INT);
 	$statement->execute();
@@ -113,6 +119,7 @@ function has_achievement_been_worked_on($id){
 			return false;
 		}
 	}
+        
 	return true;
 }
 

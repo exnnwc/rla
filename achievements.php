@@ -238,7 +238,7 @@ function display_current_work_status($id){
             return "Off";
             break;
         case 1:
-            return "Instant";
+            return "Work";
             break;
         case 2:
             return "Daily";
@@ -250,7 +250,7 @@ function display_current_work_status($id){
             return "Monthly";
             break;
 	case 5:
-		return "Work";
+		return "Instant";
 		break;
     }
 

@@ -2,7 +2,7 @@
 include ("../config.php");
 ?>
 
-<html><body onload="displayQueue();DisplayWorkHistory();">
+<html><body onload="displayContent();">
             <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
         <script src="work.js"></script>
