@@ -41,8 +41,10 @@ function check_work() {
 				where  worked=true and week(created)=week(current_date-interval 1 week))");
                 }
                 break;
-            case 3:
+            case 3:               
                 if (date("j", time()) == "1") {
+                    echo "SUP";
+                    var_dump(date("j", time()));
                     $statement = $connection->query("select * from actions where active=1 and work=4
 		            and id not in (select action_id from work 
 				where worked=true and  month(created)=month(current_date-interval 1 month)");
@@ -62,7 +64,7 @@ function check_work() {
                 echo "<div style='color:grey;'>'$action->name' has not been worked. Creating fail record in work log... $action->work</div>";
 		$connection->exec("insert into work (action_id, work, created, worked, summary) values ($action->id, $action->work, $created, false, 'test')");
             }
-            $connection->exec("insert into work (action_id, work, created, worked, summary) values (0, $work, current_date, false, 'test')");
+            $connection->exec("insert into work (action_id, work,  worked, summary) values (0, $work, false, 'v1')");
         }
         $check++;
     }
@@ -70,7 +72,8 @@ function check_work() {
 
 function create_work($action_id) {
     global $connection;
-    $statement = $connection->prepare("insert into work (action_id) values (?)");
+    $action=fetch_action($action_id);
+    $statement = $connection->prepare("insert into work (action_id, work) values (?, $action->work)");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     $statement->execute();
 }
@@ -177,6 +180,7 @@ function has_work_been_checked() {
     global $connection;
     $statement = $connection->query("select created from work where action_id=0 and active=1 order by created desc limit 1");
     $statement->execute();
+
     if (date("m/d/y", strtotime($statement->fetchColumn())) == date("m/d/y", time())) {
         return true;
     } else {

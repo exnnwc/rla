@@ -54,8 +54,7 @@ function display_achievement($achievement) {
 
 function display_action($action) {
     echo
-    "<div style='margin-left:20px;'>
-        <div  style='cursor:pointer;";
+    "<span style='margin-left:20px;cursor:pointer;";
 
     if (has_action_been_worked_on($action->id)) {
         echo "color:grey;text-decoration:line-through;' 
@@ -69,7 +68,7 @@ function display_action($action) {
                 onmouseleave=\"$(this).css('text-decoration', 'none');\" 
                 onclick=\"createWork($action->id);\"";
     }
-    echo "> $action->name</div></div>";
+    echo "> $action->name</span>";
 }
 
 function list_achievements_for_action($id) {
@@ -88,7 +87,7 @@ function list_achievements_for_action($id) {
 
 function display_history() {
     global $connection;
-    $statement = $connection->query("select * from work where action_id!=0 order by created desc");
+    $statement = $connection->query("select * from work where action_id!=0 and active=1 order by created desc");
     $statement->execute();
     $today = 0;
     $last_time = 0;
@@ -104,25 +103,28 @@ function display_history() {
             $today = date("m/d/y", strtotime($work->created));
         }
         if ($last_time != date("H:i", strtotime($work->created))) {
-            if (date("H:i", strtotime($work->created))=="00:00"){
-                echo "<h3 style='font-weight:bold;color:red;'> Incomplete </h3>";
+            if (date("H:i", strtotime($work->created)) == "00:00") {
+                echo "<h3 style='font-weight:bold;margin-bottom:0px;'> Incomplete </h3>";
             } else {
-            echo "<div>" . date("H:i", strtotime($work->created));
-            }
-            if (!strtotime($work->updated)) {
-                echo " - <span style='color:red;cursor:pointer;' 
+                echo "<div>" . date("H:i", strtotime($work->created));
+
+                if (!strtotime($work->updated)) {
+                    echo " - <span style='color:red;cursor:pointer;' 
                 onmouseover=\"$(this).css('text-decoration', 'underline');\"  
                 onmouseleave=\"$(this).css('text-decoration', 'none');\" 
                 onclick=\"cancelWork($action->id);\" >Cancel</span>";
+                }
+                echo"</div>";
             }
-            echo"</div>";
             $last_time = date("H:i", strtotime($work->created));
         }
 
         //var_dump (strtotime($work->updated));
         echo "<div>";
 
-        echo "Finished [$action->work] work on \"$action->name\"";
+        echo $work->worked ? "Finished " : "<span style='color:red;'>Failed</span> "; //Failed might be too harsh of a word.
+
+        echo "[$work->work] work on \"$action->name\"";
 
         if (strtotime($work->updated)) {
             echo " then cancelled at " . date("H:i:s", strtotime($work->created));
