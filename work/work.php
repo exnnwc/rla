@@ -3,8 +3,6 @@
 include ("../config.php");
 $connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
 
-
-
 function cancel_work($action_id) {
     echo $achievement_id;
     global $connection;
@@ -30,39 +28,47 @@ function check_work() {
         $statement = false;
         switch ($check) {
             case 1:
-                $statement = $connection->query("select * from actions where active=1 and work=2
-		        and id not in (select action_id from work 
-			where worked=true and date(created)=current_date-interval 1 day)");
+                $statement = $connection->query("select * from actions 
+                    where active=1 and work=2 and id not in 
+                        (select action_id from work 
+			where active=1 and worked=true and date(created)=current_date-interval 1 day)");
                 break;
             case 2:
-                if (date("D", time()) == "Sun") {
+                $statement = $connection->query("select count(*) from work where active=1 and action_id=0 and work=3 and dayofweek(created)=1;");
+                if (date("D", time()) == "Sun" || (int) $statement->fetchColumn() == 0) {
+                    echo "WEEKLY CHECK";
                     $statement = $connection->query("select * from actions 
-                            where active=1 and work=3 and id not in (select action_id from work 
-				where  worked=true and week(created)=week(current_date-interval 1 week))");
+                            where active=1 and work=3 and id not in 
+                            (select action_id from work where active=1 and worked=true and week(created)=week(current_date-interval 1 week))");
                 }
                 break;
-            case 3:               
-                if (date("j", time()) == "1") {
-                    echo "SUP";
-                    var_dump(date("j", time()));
-                    $statement = $connection->query("select * from actions where active=1 and work=4
-		            and id not in (select action_id from work 
-				where worked=true and  month(created)=month(current_date-interval 1 month)");
+            case 3:
+                $statement = $connection->query("select count(*) from work where active=1 and action_id=0 and work=4 and dayofmonth(created)=1;");
+                if (date("j", time()) == "1" || (int) $statement->fetchColumn() == 0) {
+                    echo "MONTHLY CHECK";
+                    $statement = $connection->query("select * from actions 
+                        where active=1 and work=4 and id not in 
+                        (select action_id from work where active=1 and worked=true 
+                        and month(created)=month(current_date-interval 1 month))");
                 }
                 break;
         }
         if ($statement) {
             $statement->execute();
             while ($action = $statement->fetchObject()) {
-                $work=$action->work;
+                $work = $action->work;
                 //This only works for the daily checks. Not weekly or monthly.
-                if ($work==2){
-                    $created="(current_date-interval 1 day)";
+                if ($work == 2) {
+                    $created = "(current_date-interval 1 day)";
+                } else if ($work == 3) {
+                    $created = "DATE_SUB(DATE(NOW()), INTERVAL DAYOFWEEK(NOW())-1 DAY)";
+                } else if ($work == 4) {
+                    $created = "date_sub(current_date, interval dayofmonth(now()) day)";
                 } else {
-                    $created="current_date";
+                    $created = "current_date";
                 }
                 echo "<div style='color:grey;'>'$action->name' has not been worked. Creating fail record in work log... $action->work</div>";
-		$connection->exec("insert into work (action_id, work, created, worked, summary) values ($action->id, $action->work, $created, false, 'test')");
+                $connection->exec("insert into work (action_id, work, created, worked, summary) values ($action->id, $action->work, $created, false, 'v1')");
             }
             $connection->exec("insert into work (action_id, work,  worked, summary) values (0, $work, false, 'v1')");
         }
@@ -72,13 +78,11 @@ function check_work() {
 
 function create_work($action_id) {
     global $connection;
-    $action=fetch_action($action_id);
+    $action = fetch_action($action_id);
     $statement = $connection->prepare("insert into work (action_id, work) values (?, $action->work)");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     $statement->execute();
 }
-
-
 
 function fetch_achievement($id) {
     global $connection;
@@ -87,7 +91,6 @@ function fetch_achievement($id) {
     $statement->execute();
     return $statement->fetchObject();
 }
-
 
 function days_since_last_worked($action_id) {
     global $connection;
@@ -99,8 +102,6 @@ function days_since_last_worked($action_id) {
     $statement->execute();
     return (int) $statement->fetchColumn();
 }
-
-
 
 function display_new_action_options($id) {
     global $connection;
@@ -114,25 +115,25 @@ function display_new_action_options($id) {
     }
 }
 
-function has_achievement_been_worked_on($id){
-	global $connection;
-	$achievement=fetch_achievement($id);
-        $statement=$connection->prepare("select count(*) from actions where achievement_id=? and active=1");
-	$statement->bindValue(1, $id, PDO::PARAM_INT);
-	$statement->execute();
-        if ($statement->fetchColumn()==0){
-            return false;                
+function has_achievement_been_worked_on($id) {
+    global $connection;
+    $achievement = fetch_achievement($id);
+    $statement = $connection->prepare("select count(*) from actions where achievement_id=? and active=1");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    if ($statement->fetchColumn() == 0) {
+        return false;
+    }
+    $statement = $connection->prepare("select * from actions where achievement_id=? and active=1");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($action = $statement->fetchObject()) {
+        if (!has_action_been_worked_on($action->id)) {
+            return false;
         }
-	$statement=$connection->prepare("select * from actions where achievement_id=? and active=1");
-	$statement->bindValue(1, $id, PDO::PARAM_INT);
-	$statement->execute();
-	while ($action=$statement->fetchObject()){
-		if (!has_action_been_worked_on($action->id)){
-			return false;
-		}
-	}
-        
-	return true;
+    }
+
+    return true;
 }
 
 function has_action_been_worked_on($action_id) {
@@ -188,6 +189,13 @@ function has_work_been_checked() {
     }
 }
 
+function is_it_the_appropriate_day($work) {
+    if ($work == 1 && (date("D", time()) == "Sun" || date("D", time()) == "Sat")) {
+        return false;
+    }
+    return true;
+}
+
 function when_last_worked($action_id) {
     global $connection;
     $statement = $connection->prepare("select created from work where action_id=? and active=1 and worked=1 order by created desc limit 1");
@@ -195,7 +203,6 @@ function when_last_worked($action_id) {
     $statement->execute();
     return strtotime($statement->fetchColumn());
 }
-
 
 function should_it_have_been_worked_on($id) {
     global $connection;
@@ -217,7 +224,3 @@ function should_it_have_been_worked_on($id) {
         }
     }
 }
-
-
-
-

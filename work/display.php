@@ -1,5 +1,4 @@
 <?php
-
 function display_achievement($achievement) {
     global $connection;
 
@@ -99,7 +98,7 @@ function display_history() {
         $achievement = fetch_achievement($action->achievement_id);
 
         if ($today != date("m/d/y", strtotime($work->created))) {
-            echo "<h2>" . date("m/d/y", strtotime($work->created)) . "</h2>";
+            echo "<h2>" . date("m/d/y l", strtotime($work->created)) . "</h2>";
             $today = date("m/d/y", strtotime($work->created));
         }
         if ($last_time != date("H:i", strtotime($work->created))) {
@@ -139,8 +138,8 @@ function display_queue() {
     $statement = $connection->query("select * from achievements where active=1 and quality=false and work>0 order by work asc");
     $statement->execute();
     while ($achievement = $statement->fetchObject()) {
-        if (!has_achievement_been_worked_on($achievement->id)) {
-            echo "<div><div style='font-weight:bold;'>$achievement->name</div>";
+        if (!has_achievement_been_worked_on($achievement->id) && is_it_the_appropriate_day($achievement->work)) {
+            echo "<div><div style='font-weight:bold;'><a href='" . SITE_ROOT . "/?rla=$achievement->id'>$achievement->name</a></div>";
             $action_statement = $connection->query("select * from actions where active=1 and achievement_id=$achievement->id");
             $action_statement->execute();
             while ($action = $action_statement->fetchObject()) {
