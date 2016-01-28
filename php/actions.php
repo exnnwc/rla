@@ -17,6 +17,7 @@ function associate($achievement_id, $action_id) {
         $statement->execute();
     }
 }
+
 function change_work_status_of_action($id, $work) {
     global $connection;
     $statement = $connection->prepare("update actions set work=? where active=1 and (id=? or reference=?)");
@@ -42,6 +43,7 @@ function create_action($achievement_id, $action, $reference) {
     $statement->bindValue(3, $reference, PDO::PARAM_INT);
     $statement->execute();
 }
+
 function create_new_action($action) {
     global $connection;
     $statement = $connection->prepare("insert into actions (name, achievement_id) values (?, 0)");

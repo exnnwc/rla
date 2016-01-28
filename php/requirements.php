@@ -1,24 +1,12 @@
 <?php
 
-$connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
+include_once ("config.php");
+$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 switch (filter_input(INPUT_POST,'function_to_be_called', FILTER_SANITIZE_STRING)) {
-    case "list_requirements":
-        list_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), 
-            filter_input(INPUT_POST,'type', FILTER_SANITIZE_STRING));
-        break;
-    case "create":
-        create(filter_input(INPUT_POST,'required_for', FILTER_SANITIZE_NUMBER_INT), 
-            filter_input(INPUT_POST,'required_by', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "delete":
-        delete(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "list_new":
-        list_new_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;
+    
 }
 
-function create($for, $by) {
+function create_requirement($for, $by) {
     global $connection;
     //echo "select count(*) from requirements where active=1 and required_for=$for and required_by=$by";
     $statement = $connection->prepare ("select count(*) from requirements where active=1 and required_for=? and required_by=?");
@@ -35,7 +23,7 @@ function create($for, $by) {
     }
 }
 
-function delete($id) {
+function delete_requirement($id) {
     global $connection;
     echo "update requirements set active=0 where id=$id";
     $statement = $connection->prepare("update requirements set active=0 where id=?");
@@ -89,7 +77,7 @@ function list_requirements($id, $type) {
             $requirement_required=$result[3];
 
            echo "<div><input type='button' value='X' 
-                    onclick=\"DeleteRequirement($requirement_id, $requirement_required);\" />
+                    onclick=\"deleteRequirement($requirement_id, $requirement_required);\" />
                   <a href='http://".$_SERVER['SERVER_NAME']."/rla/?rla=$achievement_id'>$achievement_name</a></div>";
  
         }        

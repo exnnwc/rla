@@ -1,5 +1,6 @@
 <?php
-include ("config.php");
+include_once ("config.php");
+include_once ("work.php");
 $pref_date_format = "F j, Y g:i:s";
 
 //There could be an issue where users spoof this to see other people's achievements.
@@ -93,26 +94,10 @@ $achievement = $statement->fetchObject();
     <div>
         Work: 
         <?php 
-        echo "$achievement->work (";
-        switch ($achievement->work){
-        case 0:
-            echo "Off";
-            break;
-        case 1:
-            echo "Unassigned";
-            break;
-        case 2:
-            echo "Daily";
-            break;
-        case 3:
-            echo "Weekly";
-            break;
-        case 4:
-            echo "Monthly";
-            break;            
-        }
+        echo convert_work_num_to_caption($achievement->work) . " ($achievement->work)";
+        
         ?>
-        ) <input type="button" value="Toggle work status" 
+         <input type="button" value="Toggle work status" 
                  onclick="toggleWorkStatus(<?php echo "$achievement->id, $achievement->work, $achievement->parent"; ?>);" />
     </div>
     <div>
@@ -135,8 +120,8 @@ $achievement = $statement->fetchObject();
     </h3>
         <div id="new_actions" style="display:none;">
             <select id="list_of_current_actions<?php echo $achievement->id; ?>"> </select><br/>
-            <input id="new_action_input" type="text" onkeypress="if (event.keyCode==13){CreateAction(<?php echo $achievement->id ?>, this.value)}"/> 
-            <input type="button" value="Create Action" onclick="CreateAction(<?php echo $achievement->id ?>, $('#new_action_input').val())"/>
+            <input id="new_action_input" type="text" onkeypress="if (event.keyCode==13){listAllActions(<?php echo $achievement->id ?>);createAction(<?php echo $achievement->id ?>, this.value)}"/> 
+            <input type="button" value="Create Action" onclick="listAllActions(<?php echo $achievement->id ?>);createAction(<?php echo $achievement->id ?>, $('#new_action_input').val())"/>
         </div>
     </div>
     <div id="actions<?php echo $achievement->id;?>"> </div>
@@ -205,7 +190,7 @@ $achievement = $statement->fetchObject();
     <h3>
         Required For Completion
         <input id="show_new_required_for" type="button" value="+" style="margin-left:5px;" 
-               onclick="ListNewRequirements(<?php echo $achievement->id; ?>);
+               onclick="listNewRequirements(<?php echo $achievement->id; ?>);
                        $('#new_required_for').show();
                        $('#hide_new_required_for').show();
                        $('#show_new_required_for').hide();"/>
@@ -218,14 +203,14 @@ $achievement = $statement->fetchObject();
         <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
         <select id="list_of_new_required_for<?php echo $achievement->id; ?>"></select><br>
         <input type="button" value="Required for completion" 
-               onclick="CreateRequirement(<?php echo $achievement->id; ?>, $('#list_of_new_required_for<?php echo $achievement->id; ?>').val(), 'for');"/>
+               onclick="createRequirement(<?php echo $achievement->id; ?>, $('#list_of_new_required_for<?php echo $achievement->id; ?>').val(), 'for');"/>
     </div>
     <div id="required_for_<?php echo $achievement->id ?>"></div>
 
     <h3>
         Required By Others
         <input id="show_new_required_by" type="button" value="+" style="margin-left:5px;" 
-               onclick="ListNewRequirements(<?php echo $achievement->id; ?>);
+               onclick="listNewRequirements(<?php echo $achievement->id; ?>);
                        $('#new_required_by').show();
                        $('#hide_new_required_by').show();
                        $('#show_new_required_by').hide();"/>
@@ -238,7 +223,7 @@ $achievement = $statement->fetchObject();
         <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
         <select id="list_of_new_required_by<?php echo $achievement->id; ?>"></select><br>       
         <input type="button" value="Required by others" 
-               onclick="CreateRequirement($('#list_of_new_required_by<?php echo $achievement->id; ?>').val(), <?php echo $achievement->id; ?>, 'by');"/>
+               onclick="createRequirement($('#list_of_new_required_by<?php echo $achievement->id; ?>').val(), <?php echo $achievement->id; ?>, 'by');"/>
     </div>
     <div id="required_by_<?php echo $achievement->id ?>"></div>
 
@@ -261,7 +246,7 @@ $achievement = $statement->fetchObject();
             </select>
 
             <input type="button" value="Create Relation" 
-                   onclick="CreateRelation(<?php echo $achievement->id ?>, $('#list_of_new_relations<?php echo $achievement->id ?>').val());" />
+                   onclick="createRelation(<?php echo $achievement->id ?>, $('#list_of_new_relations<?php echo $achievement->id ?>').val());" />
         </div>
         <div id="relation_error" style="color:red;"></div>
         <div id="list_of_relations<?php echo $achievement->id ?>"></div>
@@ -297,7 +282,7 @@ $achievement = $statement->fetchObject();
 
                                $('#show_new_notes').show();" />
                 <input type="button" value="Create Note"
-                       onclick="  CreateNote($('#new_note_inputted').val(), <?php echo $achievement->id; ?>, 0);
+                       onclick="  createNote($('#new_note_inputted').val(), <?php echo $achievement->id; ?>, 0);
                                $('#new_notes').hide();
                                $('#hide_new_notes').hide();
                                $('#show_new_notes').show();
@@ -317,7 +302,7 @@ function display_documentation_menu($id, $status) {
     } else {
         $menu = $menu . "Undocumented";
     }
-    $menu = $menu . "' onclick=\"ChangeDocumentationStatus($id, $status)\" />";
+    $menu = $menu . "' onclick=\"changeDocumentationStatus($id, $status)\" />";
     return $menu;
 }
 
@@ -382,4 +367,5 @@ function fetch_random_achievement_id() {
     $statement = $connection->query("select id from achievements where active=1 and parent=0 order by rand() limit 1");
     return $statement->fetchColumn();
 }
+
 ?>

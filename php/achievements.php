@@ -1,50 +1,9 @@
 <?php
 
-include ("config.php");
+include_once ("config.php");
 //TODO: Keep track of all changes. 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-switch (filter_input(INPUT_POST, 'function_to_be_called', FILTER_SANITIZE_STRING)) {
-    case "change_description":
-        change_description(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
-        break;
-    case "change_documentation_status":
-        change_documentation_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING));
-        break;
-    case "change_name":
-        change_name(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_name', FILTER_SANITIZE_STRING));
-        break;
-    case "change_power":
-        change_power(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_power', FILTER_SANITIZE_NUMBER_INT));
-        break;
-	case "change_quality":
-		change_quality(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST,'new_quality', FILTER_VALIDATE_BOOLEAN));
 
-		break;
-    case "change_rank":
-        change_rank(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_rank', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "count_achievements":
-	count_achievements();
-	break;
-    case "create_achievement":
-        create_achievement(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'parent', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "delete_achievement":
-        delete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "is_it_active":
-        is_it_active(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "list_achievements":
-        list_achievements(filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING));
-        break;
-    case "list_children":
-        list_children(filter_input(INPUT_POST, 'parent', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "change_work_status":
-        change_work_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'status', FILTER_SANITIZE_NUMBER_INT));
-        break;
-}
 
 function change_description($id, $description) {
     global $connection;
@@ -232,27 +191,8 @@ function display_current_work_status($id){
     $statement=$connection->prepare ("select work from achievements where active=1 and id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
-    $work=$statement->fetchColumn();
-    switch ($work){
-        case 0:
-            return "Off";
-            break;
-        case 1:
-            return "Work";
-            break;
-        case 2:
-            return "Daily";
-            break;
-        case 3:
-            return "Weekly";
-            break;
-        case 4:
-            return "Monthly";
-            break;
-	case 5:
-		return "Instant";
-		break;
-    }
+    
+    return convert_work_num_to_caption($statement->fetchColumn());
 
 }
 function fetch_achievement($id) {

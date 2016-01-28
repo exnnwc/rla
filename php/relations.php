@@ -1,23 +1,10 @@
 <?php
+include_once ("config.php");
+$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 
-$connection = new PDO("mysql:host=localhost;dbname=rla", "root", "");
 
-switch (filter_input(INPUT_POST,'function_to_be_called', FILTER_SANITIZE_STRING)) {
-    case "create":
-        create(filter_input(INPUT_POST,'a', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST,'b', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "delete":
-        delete(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "list":
-        list_relations(filter_input(INPUT_POST,'achievement_id', FILTER_SANITIZE_NUMBER_INT));
-        break;
-    case "list_new":
-        list_new();
-        break;
-}
 
-function create($a, $b) {
+function create_relation($a, $b) {
     global $connection;
     $statement=$connection->prepare("select count(*) from relations where a=? and b=?");
     $statement->bindValue(1, $a, PDO::PARAM_INT);
@@ -34,7 +21,7 @@ function create($a, $b) {
     }
 }
 
-function delete($id) {
+function delete_relation($id) {
     echo "$id being removed";
     global $connection;
     $statement = $connection->prepare("update relations set active=0 where id=?");
@@ -42,7 +29,7 @@ function delete($id) {
     $statement->execute();
 }
 
-function list_new() {
+function list_new_relations() {
     global $connection;
     $statement = $connection->query("select * from achievements where active=1 order by name");
     echo "<option>Please indicate which achievement you'd like to create a relation for.</option>";
@@ -78,7 +65,7 @@ function list_relations($achievement_id) {
             $achievement_name = $result[1];
             $relation_id = $result[2];
             //echo "<input type='button' onclick=\"document.write('asdfa')\"";
-            echo "<div title='$relation_id'><input type='button' value='X' onclick=\"DeleteRelation($relation_id, $achievement_id)\" />
+            echo "<div title='$relation_id'><input type='button' value='X' onclick=\"deleteRelation($relation_id, $achievement_id)\" />
             <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement_id_from_result'>$achievement_name</a></div>";
         }
     }

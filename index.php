@@ -1,12 +1,19 @@
-<?php include ("config.php"); ?>
+<?php include ("/php/config.php"); ?>
 
 <html>
     <head>
-	<!--Replace this with a web link when the site goes live.-->
-        <script src="jquery-2.1.4.min.js"></script>
+        <!--Replace this with a web link when the site goes live.-->
+        <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
         <script src="index.js"></script>
-	<script src="achievements.js"></script>
-        <script src="rla.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/actions.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/listings.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/profile.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/requirements.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/notes.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/work.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>
+        <!--<script src="rla.js"></script>-->
         <style>
             .delete_button{
                 //background-color: blue;
