@@ -4,6 +4,12 @@ include_once ("config.php");
 //TODO: Keep track of all changes. 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 
+function activate_achievement($id){
+    global $connection;
+    $statement=$connection->prepare("update achievements set active=1 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
 function are_ranks_duplicated($parent) {
     global $connection;
     $statement = $connection->query("SELECT COUNT(*) as count FROM achievements where parent=$parent and active=1 GROUP BY rank HAVING COUNT(*) > 1");
@@ -47,33 +53,25 @@ function change_power($id, $power) {
 }
 
 function change_rank($id, $new_rank) {
-    global $connection;
     $achievement = fetch_achievement($id);
+    update_rank($id, $new_rank);
+    deactivate_achievement($achievement->id);   
     if ($new_rank <= 0) {
         //BAD - shouldn't be able to change rank to 0 or a negative
     }
-    if (are_ranks_duplicated($achievement->parent)) {
-        echo "a1";
-        rank_achievements(" order by updated", $achievement->parent, 1);
+    if (are_ranks_duplicated($achievement->parent)) {        
+        fix_achievement_ranks("updated", $achievement->parent);
         exit;
-        //BAD - ranks shouldn't be duplicated
+        //BAD - ranks shouldn't be duplicated 
     }
+    //if user picks a new rank too big
     if ($new_rank > (fetch_rank($achievement->parent))) {
-        echo "a2";
-        update_rank($id, $new_rank);
-        rank_achievements(0, $achievement->parent, 1);
+        activate_achievement($achievement->id);
+        fix_achievement_ranks("rank", $achievement->parent);
         exit;
-    }
-    if ($new_rank - $achievement->rank > 0) {
-        echo "a3";
-        rank_achievements(" and rank<=$new_rank order by rank", $achievement->parent, $new_rank);
-    } else if ($new_rank - $achievement->rank < 0) {
-        echo "a4";
-        rank_achievements(" and rank>=$new_rank order by rank", $achievement->parent, $new_rank);
-    } else if ($new_rank-$achievement->rank==0){
-        //BAD - new rank should not be the same as the old
-    }
-    update_rank($id, $new_rank);
+    }    
+    rank_achievements($achievement, $new_rank);
+    activate_achievement($achievement->id);
 }
 
 function change_work_status($id, $status) {
@@ -131,12 +129,15 @@ function count_achievements() {
 	 <span style='color:gray;'>$num_of_qualities</span>]/
          <span style='color:red'>$num_of_nonworking_achievements</span>)";
 }
-
-function delete_achievement($id) {
+function deactivate_achievement($id){
     global $connection;
     $statement = $connection->prepare("update achievements set active=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
+}
+function delete_achievement($id) {
+    global $connection;
+    deactivate_achievement($id);
     $achievement = fetch_achievement($id);
     $connection->exec("update achievements set rank=rank-1 where active=1 and parent=$achievement->parent and rank>=$achievement->rank");
 }
@@ -205,6 +206,7 @@ function fetch_rank($parent) {
 }
 
 function fetch_order_query($sort_by) {
+    //I understand why this was flagged.  I could just reference an array.
     switch ($sort_by) {
         case "default":
             $order_by = " order by quality asc, rank asc";
@@ -247,6 +249,12 @@ function fetch_order_query($sort_by) {
             break;
     }
     return $order_by;
+}
+
+function fix_achievement_ranks($field, $parent) {
+    global $connection;
+    $connection->exec("set @rank=0");
+    $connection->exec("update achievements set rank=@rank:=@rank+1 where active=1 and parent=$parent order by $field");
 }
 
 function is_it_active($id) {
@@ -309,16 +317,16 @@ function list_children($id) {
     }
 }
 
-function rank_achievements($query, $parent, $start) {
+
+function rank_achievements($achievement, $new_rank) {
     global $connection;
-    $rank = $start;
-    if ($query == 0) {
-        $query = " order by rank";
-    }
-    $statement = $connection->query("select * from achievements where active=1 and parent=$parent" . $query);
-    while ($achievement = $statement->fetchObject()) {
-        $connection->exec("update achievements set rank=$rank where id=$achievement->id");
-        $rank++;
+    $connection->exec("set @rank=$new_rank");
+    if ($new_rank - $achievement->rank > 0) {        
+        $connection->exec("update achievements set rank=@rank:=@rank-1 where active=1 and parent=$achievement->parent and rank<=$new_rank order by rank");
+    } else if ($new_rank - $achievement->rank < 0) {
+        $connection->exec("update achievements set rank=@rank:=@rank+1 where active=1 and parent=$achievement->parent and rank>=$new_rank order by rank");
+    } else if ($new_rank - $achievement->rank == 0) {
+        //BAD - new rank should not be the same as the old
     }
 }
 
