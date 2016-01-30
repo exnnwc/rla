@@ -16,7 +16,7 @@ $(document.body).ready(function () {
         document.title = SITE_NAME + " - #" + achievement_id;
 
         displayProfile(achievement_id);
-    } 
+    }
 });
 function add_keypress_to_inputs() {
     $('#new_achievement_text_input').keypress(function (event) {
@@ -66,4 +66,10 @@ function add_handlers_to_buttons() {
 
 }
 
-
+function softGenericReload(id) {
+    if ($(document.body).attr('id') === "AchievementsList") {
+        listAchievements("default");
+    } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
+        displayProfile(id);
+    }
+}

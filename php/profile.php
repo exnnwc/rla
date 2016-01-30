@@ -35,7 +35,7 @@ $achievement = $statement->fetchObject();
 
 <div>
     <div id="new_achievement_name_div" style="display:none;">
-        <input id="new_achievement_name" type="text" value="<?php echo $achievement->name; ?>" 
+        <input maxlength="255" id="new_achievement_name" type="text" value="<?php echo $achievement->name; ?>" 
                onkeypress="if (event.keyCode == 13) {
                            changeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
                            $('#show_new_achievement_name').show();
@@ -49,7 +49,7 @@ $achievement = $statement->fetchObject();
 
 
     </div>
-    <input id="show_new_achievement_name" type="button" value="Edit" 
+    <input id="show_new_achievement_name" type="button" value="Change Name" 
            onclick="$('#new_achievement_name_div').show();
                    $('#show_new_achievement_name').hide();
                    $('#hide_new_achievement_name').show();" />
@@ -137,7 +137,7 @@ $achievement = $statement->fetchObject();
         ?>
     </span>
     <span id="new_description_input" style="display:none">
-        <textarea id="new_description" style="width:600px;height:150px;"><?php echo $achievement->description ? $achievement->description : ""; ?></textarea>
+        <textarea maxlength="20000" id="new_description" style="width:600px;height:150px;"><?php echo $achievement->description ? $achievement->description : ""; ?></textarea>
         <div>
             <input type="button" value="Cancel" onclick="$('#new_description_input').hide();
                     $('#show_new_description').show();" />

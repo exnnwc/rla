@@ -35,6 +35,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "delete_achievement":
         delete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "fetch_max_work_status":
+        echo json_encode(convert_work_num_to_caption("max_number"));
+        break;
     case "is_it_active":
         is_it_active(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;

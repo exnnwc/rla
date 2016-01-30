@@ -4,12 +4,13 @@ include_once ("config.php");
 //TODO: Keep track of all changes. 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 
-function activate_achievement($id){
+function activate_achievement($id) {
     global $connection;
-    $statement=$connection->prepare("update achievements set active=1 where id=?");
+    $statement = $connection->prepare("update achievements set active=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
+
 function are_ranks_duplicated($parent) {
     global $connection;
     $statement = $connection->query("SELECT COUNT(*) as count FROM achievements where parent=$parent and active=1 GROUP BY rank HAVING COUNT(*) > 1");
@@ -49,17 +50,16 @@ function change_power($id, $power) {
     $statement->bindValue(1, $power, PDO::PARAM_INT);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
-    //Need to reorder the other ones. <- WHAT DOES THIS MEAN?
 }
 
 function change_rank($id, $new_rank) {
     $achievement = fetch_achievement($id);
     update_rank($id, $new_rank);
-    deactivate_achievement($achievement->id);   
+    deactivate_achievement($achievement->id);
     if ($new_rank <= 0) {
         //BAD - shouldn't be able to change rank to 0 or a negative
     }
-    if (are_ranks_duplicated($achievement->parent)) {        
+    if (are_ranks_duplicated($achievement->parent)) {
         fix_achievement_ranks("updated", $achievement->parent);
         exit;
         //BAD - ranks shouldn't be duplicated 
@@ -69,7 +69,7 @@ function change_rank($id, $new_rank) {
         activate_achievement($achievement->id);
         fix_achievement_ranks("rank", $achievement->parent);
         exit;
-    }    
+    }
     rank_achievements($achievement, $new_rank);
     activate_achievement($achievement->id);
 }
@@ -89,52 +89,55 @@ function check_achievements_for_name($name) {
     return $statement->fetchcolumn;
 }
 
-function create_achievement($name, $parent) {
-    global $connection;
-    if (!check_achievements_for_name($name)) {
-        if ($parent == 0) {
-            $query = "insert into achievements(name, parent, rank) values (?, ?, ?)";
-        } else if ($parent > 0) {
-            $query = "insert into achievements(name, parent, rank, documented) values (?, ?, ?, ?)";
-        }
-        $statement = $connection->prepare($query);
-        $statement->bindValue(1, $name, PDO::PARAM_STR);
-        $statement->bindValue(2, $parent, PDO::PARAM_INT);
-        $statement->bindValue(3, fetch_rank($parent) + 1, PDO::PARAM_INT);
-        if ($parent > 0) {
-            $achievement = fetch_achievement($parent);
-            $statement->bindValue(4, $achievement->parent, PDO::PARAM_INT);
-        }
-        $statement->execute();
-    } else {
-        echo "0 This achievement already exists."; //Maybe reference the specific achievements.
-    }
-}
+
 
 function count_achievements() {
     global $connection;
-    $query = "select count(*) from achievements where quality=false and active=1 and parent=0 and  work>0";
-    $statement = $connection->query($query);
-    $statement->execute();
+    $data=[];
+    
+    $statement = $connection->query("select count(*) from achievements where quality=false and active=1 and parent=0 and  work>0");
     $num_of_working_achievements = (int) $statement->fetchColumn();
+    
     $statement = $connection->query("select count(*) from achievements where active=1 and quality=true");
-    $statement->execute();
     $num_of_qualities = (int) $statement->fetchColumn();
-    $query = "select count(*) from achievements where active=1 and parent=0";
-    $statement = $connection->query($query);
-    $statement->execute();
+    
+    $statement = $connection->query("select count(*) from achievements where active=1 and parent=0");
     $num_of_achievements = (int) $statement->fetchColumn();
+    
     $num_of_nonworking_achievements = $num_of_achievements - $num_of_working_achievements - $num_of_qualities;
-    echo "$num_of_achievements([<span style='color:green'>$num_of_working_achievements</span> + 
-	 <span style='color:gray;'>$num_of_qualities</span>]/
-         <span style='color:red'>$num_of_nonworking_achievements</span>)";
+    $data=["total"=>$num_of_achievements, 
+           "working"=>$num_of_working_achievements, 
+           "not_working"=>$num_of_nonworking_achievements, 
+           "qualities"=>$num_of_qualities];
+    echo json_encode($data);
 }
-function deactivate_achievement($id){
+
+
+function create_achievement($name, $parent) {
+    global $connection;
+    $achievement = fetch_achievement($parent);
+    if (check_achievements_for_name($name)) {
+        //BAD This achievement already exists.
+    }
+    if ($parent == 0) {
+        $query = "insert into achievements(name, parent, rank) values (?, ?, ?)";
+    } else if ($parent > 0) {
+        $query = "insert into achievements(name, parent, rank, documented) values (?, ?, ?, $achievement->documented)";
+    }
+    $statement = $connection->prepare($query);
+    $statement->bindValue(1, $name, PDO::PARAM_STR);
+    $statement->bindValue(2, $parent, PDO::PARAM_INT);
+    $statement->bindValue(3, fetch_rank($parent) + 1, PDO::PARAM_INT);
+    $statement->execute();
+}
+
+function deactivate_achievement($id) {
     global $connection;
     $statement = $connection->prepare("update achievements set active=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
+
 function delete_achievement($id) {
     global $connection;
     deactivate_achievement($id);
@@ -317,11 +320,10 @@ function list_children($id) {
     }
 }
 
-
 function rank_achievements($achievement, $new_rank) {
     global $connection;
     $connection->exec("set @rank=$new_rank");
-    if ($new_rank - $achievement->rank > 0) {        
+    if ($new_rank - $achievement->rank > 0) {
         $connection->exec("update achievements set rank=@rank:=@rank-1 where active=1 and parent=$achievement->parent and rank<=$new_rank order by rank");
     } else if ($new_rank - $achievement->rank < 0) {
         $connection->exec("update achievements set rank=@rank:=@rank+1 where active=1 and parent=$achievement->parent and rank>=$new_rank order by rank");

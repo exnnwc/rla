@@ -2,6 +2,7 @@
 
 include_once ("config.php");
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+
 function cancel_work($action_id) {
     echo $achievement_id;
     global $connection;
@@ -75,6 +76,32 @@ function check_work() {
     }
 }
 
+function convert_work_num_to_caption($work) {
+    switch ($work) {
+        case "max_number":
+            return 5;
+            break;
+        case 0:
+            return "Off";
+            break;
+        case 1:
+            return "Work";
+            break;
+        case 2:
+            return "Daily";
+            break;
+        case 3:
+            return "Weekly";
+            break;
+        case 4:
+            return "Monthly";
+            break;
+        case 5:
+            return "Instant";
+            break;
+    }
+}
+
 function create_work($action_id) {
     global $connection;
     $action = fetch_action($action_id);
@@ -82,8 +109,6 @@ function create_work($action_id) {
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     $statement->execute();
 }
-
-
 
 function days_since_last_worked($action_id) {
     global $connection;
@@ -95,7 +120,6 @@ function days_since_last_worked($action_id) {
     $statement->execute();
     return (int) $statement->fetchColumn();
 }
-
 
 function has_achievement_been_worked_on($id) {
     global $connection;
@@ -110,7 +134,7 @@ function has_achievement_been_worked_on($id) {
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     while ($action = $statement->fetchObject()) {
-        if (!has_action_been_worked_on($action->id)) {            
+        if (!has_action_been_worked_on($action->id)) {
             return false;
         }
     }
@@ -124,12 +148,12 @@ function has_action_been_worked_on($action_id) {
     if (when_last_worked($action_id) == "12/31/69") {
         return false;
     } else {
-        if ($action->work==1){
-            $action->work=2;            
+        if ($action->work == 1) {
+            $action->work = 2;
         }
         switch ($action->work) {
-           
-               
+
+
             case 2:
                 if (date("z", when_last_worked($action_id)) != date("z", time())) {
                     return false;
@@ -209,28 +233,5 @@ function should_it_have_been_worked_on($id) {
         } else {
             return false;
         }
-    }
-}
-
-function convert_work_num_to_caption($work){
-    switch ($work){
-        case 0:
-            return "Off";
-            break;
-        case 1:
-            return "Work";
-            break;
-        case 2:
-            return "Daily";
-            break;
-        case 3:
-            return "Weekly";
-            break;
-        case 4:
-            return "Monthly";
-            break;
-	case 5:
-		return "Instant";
-		break;
     }
 }

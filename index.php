@@ -7,6 +7,7 @@
         <script src="index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/actions.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/error.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/listings.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/profile.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/requirements.js"></script>
@@ -54,7 +55,11 @@
                 <input id="sort_work_button"  class="sort_button" type="button" value="Work &#8595;" />
                 <input id="sort_workrev_button"  class="sort_button" type="button" value="Work &#8593;"  style="display:none"/>
             </span>
-            <span>Total: <span id="achievement_count"></span></span>
+            <span>Total: <span id="achievement_count"><span id="achievement_total"></span>
+                    ([
+                    <span id="working_total" style='color:green'></span> + 
+	 <span id="quality_total" style='color:gray;'></span>]/
+         <span id="nonworking_total" style='color:red'></span>)</span></span>
 
             <div id="list_of_achievements"></div>
         <?php elseif ($rla > 0): ?>
