@@ -15,3 +15,11 @@ function testIfVariableIsString(variable, name){
         //name is not a string
     }
 }
+function testStringForMaxLength(variable, maxLength, name){
+    if (!testIfVariableIsString(variable, name)){
+        return false;
+    }
+    if (variable.length>maxLength){
+        //name is too long
+    }
+}

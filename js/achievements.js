@@ -1,9 +1,9 @@
 function changeDescription(id, description) {
-    testIfVariableIsNumber(id, "id");
-    if (description.length > 20000) {
-        //Too long
+    if (testIfVariableIsNumber(id, "id")
+            || testStringForMaxLength(description, 20000, "description")) {
         return;
     }
+
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
@@ -13,9 +13,12 @@ function changeDescription(id, description) {
                 displayProfile(id);
             });
 }
+
 function changeDocumentationStatus(id, status) {
-    testIfVariableIsNumber(id, "id");
-    testIfVariableIsNumber(status, "status");
+    if (testIfVariableIsNumber(id, "id")
+            || testIfVariableIsNumber(status, "status")) {
+        return;
+    }
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
@@ -25,14 +28,13 @@ function changeDocumentationStatus(id, status) {
                 displayProfile(id);
             });
 }
+
 function changeName(id, new_name) {
-    testIfVariableIsNumber(id, "id");
-    if ($("#achievement_name").html().trim() == new_name.trim()) {
-        //ERROR Same name as before. 
-    }
-    if (new_name.length > 255) {
-        //name too long
-    }
+    if (testIfVariableIsNumber(id, "id")
+            || testStringForMaxLength(new_name, 255, "new_name")
+            || $("#achievement_name").html().trim() == new_name.trim()) {
+        return;
+    }    
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
@@ -42,9 +44,12 @@ function changeName(id, new_name) {
                 displayProfile(id);
             });
 }
+
 function changePower(id, new_power) {
-    testIfVariableIsNumber(id, "id");
-    testIfVariableIsNumber(new_power, "new_power");
+    if (testIfVariableIsNumber(id, "id")
+            || testIfVariableIsNumber(new_power, "new_power")) {
+        return;
+    }
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
@@ -55,10 +60,11 @@ function changePower(id, new_power) {
             });
 }
 
-
 function changeQuality(id, new_quality) {
-    testIfVariableIsNumber(id, "id");
-    testIfVariableIsBoolean(new_quality, "new_quality");
+    if (testIfVariableIsNumber(id, "id") 
+            || testIfVariableIsBoolean(new_quality, "new_quality")) {
+        return;
+    }
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
@@ -71,9 +77,11 @@ function changeQuality(id, new_quality) {
 }
 
 function changeRank(id, new_rank, parent) {
-    testIfVariableIsNumber(id, "id");
-    testIfVariableIsNumber(new_rank, "new_rank");
-    testIfVariableIsNumber(parent, "parent");
+    if (testIfVariableIsNumber(id, "id") 
+            || testIfVariableIsNumber(new_rank, "new_rank") 
+            || testIfVariableIsNumber(parent, "parent")) {
+        return;
+    }
     if (new_rank == 0) {
         //ERROR new_rank should never be 0
         return;
@@ -88,13 +96,15 @@ function changeRank(id, new_rank, parent) {
             });
 }
 function changeWorkStatus(id, status, parent) {
-    testIfVariableIsNumber(id, "id");
-    testIfVariableIsNumber(status, "status");
-    testIfVariableIsNumber(parent, "parent");
+    if (testIfVariableIsNumber(id, "id") 
+            || testIfVariableIsNumber(status, "status") 
+            || testIfVariableIsNumber(parent, "parent")) {
+        return;
+    }
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
-        data: {function_to_be_called: "change_work_status", id: id, status: status}
+        data: {function_to_be_called: "change_work_status_of_achievement", id: id, status: status}
     })
             .done(function (result) {
                 softGenericReload(id);
@@ -118,14 +128,9 @@ function countAchievements() {
 
 }
 function createAchievement(parent, name) {
-    testIfVariableIsNumber(parent, "parent");
-    testIfVariableIsString(name, "name");
-    if (name.length > 255) {
-        //BAD 
-        return;
-    }
-    if (name.trim() === "") {
-        //BAD (Possibly ignore) 
+    if (testIfVariableIsNumber(parent, "parent")
+            || testStringForMaxLength(name, 255, "name")
+            || name.trim() === "") {
         return;
     }
     $.ajax({
@@ -139,9 +144,11 @@ function createAchievement(parent, name) {
 }
 
 function deleteAchievement(id, parent, fromProfile) {
-    testIfVariableIsNumber(id, "id");
-    testIfVariableIsNumber(parent, "parent");
-    testIfVariableIsBoolean(fromProfile, "fromProfile");
+    if (testIfVariableIsNumber(id, "id")
+            || testIfVariableIsNumber(parent, "parent")
+            || testIfVariableIsBoolean(fromProfile, "fromProfile")) {
+        return;
+    }
     if (window.confirm("Are you sure you want to delete this achievement?")) {
         $.ajax({
             method: "POST",
@@ -162,30 +169,25 @@ function deleteAchievement(id, parent, fromProfile) {
     }
 }
 
-function fetchMaxWorkStatus() {
-    
-    return $.ajax({
+function toggleWorkStatus(id, status, parent) {
+    //FIX I'd like to implement this AJAX call as a separate function 
+    //but this is a quick fix that I don't imagine will have negative repercussions.    
+    if (testIfVariableIsNumber(id, "id")
+            || testIfVariableIsNumber(status, "status")
+            || testIfVariableIsNumber(parent, "parent")) {
+        return;
+    }
+    $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
         data: {function_to_be_called: "fetch_max_work_status"}
-    });
-           
-           
-    
-}
-
-
-
-function toggleWorkStatus(id, status, parent) {
-    testIfVariableIsNumber(id, "id");
-    testIfVariableIsNumber(status, "status");
-    testIfVariableIsNumber(parent, "parent");
-    newShit=fetchMaxWorkStatus();
-    console.log(newShit.responseText);
-    if (status >= fetchMaxWorkStatus()) {
-        status = -1;
-    }
-    status++;
-    console.log("new status is" + status);
-    changeWorkStatus(id, status, parent);
+    })
+            .done(function (result) {
+                if (status >= JSON.parse(result)) {
+                    status = -1;
+                }
+                status++;
+                console.log("new status is" + status);
+                changeWorkStatus(id, status, parent);
+            });
 }

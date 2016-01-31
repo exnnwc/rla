@@ -11,14 +11,7 @@ function cancel_work($action_id) {
     $statement->execute();
 }
 
-function change_work($id, $work) {
-    //echo "$id $work";
-    global $connection;
-    $statement = $connection->prepare("update achievements set work=? where id=?");
-    $statement->bindvalue(1, $work, PDO::PARAM_INT);
-    $statement->bindvalue(2, $id, PDO::PARAM_INT);
-    $statement->execute();
-}
+
 
 function check_work() {
 //Weekly and monthly check only work on Sunday or 1st day of the month. Need to check if it hasn't been checked before.

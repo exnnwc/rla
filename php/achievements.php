@@ -65,7 +65,7 @@ function change_rank($id, $new_rank) {
         //BAD - ranks shouldn't be duplicated 
     }
     //if user picks a new rank too big
-    if ($new_rank > (fetch_rank($achievement->parent))) {
+    if ($new_rank > (fetch_highest_rank($achievement->parent))) {
         activate_achievement($achievement->id);
         fix_achievement_ranks("rank", $achievement->parent);
         exit;
@@ -74,19 +74,22 @@ function change_rank($id, $new_rank) {
     activate_achievement($achievement->id);
 }
 
-function change_work_status($id, $status) {
+function change_work_status_of_achievement($id, $status) {
     global $connection;
     $statement = $connection->prepare("update achievements set work=? where id=?");
     $statement->bindValue(1, $status, PDO::PARAM_INT);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
+    update_work_status_for_related_actions($achievement_id);
 }
 
-function check_achievements_for_name($name) {
+function achievement_name_exists($name, $parent) {    
     global $connection;
-    $statement = $connection->prepare("select count(*) from achievements where active=1 and name=? limit 1");
+    $statement = $connection->prepare("select count(*) from achievements where active=1 and name=? and parent=? limit 1");
     $statement->bindValue(1, $name, PDO::PARAM_STR);
-    return $statement->fetchcolumn;
+    $statement->bindValue(2, $parent, PDO::PARAM_INT);
+    $statement->execute();    
+    return boolval($statement->fetchcolumn());
 }
 
 
@@ -109,6 +112,7 @@ function count_achievements() {
            "working"=>$num_of_working_achievements, 
            "not_working"=>$num_of_nonworking_achievements, 
            "qualities"=>$num_of_qualities];
+    
     echo json_encode($data);
 }
 
@@ -116,8 +120,8 @@ function count_achievements() {
 function create_achievement($name, $parent) {
     global $connection;
     $achievement = fetch_achievement($parent);
-    if (check_achievements_for_name($name)) {
-        //BAD This achievement already exists.
+    if (achievement_name_exists($name, $parent)) {
+        //ERROR $name already exists.
     }
     if ($parent == 0) {
         $query = "insert into achievements(name, parent, rank) values (?, ?, ?)";
@@ -127,7 +131,7 @@ function create_achievement($name, $parent) {
     $statement = $connection->prepare($query);
     $statement->bindValue(1, $name, PDO::PARAM_STR);
     $statement->bindValue(2, $parent, PDO::PARAM_INT);
-    $statement->bindValue(3, fetch_rank($parent) + 1, PDO::PARAM_INT);
+    $statement->bindValue(3, fetch_highest_rank($parent) + 1, PDO::PARAM_INT);
     $statement->execute();
 }
 
@@ -200,7 +204,7 @@ function fetch_achievement($id) {
     return $statement->fetchObject();
 }
 
-function fetch_rank($parent) {
+function fetch_highest_rank($parent) {
     global $connection;
     $statement = $connection->prepare("select rank from achievements where active=1 and parent=? order by rank desc limit 1");
     $statement->bindValue(1, $parent, PDO::PARAM_INT);

@@ -1,23 +1,5 @@
 <?php
 
-function associate($achievement_id, $action_id) {
-    global $connection;
-    $action = fetch_action($action_id);
-    if ($action->achievement_id == 0) {
-        $statement = $connection->prepare("insert into actions (name, work, achievement_id, reference) values('" . $action->name . "', $action->work, ?, 0)");
-        $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
-        $statement->execute();
-        $statement = $connection->prepare("update actions set active=0 where id=?");
-        $statement->bindValue(1, $action_id, PDO::PARAM_INT);
-        $statement->execute();
-    } else {
-        $statement = $connection->prepare("insert into actions (name, work, achievement_id, reference) values('" . $action->name . "', $action->work, ?, ?)");
-        $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
-        $statement->bindValue(2, $action_id, PDO::PARAM_INT);
-        $statement->execute();
-    }
-}
-
 function change_work_status_of_action($id, $work) {
     global $connection;
     $statement = $connection->prepare("update actions set work=? where active=1 and (id=? or reference=?)");
@@ -27,31 +9,18 @@ function change_work_status_of_action($id, $work) {
     $statement->execute();
 }
 
-function create_action($achievement_id, $action, $reference) {
-    // echo $achievement_id + " " +  $action;
+function create_action($achievement_id, $action) {
     global $connection;
-    if ($reference != 0) {
-        $action = fetch_action($reference)->name;
-    }
-    $statement = $connection->prepare("select work from achievements where id=?");
-    $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
-    $statement->execute();
-    $work = $statement->fetchColumn();
-    $statement = $connection->prepare("insert into actions(achievement_id, name, reference, work) values (?, ?, ?, $work)");
+    $achievement=fetch_achievement($achievement_id);    
+    $statement = $connection->prepare("insert into actions(achievement_id, name,  work) values (?, ?, ?)");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->bindValue(2, $action, PDO::PARAM_STR);
-    $statement->bindValue(3, $reference, PDO::PARAM_INT);
-    $statement->execute();
-}
-
-function create_new_action($action) {
-    global $connection;
-    $statement = $connection->prepare("insert into actions (name, achievement_id) values (?, 0)");
-    $statement->bindValue(1, $action, PDO::PARAM_STR);
+    $statement->bindValue(3, $achievement->work, PDO::PARAM_INT);
     $statement->execute();
 }
 
 function delete_action($id) {
+    //go through this.  This can't be right.
     global $connection;
     $action = fetch_action($id);
     $statement = $connection->query("select count(*) from actions where active=1 and (id=$action->id or reference=$action->id)");
@@ -77,17 +46,19 @@ function delete_action($id) {
     }
 }
 
-function delete_top_action($id) {
-    global $connection;
-    $statement = $connection->prepare("update actions set active=0 where id=?");
-    $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();
-}
-
 function fetch_action($id) {
     global $connection;
     $statement = $connection->prepare("select * from actions where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     return $statement->fetchObject();
+}
+
+function update_work_status_for_related_actions($achievement_id, $new_work){
+    //I may eventually allow actions to have separate work schedules than their attached achievements.
+    global $connection;
+    $statement = $connection->prepare('update actions set work=? where achievement_id=?');
+    $statement->bindValue(1, $new_work, PDO::PARAM_INT);
+    $statement->bindValue(2, $achievement_id, PDO::PARAM_INT);
+    
 }

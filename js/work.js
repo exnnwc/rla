@@ -11,17 +11,7 @@ function cancelWork(action_id) {
                 displayWork();
             });
 }
-function changeWork(id, work) {
-    //console.log(id + " " + work);
-    $.ajax({
-        method: "POST",
-        url: "/rla/php/ajax.php",
-        data: {function_to_be_called: "change_work", id: id, work: work}
-    })
-            .done(function (result) {
-                displayWork();
-            });
-}
+
 
 
 
