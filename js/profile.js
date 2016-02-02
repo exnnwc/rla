@@ -25,7 +25,7 @@ function displayProfile(id) {
                             .done(function (result) {
                                 $("#achievement_profile").html(result);
                                 listActions(id);
-                                listCurrentActions(id);
+                                listNewActions(id);
                                 listRequirements(id, "for");
                                 listRequirements(id, "by");
                                 displayChildren(id);
@@ -50,12 +50,12 @@ function listActions(achievement_id) {
                 $("#actions" + achievement_id).html(result);
             });
 }
-function listCurrentActions(achievement_id) {
+function listNewActions(achievement_id) {
     //console.log(achievement_id);
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
-        data: {function_to_be_called: "list_current_actions", achievement_id: achievement_id}
+        data: {function_to_be_called: "list_new_actions", achievement_id: achievement_id}
     })
             .done(function (result) {
                 //console.log(result);
@@ -64,7 +64,7 @@ function listCurrentActions(achievement_id) {
 }
 function listAllActions(achievement_id){
     listActions(achievement_id);    
-    listCurrentActions(achievement_id);
+    listNewActions(achievement_id);
 }
 function listNewRelations(id) {
     $.ajax({

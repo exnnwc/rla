@@ -89,20 +89,14 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "is_it_active":
         is_it_active(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
-    case "list_achievements": //change to display?
-        list_achievements(filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING));
-        break;
     case "list_children":
         list_children(filter_input(INPUT_POST, 'parent', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "list_actions":
         list_actions(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
-    case "list_current_actions":
-        list_current_actions();
-        break;
-    case "list_work":
-        list_work(filter_input(INPUT_POST, 'work', FILTER_SANITIZE_NUMBER_INT));
+    case "list_new_actions":
+        list_new_actions();
         break;
     case "list_new_relations":
         list_new_relations();
