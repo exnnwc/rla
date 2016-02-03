@@ -1,4 +1,4 @@
-<?php include ("/php/config.php"); ?>
+<?php include ("php/config.php"); ?>
 
 <html>
     <head>

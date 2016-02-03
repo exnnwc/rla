@@ -57,7 +57,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         create_requirement(filter_input(INPUT_POST, 'required_for', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'required_by', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "create_work":
-        create_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
+        create_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT), $_POST['data']);
         break;
     case "delete_achievement":
         delete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
