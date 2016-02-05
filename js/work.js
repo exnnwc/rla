@@ -17,10 +17,14 @@ function cancelWork(action_id) {
 
 
 function createWork(action_id) {
+    var data;
+    if ($("#action_quantity_"+action_id).val()){
+        data={quantity:$("#action_quantity_"+action_id).val()};
+    }
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
-        data: {function_to_be_called: "create_work", action_id: action_id}
+        data: {function_to_be_called: "create_work", action_id: action_id, data:data}
     })
             .done(function (result) {
                 console.log(result);

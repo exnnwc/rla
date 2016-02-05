@@ -13,6 +13,9 @@ function fetch_action_listing($action) {
                         onmouseleave=\"$(this).css('text-decoration', 'none');\" 
                         onclick=\"createWork($action->id);\"";
     $string = $string . "> $action->name</span>";
+    if ($action->type==1){
+        $string = $string . "<input id='action_quantity_$action->id' type='number' value='$action->default_quantity'/>";
+    }
     return $string;
 }
 
