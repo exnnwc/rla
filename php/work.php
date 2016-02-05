@@ -94,20 +94,20 @@ function convert_work_num_to_caption($work) {
     }
 }
 
-function create_work($action_id, $data) {
+function create_work($action_id) {
     global $connection;
     $action = fetch_action($action_id);
-    switch ($action->$type) {
+    /*switch ($action->$type) {
         case 0:
             $query = "insert into work (action_id, work) values (?, $action->work)";
             break;
         case 1:
             $query = "insert into work (action_id, quantity, work) values (?, ?, $action->work)";
             break;
-    }
-    $statement = $connection->prepare($query);
+    }*/
+    $statement = $connection->prepare("insert into work (action_id, work) values (?, $action->work)");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
-    //$statement->execute();
+    $statement->execute();
 }
 
 function days_since_last_worked($action_id) {
