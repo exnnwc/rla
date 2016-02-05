@@ -91,6 +91,8 @@ $achievement = $statement->fetchObject();
     <div>
         Power:<?php echo $achievement->power; ?>
     </div>
+<?php if ((int)$achievement->completed==0):?>
+    
     <div>
         Work: 
         <?php 
@@ -99,7 +101,14 @@ $achievement = $statement->fetchObject();
         ?>
          <input type="button" value="Toggle work status" 
                  onclick="toggleWorkStatus(<?php echo "$achievement->id, $achievement->work, $achievement->parent"; ?>);" />
+         <input type="button" value="Complete" onclick="completeAchievement(<?php echo $achievement->id; ?>);" />
     </div>
+<?php elseif ((int)$achievement->completed!=0):?>
+    <div>
+        Completed:<?php echo date("m/d/y", strtotime($achievement->completed));?>
+        <input type='button' value='Cancel' onclick="uncompleteAchievement(<?php echo $achievement->id; ?>);" />
+    </div>
+<?php endif;?>
     <div>
 
         <?php

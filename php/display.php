@@ -1,20 +1,31 @@
 <?php
+
 include_once("work.php");
 
 function fetch_action_listing($action) {
     $string = "<span style='margin-left:20px;cursor:pointer;";
-    $string = has_action_been_worked_on($action->id) 
-        ? $string . "color:grey;text-decoration:line-through;' 
+    $string = has_action_been_worked_on($action->id) ? $string . "color:grey;text-decoration:line-through;' 
                         title='Cancel work'  
                         onmouseover=\"$(this).css('text-decoration', 'none');\"  
                         onmouseleave=\"$(this).css('text-decoration', 'line-through');\"
-                        onclick=\"cancelWork($action->id);\""
-        : $string . "' title='Click to indicate action worked.' 
+                        onclick=\"cancelWork($action->id);\"" : $string . "' title='Click to indicate action worked.' 
                         onmouseover=\"$(this).css('text-decoration', 'line-through');\" 
                         onmouseleave=\"$(this).css('text-decoration', 'none');\" 
-                        onclick=\"createWork($action->id);\"";    
+                        onclick=\"createWork($action->id);\"";
     $string = $string . "> $action->name</span>";
     return $string;
+}
+
+
+
+function fetch_child_menu($achievement) {
+    return "<input class='delete_button' type='button' value='X' />        
+            <input type='button' value='-' 
+                onclick=\"changeRank($achievement->id, " . ($achievement->rank + 1) . ", true, $achievement->parent);\"/>                    
+              <input type='text' style='width:32px;text-align:center;' value='$achievement->rank' 
+                  onkeypress=\"if (event.keyCode==13){changeRank($achievement->id, this.value, true, $achievement->parent); }\"/>
+              <input type='button' value='+' 
+                onclick=\"changeRank($achievement->id, " . ($achievement->rank - 1) . ", true, $achievement->parent);\"/>";
 }
 
 function display_queue() {
@@ -39,15 +50,6 @@ function display_queue() {
     }
 }
 
-function fetch_child_menu($achievement) {
-    return "<input class='delete_button' type='button' value='X' />        
-            <input type='button' value='-' 
-                onclick=\"changeRank($achievement->id, " . ($achievement->rank + 1) . ", true, $achievement->parent);\"/>                    
-              <input type='text' style='width:32px;text-align:center;' value='$achievement->rank' 
-                  onkeypress=\"if (event.keyCode==13){changeRank($achievement->id, this.value, true, $achievement->parent); }\"/>
-              <input type='button' value='+' 
-                onclick=\"changeRank($achievement->id, " . ($achievement->rank - 1) . ", true, $achievement->parent);\"/>";
-}
 function list_actions($achievement_id) {
     global $connection;
     $statement = $connection->prepare("select * from actions where active=1 and achievement_id=? order by name");
@@ -69,15 +71,15 @@ function list_children($id) {
     $statement->execute();
     if ($statement->fetchColumn() == 0) {
         echo "<div style=' font-style:italic;'>This achievement has no children.</div>";
-    } else {
-        $statement = $connection->prepare("select * from achievements where active=1 and parent=? order by rank");
-        $statement->bindValue(1, $id, PDO::PARAM_INT);
-        $statement->execute();
-        while ($achievement = $statement->fetchObject()) {
-            echo "  <div>" . fetch_child_menu($achievement)
-                . "     <a href='" . SITE_ROOT . "/?rla=$achievement->id'>$achievement->name </a>
+        exit;
+    }
+    $statement = $connection->prepare("select * from achievements where active=1 and parent=? order by rank");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($achievement = $statement->fetchObject()) {
+        echo "  <div>" . fetch_child_menu($achievement)
+        . "     <a href='" . SITE_ROOT . "/?rla=$achievement->id'>$achievement->name </a>
                     </div>";
-        }
     }
 }
 

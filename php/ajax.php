@@ -35,6 +35,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "change_work_status_of_action":
         change_work_status_of_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'work', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "complete_achievement":
+        complete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
     case "count_achievements":
         count_achievements();
         break;
@@ -67,13 +70,13 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "delete_note":
         delete_note(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;  
+        break;
     case "delete_relation":
         delete_relation(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;    
+        break;
     case "delete_requirement":
         delete_requirement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;    
+        break;
     case "delete_top_action":
         delete_top_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -103,7 +106,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "list_new_requirements":
         list_new_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
-        break;    
+        break;
     case "list_notes":
         list_notes(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -112,5 +115,8 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "list_requirements":
         list_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING));
-        break;    
+        break;
+    case "uncomplete_achievement":
+        uncomplete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
 }

@@ -34,7 +34,7 @@ function changeName(id, new_name) {
             || testStringForMaxLength(new_name, 255, "new_name")
             || $("#achievement_name").html().trim() == new_name.trim()) {
         return;
-    }    
+    }
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
@@ -61,7 +61,7 @@ function changePower(id, new_power) {
 }
 
 function changeQuality(id, new_quality) {
-    if (testIfVariableIsNumber(id, "id") 
+    if (testIfVariableIsNumber(id, "id")
             || testIfVariableIsBoolean(new_quality, "new_quality")) {
         return;
     }
@@ -77,8 +77,8 @@ function changeQuality(id, new_quality) {
 }
 
 function changeRank(id, new_rank, parent) {
-    if (testIfVariableIsNumber(id, "id") 
-            || testIfVariableIsNumber(new_rank, "new_rank") 
+    if (testIfVariableIsNumber(id, "id")
+            || testIfVariableIsNumber(new_rank, "new_rank")
             || testIfVariableIsNumber(parent, "parent")) {
         return;
     }
@@ -96,8 +96,8 @@ function changeRank(id, new_rank, parent) {
             });
 }
 function changeWorkStatus(id, status, parent) {
-    if (testIfVariableIsNumber(id, "id") 
-            || testIfVariableIsNumber(status, "status") 
+    if (testIfVariableIsNumber(id, "id")
+            || testIfVariableIsNumber(status, "status")
             || testIfVariableIsNumber(parent, "parent")) {
         return;
     }
@@ -109,6 +109,17 @@ function changeWorkStatus(id, status, parent) {
             .done(function (result) {
                 softGenericReload(id);
                 countAchievements();
+            });
+}
+
+function completeAchievement(id) {
+    $.ajax({
+        method: "POST",
+        url: "/rla/php/ajax.php",
+        data: {function_to_be_called: "complete_achievement", id: id}
+    })
+            .done(function (result) {
+                softGenericReload(id);
             });
 }
 
@@ -189,5 +200,16 @@ function toggleWorkStatus(id, status, parent) {
                 status++;
                 console.log("new status is" + status);
                 changeWorkStatus(id, status, parent);
+            });
+}
+
+function uncompleteAchievement(id) {
+    $.ajax({
+        method: "POST",
+        url: "/rla/php/ajax.php",
+        data: {function_to_be_called: "uncomplete_achievement", id: id}
+    })
+            .done(function (result) {
+                softGenericReload(id);
             });
 }

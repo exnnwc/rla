@@ -4,13 +4,13 @@ require_once("work.php");
 include_once ("config.php");
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 $sort_by=filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING);
-
 echo "<table style='text-align:center;'>" . fetch_table_header();
-$statement = $connection->query("select * from achievements where active=1 and parent=0" . fetch_order_query($sort_by));
+$statement = $connection->query("select * from achievements where active=1 and parent=0 and completed=0" . fetch_order_query($sort_by));
 while ($achievement = $statement->fetchObject()) {
     echo fetch_listing_row($achievement);
 }
 echo "</table>";
+list_completed_achievements();
 
 function fetch_listing_menu($achievement) {
     $string = " <tr><td>
@@ -29,7 +29,10 @@ function fetch_listing_menu($achievement) {
                         class='change_work_button' value='" . convert_work_num_to_caption($achievement->work) . "' 
                         onclick=\"toggleWorkStatus($achievement->id, $achievement->work, $achievement->parent);\"/>
                 </td><td>";
-    $string = $achievement->quality ? $string . "<input type='button' value='On' onclick=\"changeQuality($achievement->id, false);\"/>" : $string . "<input type='button' value='Off' onclick=\"changeQuality($achievement->id, true);\"/></td>";
+    $string = $achievement->quality 
+            ? $string . "<input type='button' value='On' onclick=\"changeQuality($achievement->id, false);\"/></td><td>" 
+            : $string . "<input type='button' value='Off' onclick=\"changeQuality($achievement->id, true);\"/></td><td>"; 
+    $string=$string . "<input type='button' value='Complete' onclick=\"completeAchievement($achievement->id);\"/></td>";    
     return $string;
 }
 
@@ -80,6 +83,30 @@ function fetch_table_header() {
                 <a href = '" . SITE_ROOT . "/work/' style = 'color:black;'>Work</a>
             </td>
             <td>Quality</td>
+            <td>Complete?</td>
             <td>Achievement Name</td>
             </tr>";
+}
+
+function list_completed_achievements(){
+    global $connection;    
+    echo "<h3 style='text-align:center;'>Completed Achievements</h3>";
+    $statement=$connection->query("select count(*) from achievements where active=1 and completed!=0");
+    if ((int)$statement->fetchColumn()==0){
+        echo "<div>None.</div>";
+        return;
+    }
+    $statement=$connection->query("select * from achievements where completed!=0");
+    while ($achievement=$statement->fetchObject()){
+        echo "  <div>
+                    
+                    <span style='font-weight:bold'>$achievement->name </span>
+                        <div>
+                            <span>Created:". date("m/d/y", strtotime($achievement->created)) ."</span>            
+                            <span>Completed:". date("m/d/y", strtotime($achievement->completed)) ."</span>
+                            <input type='button' value='Cancel' onclick=\"uncompleteAchievement($achievement->id);\" />                                
+                        </div>
+                </div>";
+    }
+    
 }
