@@ -1,18 +1,18 @@
 <?php
-
-include_once("work.php");
-
+require_once("work.php");
 function fetch_action_listing($action) {
     $string = "<span style='margin-left:20px;cursor:pointer;";
-    $string = has_action_been_worked_on($action->id) ? $string . "color:grey;text-decoration:line-through;' 
+    $string = has_action_been_worked_on($action->id) 
+            ? $string . "color:grey;text-decoration:line-through;' 
                         title='Cancel work'  
                         onmouseover=\"$(this).css('text-decoration', 'none');\"  
                         onmouseleave=\"$(this).css('text-decoration', 'line-through');\"
-                        onclick=\"cancelWork($action->id);\"" : $string . "' title='Click to indicate action worked.' 
+                        onclick=\"cancelWork($action->id);\"" 
+            : $string . "' title='Click to indicate action worked.' 
                         onmouseover=\"$(this).css('text-decoration', 'line-through');\" 
                         onmouseleave=\"$(this).css('text-decoration', 'none');\" 
                         onclick=\"createWork($action->id);\"";
-    $string = $string . "> $action->name</span>";
+    $string = $string . "> $action->name [" . convert_work_num_to_caption($action->work) . "]</span>";
     if ($action->type==1){
         $string = $string . "<input id='action_quantity_$action->id' type='number' value='$action->default_quantity'/>";
     }
@@ -46,9 +46,9 @@ function display_queue() {
             $action_statement = $connection->query("select * from actions where active=1 and achievement_id=$achievement->id");
             $action_statement->execute();
             while ($action = $action_statement->fetchObject()) {
-                echo "<div style='margin-left:16px;'>" . fetch_action_listing($action) . "[" . convert_work_num_to_caption($action->work) . "]</div>";
+                echo "  <div style='margin-left:16px;'>" . fetch_action_listing($action) . "</div>";
             }
-            echo "</div>";
+            echo "      </div>";
         }
     }
 }
@@ -81,8 +81,8 @@ function list_children($id) {
     $statement->execute();
     while ($achievement = $statement->fetchObject()) {
         echo "  <div>" . fetch_child_menu($achievement)
-        . "     <a href='" . SITE_ROOT . "/?rla=$achievement->id'>$achievement->name </a>
-                    </div>";
+        . "         <a href='" . SITE_ROOT . "/?rla=$achievement->id'>$achievement->name </a>
+                </div>";
     }
 }
 

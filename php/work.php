@@ -11,8 +11,6 @@ function cancel_work($action_id) {
     $statement->execute();
 }
 
-
-
 function check_work() {
 //Weekly and monthly check only work on Sunday or 1st day of the month. Need to check if it hasn't been checked before.
     global $connection;
@@ -21,10 +19,8 @@ function check_work() {
         $statement = false;
         switch ($check) {
             case 1:
-                $statement = $connection->query("select * from actions 
-                    where active=1 and work=2 and id not in 
-                        (select action_id from work 
-			where active=1 and worked=true and date(created)=current_date-interval 1 day)");
+                $statement = $connection->query("select * from actions where active=1 and work=2 and id not in 
+                        (select action_id from work where active=1 and worked=true and date(created)=current_date-interval 1 day)");
                 break;
             case 2:
                 $statement = $connection->query("select count(*) from work where active=1 and action_id=0 and work=3 and dayofweek(created)=1;");
@@ -38,38 +34,41 @@ function check_work() {
             case 3:
                 $statement = $connection->query("select count(*) from work where active=1 and action_id=0 and work=4 and dayofmonth(created)=1;");
                 if (date("j", time()) == "1" || (int) $statement->fetchColumn() == 0) {
-                    echo "MONTHLY CHECK";
-                    $statement = $connection->query("select * from actions 
-                        where active=1 and work=4 and id not in 
-                        (select action_id from work where active=1 and worked=true 
-                        and month(created)=month(current_date-interval 1 month))");
+                    echo "MONTHLY CHECK"; 
+                    $statement = $connection->query("select * from actions where active=1 and work=4 and id not in 
+                        (select action_id from work where active=1 and worked=true and month(created)=month(current_date-interval 1 month))");
                 }
                 break;
         }
-        if ($statement) {
-            $statement->execute();
-            while ($action = $statement->fetchObject()) {
-                $work = $action->work;
-                //This only works for the daily checks. Not weekly or monthly.
-                if ($work == 2) {
-                    $created = "(current_date-interval 1 day)";
-                } else if ($work == 3) {
-                    $created = "DATE_SUB(DATE(NOW()), INTERVAL DAYOFWEEK(NOW())-1 DAY)";
-                } else if ($work == 4) {
-                    $created = "date_sub(current_date, interval dayofmonth(now()) day)";
-                } else {
-                    $created = "current_date";
-                }
-                echo "<div style='color:grey;'>'$action->name' has not been worked. Creating fail record in work log... $action->work</div>";
-                $connection->exec("insert into work (action_id, work, created, worked, summary) values ($action->id, $action->work, $created, false, 'v1')");
+        $statement->execute();
+        while ($action = $statement->fetchObject() && is_object($action)) {
+            $work = $action->work;
+            //This only works for the daily checks. Not weekly or monthly.
+            if ($work == 2) {
+                $created = "(current_date-interval 1 day)";
+            } else if ($work == 3) {
+                $created = "DATE_SUB(DATE(NOW()), INTERVAL DAYOFWEEK(NOW())-1 DAY)";
+            } else if ($work == 4) {
+                $created = "date_sub(current_date, interval dayofmonth(now()) day)";
+            } else {
+                $created = "current_date";
             }
-            $connection->exec("insert into work (action_id, work,  worked, summary) values (0, $work, false, 'v1')");
+            echo "<div style='color:grey;'>'$action->name' has not been worked. Creating fail record in work log... $action->work</div>";
+            $connection->exec("insert into work (action_id, work, created, worked, summary) values ($action->id, $action->work, $created, false, 'v1')");
         }
+        if (isset($work)) {
+            echo "ASDFAS";
+            $connection->exec("insert into work (action_id, work,  worked, summary) values (0, $work, false, 'v1')");
+        } else {
+            $connection->exec("insert into work (action_id, summary) values (0, 'v1')");
+        }
+
         $check++;
     }
 }
 
 function convert_work_num_to_caption($work) {
+    //convert to an array 02/04/16
     switch ($work) {
         case "max_number":
             return 5;
@@ -78,7 +77,7 @@ function convert_work_num_to_caption($work) {
             return "Off";
             break;
         case 1:
-            return "Work";
+            return "Work-day";
             break;
         case 2:
             return "Daily";
@@ -98,16 +97,16 @@ function convert_work_num_to_caption($work) {
 function create_work($action_id, $data) {
     global $connection;
     $action = fetch_action($action_id);
-    switch ($action->$type){
+    switch ($action->$type) {
         case 0:
-            $query="insert into work (action_id, work) values (?, $action->work)";
+            $query = "insert into work (action_id, work) values (?, $action->work)";
             break;
         case 1:
-            $query="insert into work (action_id, quantity, work) values (?, ?, $action->work)";
+            $query = "insert into work (action_id, quantity, work) values (?, ?, $action->work)";
             break;
     }
-        $statement = $connection->prepare($query);
-        $statement->bindValue(1, $action_id, PDO::PARAM_INT);
+    $statement = $connection->prepare($query);
+    $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     //$statement->execute();
 }
 
