@@ -1,6 +1,8 @@
 <?php
+
 require_once ("config.php");
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+
 function achievement_name_exists($name, $parent) {
     global $connection;
     $statement = $connection->prepare("select count(*) from achievements where active=1 and name=? and parent=? limit 1");
@@ -89,11 +91,11 @@ function change_work_status_of_achievement($id, $status) {
     update_work_status_for_related_actions($id, $status);
 }
 
-function complete_achievement($id){
+function complete_achievement($id) {
     global $connection;
-    $statement=$connection->prepare("update achievements set completed=now() where id=?");
+    $statement = $connection->prepare("update achievements set completed=now() where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();    
+    $statement->execute();
 }
 
 function count_achievements() {
@@ -151,12 +153,27 @@ function delete_achievement($id) {
     $connection->exec("update achievements set rank=rank-1 where active=1 and parent=$achievement->parent and rank>=$achievement->rank");
 }
 
-
-
 function fetch_achievement($id) {
     global $connection;
     $statement = $connection->prepare("select * from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    return $statement->fetchObject();
+}
+
+function fetch_achievement_name($id) {
+    global $connection;
+    $statement = $connection->prepare("select name from achievements where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    return $statement->fetchColumn();
+}
+
+function fetch_achievement_by_rank_and_parent($rank, $parent) {
+    global $connection;
+    $statement = $connection->prepare("select * from achievements where active=1 and rank=? and parent=?");
+    $statement->bindValue(1, $rank, PDO::PARAM_INT);
+    $statement->bindValue(2, $parent, PDO::PARAM_INT);
     $statement->execute();
     return $statement->fetchObject();
 }
@@ -169,7 +186,11 @@ function fetch_highest_rank($parent) {
     return $statement->fetchColumn();
 }
 
-
+function fetch_random_achievement_id() {
+    global $connection;
+    $statement = $connection->query("select id from achievements where active=1 and parent=0 order by rand() limit 1");
+    return $statement->fetchColumn();
+}
 
 function fix_achievement_ranks($field, $parent) {
     global $connection;
@@ -184,8 +205,6 @@ function is_it_active($id) {
     $statement->execute();
     echo $statement->fetchColumn();
 }
-
-
 
 function rank_achievements($achievement, $new_rank) {
     global $connection;
@@ -215,9 +234,9 @@ function update_rank($id, $new_rank) {
     $statement->execute();
 }
 
-function uncomplete_achievement($id){
+function uncomplete_achievement($id) {
     global $connection;
-    $statement=$connection->prepare("update achievements set completed=0 where id=?");
+    $statement = $connection->prepare("update achievements set completed=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();   
+    $statement->execute();
 }

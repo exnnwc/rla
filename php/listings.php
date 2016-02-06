@@ -1,9 +1,10 @@
 <?php
 require_once("work.php");
 
-include_once ("config.php");
+require_once ("config.php");
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 $sort_by=filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING);
+
 echo "<table style='text-align:center;'>" . fetch_table_header();
 $statement = $connection->query("select * from achievements where active=1 and parent=0 and completed=0" . fetch_order_query($sort_by));
 while ($achievement = $statement->fetchObject()) {
@@ -55,7 +56,8 @@ function fetch_listing_row($achievement) {
 
 function fetch_order_query($sort_by) {
     //I understand why this was flagged.  I could just reference an array.
-    $order_by = ["default" => " order by quality asc, rank asc",
+    $order_by = 
+       ["default" => " order by quality asc, rank asc",
         "power" => " order by power asc",
         "powerrev" => " order by power desc, rank asc",
         "power_adj" => " order by power_adj asc",

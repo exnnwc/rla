@@ -51,7 +51,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         create_new_action(filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING));
         break;
     case "create_note":
-        create_note(filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'edit', FILTER_SANITIZE_NUMBER_INT));
+        create_note(filter_input(INPUT_POST, 'note', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "create_relation":
         create_relation(filter_input(INPUT_POST, 'a', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'b', FILTER_SANITIZE_NUMBER_INT));

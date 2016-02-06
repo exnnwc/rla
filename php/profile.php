@@ -1,6 +1,7 @@
 <?php
-include_once ("config.php");
-include_once ("work.php");
+require_once ("achievements.php");
+require_once ("config.php");
+require_once ("work.php");
 $pref_date_format = "F j, Y g:i:s";
 
 //There could be an issue where users spoof this to see other people's achievements.
@@ -8,46 +9,40 @@ $pref_date_format = "F j, Y g:i:s";
 
 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-$statement = $connection->prepare("select * from achievements where id=? and active=1");
-$statement->bindValue(1, filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), PDO::PARAM_INT);
-$statement->execute();
-$achievement = $statement->fetchObject();
+
+$achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
 ?>
 
 <div id="navbar" style='text-align:center'>
     <div style="margin:5px;">
-        <a href="<?PHP echo SITE_ROOT; ?>">List</a>
+        <a href="<?= SITE_ROOT ?>">List</a>
     </div><div style="margin-bottom:10px;">
 
-        <a href="<?php echo SITE_ROOT ?>/?rla=<?php echo fetch_random_achievement_id(); ?>">Random</a>
+        <a href="<?= SITE_ROOT ?>/?rla=<?php echo fetch_random_achievement_id() ?>">Random</a>
     </div>
     <div>
-        <?php display_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
+        <?php echo fetch_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
     </div>    
 </div>
 <h1 id="achievement_name" style='text-align:center;'> 
-
-    <?php
-    echo $achievement->name;
-    ?> 
-
+    <?= $achievement->name ?> 
 </h1>
-
 <div>
+    <?php if ($achievement->completed == 0): ?>
+        <input type="button" value="Complete" onclick="completeAchievement(<?php echo $achievement->id; ?>);" />
+    <?php endif; ?>
+
     <div id="new_achievement_name_div" style="display:none;">
-        <input maxlength="255" id="new_achievement_name" type="text" value="<?php echo $achievement->name; ?>" 
-               onkeypress="if (event.keyCode == 13) {
+        <input maxlength="255" id="new_achievement_name" type="text" value="<?= $achievement->name ?>" 
+               onkeypress="if (event.keyCode === 13) {
                            changeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
                            $('#show_new_achievement_name').show();
                            $('#hide_new_achievement_name').hide();
                        }"/>
-
         <input type="button" value="Change name" 
                onclick="changeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
                        $('#show_new_achievement_name').show();
                        $('#hide_new_achievement_name').hide();"/>
-
-
     </div>
     <input id="show_new_achievement_name" type="button" value="Change Name" 
            onclick="$('#new_achievement_name_div').show();
@@ -57,64 +52,39 @@ $achievement = $statement->fetchObject();
            onclick="$('#new_achievement_name_div').hide();
                    $('#show_new_achievement_name').show();
                    $('#hide_new_achievement_name').hide();" />
+
     <input id='delete_achievement_<?php echo $achievement->id; ?>' class='delete_button' type='button' value='Delete' />
-
 </div>
-
 <div>
     Parent: 
     <?php
-    if ($achievement->parent == 0) {
-        echo "Top level";
-    } else {
-        echo "<a href='".SITE_ROOT."/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
-    }
+    echo ($achievement->parent == 0) ? "Top level" : "<a href='" . SITE_ROOT . "/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
     ?>
 </div>
 <div>
-    Created:
-
-    <?php
-    echo date($pref_date_format, strtotime($achievement->created));
-    ?>
-
+    Created: <?php echo date($pref_date_format, strtotime($achievement->created)); ?>
 </div>
 <div>
-
-    <?php
-    echo ($achievement->completed != 0) ? "Completed:" . date($pref_date_format, strtotime($achievement->completed)) : "";
-    ?>
-
+<?php
+($achievement->completed != 0)
+        and print ("Completed:<span style='margin-left:8px;'>" . date($pref_date_format, strtotime($achievement->completed))
+                . "</span><input style='margin-left:8px;' type='button' value='Cancel' onclick=\"uncompleteAchievement($achievement->id);\" />");
+?>
 </div>
 <div> 
     Rank:<?php echo $achievement->rank; ?>
     <div>
         Power:<?php echo $achievement->power; ?>
     </div>
-<?php if ((int)$achievement->completed==0):?>
-    
     <div>
-        Work: 
-        <?php 
-        echo convert_work_num_to_caption($achievement->work) . " ($achievement->work)";
-        
-        ?>
-         <input type="button" value="Toggle work status" 
-                 onclick="toggleWorkStatus(<?php echo "$achievement->id, $achievement->work, $achievement->parent"; ?>);" />
-         <input type="button" value="Complete" onclick="completeAchievement(<?php echo $achievement->id; ?>);" />
+        Work: <?php echo convert_work_num_to_caption($achievement->work) . " ($achievement->work)"; ?>
+        <input type="button" value="Toggle work status" 
+               onclick="toggleWorkStatus(<?php echo "$achievement->id, $achievement->work, $achievement->parent"; ?>);" />         
     </div>
-<?php elseif ((int)$achievement->completed!=0):?>
     <div>
-        Completed:<?php echo date("m/d/y", strtotime($achievement->completed));?>
-        <input type='button' value='Cancel' onclick="uncompleteAchievement(<?php echo $achievement->id; ?>);" />
-    </div>
-<?php endif;?>
-    <div>
-
-        <?php
-        echo $achievement->documented ? "Documented (Requires proof of completion)" . display_documentation_menu($achievement->id, 0) : "Undocumented (No proof of completion required)" . display_documentation_menu($achievement->id, 1);
-        ?>
-
+<?php
+echo $achievement->documented ? "Documented (Requires proof of completion)" . display_documentation_menu($achievement->id, 0) : "Undocumented (No proof of completion required)" . display_documentation_menu($achievement->id, 1);
+?>
     </div>
     <h3>
         Actions
@@ -127,32 +97,44 @@ $achievement = $statement->fetchObject();
                        $('#hide_new_actions').show();
                        $('#show_new_actions').hide();" />        
     </h3>
-        <div id="new_actions" style="display:none;">
-            <select id="list_of_current_actions<?php echo $achievement->id; ?>"> </select><br/>
-            <input id="new_action_input" type="text" onkeypress="if (event.keyCode==13){listAllActions(<?php echo $achievement->id ?>);createAction(<?php echo $achievement->id ?>, this.value)}"/> 
-            <input type="button" value="Create Action" onclick="listAllActions(<?php echo $achievement->id ?>);createAction(<?php echo $achievement->id ?>, $('#new_action_input').val())"/>
-        </div>
-    </div>
-    <div id="actions<?php echo $achievement->id;?>"> </div>
-    <h3>
-        Description
-        <input id="show_new_description" type='button' value='Edit' onclick="$('#current_description').hide();
-                $('#new_description_input').show();
-                $('#show_new_description').hide();"/>
-    </h3>
-    <span id="current_description">
-        <?php
-        echo $achievement->description ? str_replace("\n", "<BR>", $achievement->description) : "<div style=' font-style:italic;'>There is no description.</div>";
-        ?>
-    </span>
-    <span id="new_description_input" style="display:none">
-        <textarea maxlength="20000" id="new_description" style="width:600px;height:150px;"><?php echo $achievement->description ? $achievement->description : ""; ?></textarea>
+    <div id="new_actions" style="display:none;">
         <div>
-            <input type="button" value="Cancel" onclick="$('#new_description_input').hide();
-                    $('#show_new_description').show();" />
-            <input type='button' value='Submit' onclick="changeDescription(<?php echo $achievement->id; ?>, $('#new_description').val())" />
+            <select id="list_of_current_actions<?php echo $achievement->id; ?>"> </select>
         </div>
-    </span>
+        <input id="new_action_input" type="text" 
+               onkeypress="  if (event.keyCode == 13) {
+                           listAllActions(<?php echo $achievement->id ?>);
+                           createAction(<?php echo $achievement->id ?>, this.value);
+                       }" 
+               /> 
+        <input type="button" value="Create Action" onclick="listAllActions(<?php echo $achievement->id ?>);
+                createAction(<?php echo $achievement->id ?>, $('#new_action_input').val())"/>
+    </div>
+</div>
+<div id="actions<?php echo $achievement->id; ?>"> </div>
+<h3>
+    Description
+    <input id="show_new_description" type='button' value='Edit' onclick="$('#current_description').hide();
+            $('#new_description_input').show();
+            $('#show_new_description').hide();"/>
+</h3>
+<span id="current_description">
+           <?php
+           echo $achievement->description ? $achievement->description : "<div style=' font-style:italic;'>There is no description.</div>";
+           ?>
+</span>
+<span id="new_description_input" style="display:none">
+    <textarea maxlength="20000" id="new_description" style="width:600px;height:150px;">
+    <?php echo $achievement->description ? $achievement->description : ""; ?>
+    </textarea>
+    <div>
+        <input type="button" value="Cancel" 
+               onclick=" $('#new_description_input').hide();
+                       $('#show_new_description').show();" />
+        <input type='button' value='Submit' 
+               onclick="changeDescription(<?php echo $achievement->id; ?>, $('#new_description').val())" />
+    </div>
+</span>
 </div>
 <div>
     <h3>
@@ -174,12 +156,11 @@ $achievement = $statement->fetchObject();
                            this.value = '';
                        }"/>
         <input type="button" value="Quick Create" 
-               onclick="
-                       createAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());
+               onclick="createAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());
                        $('#new_achievement<?php echo $achievement->id; ?>').val('');"/>
-
     </div>
-    <div id='child_achievements_of_<?php echo $achievement->id; ?>'></div>
+    <div id='child_achievements_of_<?php echo $achievement->id; ?>'>
+    </div>
 </div>
 
 
@@ -195,7 +176,6 @@ $achievement = $statement->fetchObject();
                    $('#show_other_achievements').hide();" />
 </h2>
 <div id="other_achievements<?php echo $achievement->id ?>" style="">
-
     <h3>
         Required For Completion
         <input id="show_new_required_for" type="button" value="+" style="margin-left:5px;" 
@@ -263,10 +243,6 @@ $achievement = $statement->fetchObject();
     </div>
 </div>
 
-
-
-
-
 <div>
     <h2 style='text-align:center;'>
         Notes    
@@ -282,20 +258,19 @@ $achievement = $statement->fetchObject();
     <div id="all_notes">
         <input id="show_new_notes" type="button" value="Create Note" 
                onclick="$('#show_new_notes').hide();
-                       $('#new_notes').show();" />
+                        $('#new_notes').show();" />
         <div id="new_notes" style="display:none;">
             <textarea id="new_note_inputted" style='width:400px;height:100px;'></textarea>
             <div>
                 <input type="button" value="Cancel"
                        onclick="$('#new_notes').hide();
-
-                               $('#show_new_notes').show();" />
+                                $('#show_new_notes').show();" />
                 <input type="button" value="Create Note"
-                       onclick="  createNote($('#new_note_inputted').val(), <?php echo $achievement->id; ?>, 0);
+                       onclick="    createNote($('#new_note_inputted').val(), <?php echo $achievement->id; ?>, 0);
                                $('#new_notes').hide();
                                $('#hide_new_notes').hide();
                                $('#show_new_notes').show();
-                                $('#new_note_inputted').val('');" />
+                               $('#new_note_inputted').val('');" />
             </div>
         </div>
         <div id="list_of_notes<?php echo $achievement->id; ?>"></div>
@@ -305,76 +280,43 @@ $achievement = $statement->fetchObject();
 <?php
 
 function display_documentation_menu($id, $status) {
-    $menu = "<input type='button' value='";
+    $menu = "<input style='margin-left:8px;' type='button' value='Change to ";
     if ($status) {
-        $menu = $menu . "Documented";
+        $menu = $menu . "documented";
     } else {
-        $menu = $menu . "Undocumented";
+        $menu = $menu . "undocumented";
     }
     $menu = $menu . "' onclick=\"changeDocumentationStatus($id, $status)\" />";
     return $menu;
 }
 
-function display_categories($active_category) {
-    
+function fetch_nav_menu($id, $rank, $parent) {
+    $prev_achievement = fetch_achievement_by_rank_and_parent($rank - 1, $parent);
+    $next_achievement = fetch_achievement_by_rank_and_parent($rank + 1, $parent);
+    $string = ($rank > 1) ? " <div title='$prev_achievement->name' style='float:left'>
+                <a href='" . SITE_ROOT . "/?rla=$prev_achievement->id'>Previous</a>
+            </div>" : " <div style='float:left;'>Previous</div>";
+    $string = $string . generate_select_achievement_menu($parent, $id);
+    $string = ($rank < fetch_highest_rank($parent)) ? $string . "   <div title='$next_achievement->name' style='float:right'>
+                            <a href='" . SITE_ROOT . "/?rla=$next_achievement->id'>Next</a>
+                        </div>" : $string . "   <div class='right'>Next</div>";
+    return $string;
 }
 
-function display_nav_menu($id, $rank, $parent) {
+function generate_select_achievement_menu($parent, $id) {
     global $connection;
-    if ($rank > 1) {
-        $statement = $connection->prepare("select * from achievements where active=1 and rank=? and parent=?");
-        $statement->bindValue(1, ($rank - 1), PDO::PARAM_INT);
-        $statement->bindValue(2, $parent, PDO::PARAM_INT);
-        $statement->execute();
-        $prev_achievement = $statement->fetchObject();
-        echo "<div title='$prev_achievement->name' style='float:left'>
-                <a href='". SITE_ROOT . "/?rla=$prev_achievement->id'>Previous</a>
-              </div>";
-    } else {
-        echo "<div style='float:left;'>Previous</div>";
-    }
+    $string = " <select id='achievement_id' style='text-align:center;'
+                  onchange=\"window.location.assign('http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla='+$('#achievement_id').val())\">
+                    <option>Go to another achievement here</option>";
 
-    echo "<select id='achievement_id' style='text-align:center;'
-            onchange=\"window.location.assign('http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla='+$('#achievement_id').val())\">
-          <option>Go to another achievement here</option>";
     $statement = $connection->prepare("select * from achievements where active=1 and parent=? and id!=? order by name asc");
     $statement->bindValue(1, $parent, PDO::PARAM_INT);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()) {
-        echo "<option value='$achievement->id' > $achievement->name</option>";
+        $string = $string . "<option value='$achievement->id' > $achievement->name</option>";
     }
-    echo "</select>";
-    $statement = $connection->prepare("select rank from achievements where active=1 and parent=? order by rank desc limit 1");
-    $statement->bindValue(1, $parent, PDO::PARAM_INT);
-    $statement->execute();
-    $highest_rank = $statement->fetchColumn();
-    if ($rank < $highest_rank) {
-        $statement = $connection->prepare("select * from achievements where active=1 and rank=? and parent=?");
-        $statement->bindValue(1, ($rank + 1), PDO::PARAM_INT);
-        $statement->bindValue(2, $parent, PDO::PARAM_INT);
-        $statement->execute();
-        $next_achievement = $statement->fetchObject();
-        echo "<div title='$next_achievement->name' style='float:right'>
-                <a href='". SITE_ROOT ."/?rla=$next_achievement->id'>Next</a>
-              </div>";
-    } else {
-        echo "<div class='right'>Next</div>";
-    }
+    $string = $string . "  </select>";
+    return $string;
 }
 
-function fetch_achievement_name($id) {
-    global $connection;
-    $statement = $connection->prepare("select name from achievements where id=?");
-    $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();
-    return $statement->fetchColumn();
-}
-
-function fetch_random_achievement_id() {
-    global $connection;
-    $statement = $connection->query("select id from achievements where active=1 and parent=0 order by rand() limit 1");
-    return $statement->fetchColumn();
-}
-
-?>
