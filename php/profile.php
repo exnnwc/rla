@@ -56,6 +56,9 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     <input id='delete_achievement_<?php echo $achievement->id; ?>' class='delete_button' type='button' value='Delete' />
 </div>
 <div>
+    <?php echo $achievement->quality ? "Quality" : "Achievement";?>
+</div>
+<div>
     Parent: 
     <?php
     echo ($achievement->parent == 0) ? "Top level" : "<a href='" . SITE_ROOT . "/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
@@ -281,11 +284,7 @@ echo $achievement->documented ? "Documented (Requires proof of completion)" . di
 
 function display_documentation_menu($id, $status) {
     $menu = "<input style='margin-left:8px;' type='button' value='Change to ";
-    if ($status) {
-        $menu = $menu . "documented";
-    } else {
-        $menu = $menu . "undocumented";
-    }
+    $menu = $status ? $menu . "documented" : $menu . "undocumented";
     $menu = $menu . "' onclick=\"changeDocumentationStatus($id, $status)\" />";
     return $menu;
 }
@@ -304,7 +303,7 @@ function fetch_nav_menu($id, $rank, $parent) {
 }
 
 function generate_select_achievement_menu($parent, $id) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $string = " <select id='achievement_id' style='text-align:center;'
                   onchange=\"window.location.assign('http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla='+$('#achievement_id').val())\">
                     <option>Go to another achievement here</option>";

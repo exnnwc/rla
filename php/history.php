@@ -6,7 +6,6 @@ require_once ("../php/actions.php");
 require_once ("../php/achievements.php");
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 
-
 $today = 0;
 $last_time = 0;
 if (!has_work_been_checked()) {
@@ -23,30 +22,19 @@ while ($work = $statement->fetchObject()) {
         $today = date("m/d/y", strtotime($work->created));
     }
     if ($last_time != date("H:i", strtotime($work->created))) {
-       /* if (date("H:i", strtotime($work->created)) == "00:00") {
-            echo "<h3 style='font-weight:bold;margin-bottom:0px;'> Incomplete </h3>";
-        } else {*/
-            echo "<div style='margin-top:24px'>" . date("H:i", strtotime($work->created));
-
-
-            echo"</div>";
-        //}
+        echo "<div style='margin-top:24px'>" . date("H:i", strtotime($work->created)) . "</div>";
         $last_time = date("H:i", strtotime($work->created));
     }
     echo "<div style='margin-top:8px'>";
     if (!strtotime($work->updated) && $work->worked) {
         echo " <input style='margin-right:8px;' type='button' value='X' onclick=\"cancelWork($action->id);\" />";
-            /*<span style='color:red;cursor:pointer;' 
-                onmouseover=\"$(this).css('text-decoration', 'underline');\"  
-                onmouseleave=\"$(this).css('text-decoration', 'none');\" 
-                onclick=\"cancelWork($action->id);\" >Cancel</span>";*/
     }
     echo $work->worked ? "Finished " : "<span style='color:red;'>Incompleted </span> ";
     echo strtolower(convert_work_num_to_caption($work->work)) . " work on \"$action->name\"";
 
     if (strtotime($work->updated)) {
         echo " then cancelled at " . date("H:i:s", strtotime($work->created)) . " </span>";
-    } 
+    }
     echo "</div>";
 }
 

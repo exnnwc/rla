@@ -3,7 +3,7 @@
         <?php
         include ("config.php");
         $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-        global $connection;
+        $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
         $connection->exec("update achievements set power_adj=power where active=1");
         //$update->execute();
         $statement = $connection->query("select * from achievements where parent=0");
@@ -30,7 +30,7 @@
         
         
         function fetch_achievement($id) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select * from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();

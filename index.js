@@ -15,7 +15,7 @@ $(document.body).ready(function () {
         var achievement_id = $(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19);
         document.title = SITE_NAME + " - #" + achievement_id;
 
-        displayProfile(achievement_id);
+        displayProfile(Number(achievement_id));
     }
 });
 function add_keypress_to_inputs() {
@@ -52,7 +52,7 @@ function add_handlers_to_buttons() {
         var sort_by = button_id.substr(5, (button_id.length - 12));
         if (sort_by.substr((sort_by.length - 3), 3) === "rev") {
             var sort_inverse = sort_by.substr(0, (sort_by.length - 3));
-        } else {
+        } else if (sort_by.substr((sort_by.length - 3), 3) != "rev") {
             var sort_inverse = sort_by + "rev";
         }
         listAchievements(sort_by);

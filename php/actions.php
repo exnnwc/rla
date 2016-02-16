@@ -1,6 +1,6 @@
 <?php
 function create_action($achievement_id, $action) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement=fetch_achievement($achievement_id);    
     $statement = $connection->prepare("insert into actions(achievement_id, name,  work) values (?, ?, ?)");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
@@ -11,14 +11,14 @@ function create_action($achievement_id, $action) {
 
 function delete_action($id) {
     //If I need to extend this to include reference actions, I've already written that. Deleted 02/01/16
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement=$connection->prepare("update actions set active=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();    
 }
 
 function fetch_action($id) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select * from actions where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
@@ -27,7 +27,7 @@ function fetch_action($id) {
 
 function update_work_status_for_related_actions($achievement_id, $new_work){    
     //I may eventually allow actions to have separate work schedules than their attached achievements.
-    global $connection;    
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
     $statement = $connection->prepare('update actions set work=? where achievement_id=?');
     $statement->bindValue(1, $new_work, PDO::PARAM_INT);
     $statement->bindValue(2, $achievement_id, PDO::PARAM_INT);

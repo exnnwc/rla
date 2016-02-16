@@ -3,8 +3,8 @@
 require_once("work.php");
 
 function display_queue() {
-    global $connection;
-    $statement = $connection->query("select * from achievements where active=1 and quality=false and work>0 order by work asc");
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->query("select * from achievements where active=1 and quality=false and work>0 order by rank asc");
     $statement->execute();
     while ($achievement = $statement->fetchObject()) {
         if (!has_achievement_been_worked_on($achievement->id) && is_it_the_appropriate_day($achievement->work)) {
@@ -45,14 +45,14 @@ function fetch_child_menu($achievement) {
     return "<input class='delete_button' type='button' value='X' />        
             <input type='button' value='-' 
                 onclick=\"changeRank($achievement->id, " . ($achievement->rank + 1) . ", true, $achievement->parent);\"/>                    
-              <input type='text' style='width:32px;text-align:center;' value='$achievement->rank' 
+              <input type='number' style='width:32px;text-align:center;' value='$achievement->rank' 
                   onkeypress=\"if (event.keyCode==13){changeRank($achievement->id, this.value, true, $achievement->parent); }\"/>
               <input type='button' value='+' 
                 onclick=\"changeRank($achievement->id, " . ($achievement->rank - 1) . ", true, $achievement->parent);\"/>";
 }
 
 function list_actions($achievement_id) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select * from actions where active=1 and achievement_id=? order by name");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->execute();
@@ -66,7 +66,7 @@ function list_actions($achievement_id) {
 }
 
 function list_children($id) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from achievements where active=1 and parent=? limit 1");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
@@ -85,7 +85,7 @@ function list_children($id) {
 }
 
 function list_new_actions() {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from actions where reference=0 and active=1");
     $statement->execute();
     echo "<option></option>";
@@ -95,7 +95,7 @@ function list_new_actions() {
 }
 
 function list_new_relations() {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from achievements where active=1 order by name");
     echo "<option>Please indicate which achievement you'd like to create a relation for.</option>";
     while ($achievement = $statement->fetchObject()) {
@@ -104,7 +104,7 @@ function list_new_relations() {
 }
 
 function list_new_requirements($id) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select * from achievements where active=1 and parent=0 order by name asc");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
@@ -114,7 +114,7 @@ function list_new_requirements($id) {
 }
 
 function list_notes($achievement_id) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select * from notes where active=1 and achievement=? order by created desc");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->execute();
@@ -132,7 +132,7 @@ function list_notes($achievement_id) {
 }
 
 function list_relations($achievement_id) {
-    global $connection;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     if (fetch_number_of_relations_for($achievement_id) == 0) {
         echo "<div style=' font-style:italic;'>No other achievements are related.</div>";
         return;
@@ -155,7 +155,7 @@ function list_relations($achievement_id) {
 }
 
 function list_requirements($id, $type) {
-    global $connection;       
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);       
     $type_arr=["for"=>"by", "by"=>"for"];
     $other_type=$type_arr[$type];
     if (there_are_no_requirements($id,$type)){

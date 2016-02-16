@@ -26,17 +26,33 @@ function fetch_listing_menu($achievement) {
                 </td>
                 <td>$achievement->power</td>
                 <td>$achievement->power_adj</td>
-                <td><input id='turn_work_on_$achievement->id' type='button' 
-                        class='change_work_button' value='" . convert_work_num_to_caption($achievement->work) . "' 
-                        onclick=\"toggleWorkStatus($achievement->id, $achievement->work, $achievement->parent);\"/>
-                </td><td>";
-    $string = $achievement->quality 
-            ? $string . "<input type='button' value='On' onclick=\"changeQuality($achievement->id, false);\"/></td><td>" 
-            : $string . "<input type='button' value='Off' onclick=\"changeQuality($achievement->id, true);\"/></td><td>"; 
-    $string=$string . "<input type='button' value='Complete' onclick=\"completeAchievement($achievement->id);\"/></td>";    
+                ";
+    $string = $string . fetch_next_three_menu_cells($achievement);
+            
+        
     return $string;
 }
 
+function fetch_next_three_menu_cells($achievement){
+    return  $achievement->quality 
+            ? " <td>
+                    N/A
+                </td><td>
+                    <input type='button' value='On' onclick=\"changeQuality($achievement->id, false);\"/>
+                </td><td>
+                    N/A
+               </td>" 
+            : " <td>
+                    <input id='turn_work_on_$achievement->id' type='button' 
+                      class='change_work_button' value='" . convert_work_num_to_caption($achievement->work) . "' 
+                      onclick=\"toggleWorkStatus($achievement->id, $achievement->work, $achievement->parent);\"/>
+                </td><td>
+                    <input type='button' value='Off' onclick=\"changeQuality($achievement->id, true);\"/>
+                </td><td>
+                    <input type='button' value='' onclick=\"completeAchievement($achievement->id);\"/>
+                </td>"; 
+    
+}
 function fetch_listing_row($achievement) {
     $string = fetch_listing_menu($achievement)
             . " <td style='text-align:left'>
@@ -55,7 +71,7 @@ function fetch_listing_row($achievement) {
 }
 
 function fetch_order_query($sort_by) {
-    //I understand why this was flagged.  I could just reference an array.
+    //TEST $sort_by that the key is appropriate first.
     $order_by = 
        ["default" => " order by quality asc, rank asc",
         "power" => " order by power asc",
@@ -91,7 +107,7 @@ function fetch_table_header() {
 }
 
 function list_completed_achievements(){
-    global $connection;    
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
     echo "<h3 style='text-align:center;'>Completed Achievements</h3>";
     $statement=$connection->query("select count(*) from achievements where active=1 and completed!=0");
     if ((int)$statement->fetchColumn()==0){
@@ -102,7 +118,11 @@ function list_completed_achievements(){
     while ($achievement=$statement->fetchObject()){
         echo "  <div>
                     
-                    <span style='font-weight:bold'>$achievement->name </span>
+                    <span style='font-weight:bold'>
+                        <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;'>
+                        $achievement->name                             
+                        </a>
+                    </span>
                         <div>
                             <span>Created:". date("m/d/y", strtotime($achievement->created)) ."</span>            
                             <span>Completed:". date("m/d/y", strtotime($achievement->completed)) ."</span>

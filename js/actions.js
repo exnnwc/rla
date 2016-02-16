@@ -1,7 +1,7 @@
 
 function createAction(achievement_id, action) {
-    if (testIfVariableIsNumber(achievement_id, "achievement_id") 
-            || testIfVariableIsString(action, "action") || testStringForMaxLength(action, 255, "action") ){
+    if (!testIfVariableIsNumber(achievement_id, "achievement_id") 
+            || !testIfVariableIsString(action, "action") || !testStringForMaxLength(action, 255, "action") ){
        return;
     }
     $.ajax({
@@ -19,7 +19,7 @@ function createAction(achievement_id, action) {
 
 
 function deleteAction(id, achievement_id) {
-    if (testIfVariableIsNumber(id, "id") ||testIfVariableIsNumber(achievement_id, "achievement_id")){
+    if (!testIfVariableIsNumber(id, "id") ||!testIfVariableIsNumber(achievement_id, "achievement_id")){
         return;        
     }
     if (window.confirm("Are you sure you want to delete this action?")) {

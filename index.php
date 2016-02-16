@@ -24,11 +24,8 @@
     </head>
 
     <?php
-    if (isset($_GET['rla'])) {
-        $rla = filter_input(INPUT_GET, 'rla', FILTER_SANITIZE_NUMBER_INT);
-    } else {
-        $rla = 0;
-    }
+    $rla = isset($_GET['rla']) ? filter_input(INPUT_GET, 'rla', FILTER_SANITIZE_NUMBER_INT) : 0 ;
+    
     if ($rla == 0):
         ?>
         <body id="AchievementsList">

@@ -6,6 +6,7 @@ include ("../php/config.php");
             <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
 
         <script src="index.js"></script>
+        <script src="../js/error.js"></script>
         <script src="../js/work.js"></script>
         <a href="<?php echo SITE_ROOT; ?>">Back To Achievements List</a>
 
