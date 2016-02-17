@@ -1,6 +1,6 @@
 function changeDescription(id, description) {
-    if (testIfVariableIsNumber(id, "id")
-            || testStringForMaxLength(description, 20000, "description")) {
+    if (!testIfVariableIsNumber(id, "id")
+            || !testStringForMaxLength(description, 20000, "description")) {
         return;
     }
 
@@ -15,8 +15,8 @@ function changeDescription(id, description) {
 }
 
 function changeDocumentationStatus(id, status) {
-    if (testIfVariableIsNumber(id, "id")
-            || testIfVariableIsNumber(status, "status")) {
+    if (!testIfVariableIsNumber(id, "id")
+            || !testIfVariableIsNumber(status, "status")) {
         return;
     }
     $.ajax({
@@ -30,8 +30,8 @@ function changeDocumentationStatus(id, status) {
 }
 
 function changeName(id, new_name) {
-    if (testIfVariableIsNumber(id, "id")
-            || testStringForMaxLength(new_name, 255, "new_name")
+    if (!testIfVariableIsNumber(id, "id")
+            || !testStringForMaxLength(new_name, 255, "new_name")
             || $("#achievement_name").html().trim() == new_name.trim()) {
         return;
     }
@@ -46,8 +46,8 @@ function changeName(id, new_name) {
 }
 
 function changePower(id, new_power) {
-    if (testIfVariableIsNumber(id, "id")
-            || testIfVariableIsNumber(new_power, "new_power")) {
+    if (!testIfVariableIsNumber(id, "id")
+            || !testIfVariableIsNumber(new_power, "new_power")) {
         return;
     }
     $.ajax({
@@ -61,8 +61,8 @@ function changePower(id, new_power) {
 }
 
 function changeQuality(id, new_quality) {
-    if (testIfVariableIsNumber(id, "id")
-            || testIfVariableIsBoolean(new_quality, "new_quality")) {
+    if (!testIfVariableIsNumber(id, "id")
+            || !testIfVariableIsBoolean(new_quality, "new_quality")) {
         return;
     }
     $.ajax({
@@ -77,9 +77,10 @@ function changeQuality(id, new_quality) {
 }
 
 function changeRank(id, new_rank, parent) {
-    if (testIfVariableIsNumber(id, "id")
-            || testIfVariableIsNumber(new_rank, "new_rank")
-            || testIfVariableIsNumber(parent, "parent")) {
+    console.log(id, new_rank, parent);
+    if (!testIfVariableIsNumber(id, "id")
+            || !testIfVariableIsNumber(new_rank, "new_rank")
+            || !testIfVariableIsNumber(parent, "parent")) {
         return;
     }
     if (new_rank == 0) {
@@ -96,9 +97,9 @@ function changeRank(id, new_rank, parent) {
             });
 }
 function changeWorkStatus(id, status, parent) {
-    if (testIfVariableIsNumber(id, "id")
-            || testIfVariableIsNumber(status, "status")
-            || testIfVariableIsNumber(parent, "parent")) {
+    if (!testIfVariableIsNumber(id, "id")
+            || !testIfVariableIsNumber(status, "status")
+            || !testIfVariableIsNumber(parent, "parent")) {
         return;
     }
     $.ajax({
@@ -113,6 +114,9 @@ function changeWorkStatus(id, status, parent) {
 }
 
 function completeAchievement(id) {
+    if (!testIfVariableIsNumber(id, "id")){
+        return;        
+    }
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",
@@ -139,8 +143,8 @@ function countAchievements() {
 
 }
 function createAchievement(parent, name) {
-    if (testIfVariableIsNumber(parent, "parent")
-            || testStringForMaxLength(name, 255, "name")
+    if (!testIfVariableIsNumber(parent, "parent")
+            || !testStringForMaxLength(name, 255, "name")
             || name.trim() === "") {
         return;
     }
@@ -155,9 +159,11 @@ function createAchievement(parent, name) {
 }
 
 function deleteAchievement(id, parent, fromProfile) {
-    if (testIfVariableIsNumber(id, "id")
-            || testIfVariableIsNumber(parent, "parent")
-            || testIfVariableIsBoolean(fromProfile, "fromProfile")) {
+   console.log (typeof(id), parent, fromProfile);
+    if (!testIfVariableIsNumber(id, "id")
+            || !testIfVariableIsNumber(parent, "parent")
+            || !testIfVariableIsBoolean(fromProfile, "fromProfile")) {
+        
         return;
     }
     if (window.confirm("Are you sure you want to delete this achievement?")) {
@@ -183,9 +189,9 @@ function deleteAchievement(id, parent, fromProfile) {
 function toggleWorkStatus(id, status, parent) {
     //FIX I'd like to implement this AJAX call as a separate function 
     //but this is a quick fix that I don't imagine will have negative repercussions.    
-    if (testIfVariableIsNumber(id, "id")
-            || testIfVariableIsNumber(status, "status")
-            || testIfVariableIsNumber(parent, "parent")) {
+    if (!testIfVariableIsNumber(id, "id")
+            || !testIfVariableIsNumber(status, "status")
+            || !testIfVariableIsNumber(parent, "parent")) {
         return;
     }
     $.ajax({
@@ -204,6 +210,10 @@ function toggleWorkStatus(id, status, parent) {
 }
 
 function uncompleteAchievement(id) {
+    //complete and uncomplete could be folded into one function.
+    if (!testIfVariableIsNumber(id, "id")){
+        return;        
+    }
     $.ajax({
         method: "POST",
         url: "/rla/php/ajax.php",

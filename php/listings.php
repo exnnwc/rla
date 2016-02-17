@@ -12,17 +12,17 @@ while ($achievement = $statement->fetchObject()) {
 }
 echo "</table>";
 list_completed_achievements();
-
+//onclick=\"deleteAchievement($achievement->id, $achievement->parent, 0);\" />
 function fetch_listing_menu($achievement) {
+    $params= json_encode ([(int)$achievement->id, (int)$achievement->parent, false]);
+    $rank_params=json_encode([(int)$achievement->id, "", (int)$achievement->parent]);
     $string = " <tr><td>
-                    <input class='new_shit' type='button' value='X' 
-                        onclick=\"deleteAchievement($achievement->id, $achievement->parent, 0);\" />
+                    <input id='delete$achievement->id' class='delete_achievement_button' type='button' value='X'
+                        
                 </td><td>
-                    <input id='down_rank_$achievement->id' type='button' class='down_rank_button' value='-' />
-                    <input id='change_rank_$achievement->id' type='text' 
-                        class='change_rank' value='$achievement->rank' style='width:32px;text-align:center;' 
-                        onkeypress=\"if (event.keyCode===13){changeRank($achievement->id, this.value, false, $achievement->parent);}\" />
-                    <input id='up_rank_$achievement->id' type='button' class='up_rank_button' value='+' />
+                    <input id='rank$achievement->id' type='number' 
+                        class='change_rank_button' value='$achievement->rank' style='width:32px;text-align:center;' />
+                    
                 </td>
                 <td>$achievement->power</td>
                 <td>$achievement->power_adj</td>

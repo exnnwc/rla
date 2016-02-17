@@ -59,9 +59,21 @@ function add_handlers_to_buttons() {
         $("#sort_" + sort_by + "_button").hide();
         $("#sort_" + sort_inverse + "_button").show();
     });
-
-    $(".delete_button").click(function () {
-        console.log("work");
+    //The following would be on both 
+    $(document).on("click", ".delete_achievement_button", function () {
+        id = $(".delete_achievement_button").attr('id');
+        achievement_id = JSON.parse(id.substr(6, id.length - 6));
+        parent = 0;
+        from_profile = false;
+        deleteAchievement(achievement_id, parent, from_profile);
+    });
+    $(document).on("change", ".change_rank_button", function () {
+        id = $(".change_rank_button").attr('id');
+        console.log(id);
+        achievement_id=id.substr(4,id.length-4)
+        parent=0;
+        rank=$("#rank" + achievement_id).val();
+        changeRank(achievement_id, rank, parent);
     });
 
 }
