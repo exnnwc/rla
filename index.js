@@ -9,7 +9,7 @@ $(document.body).ready(function () {
         countAchievements();
         add_keypress_to_inputs();
 
-        add_handlers_to_buttons();
+        add_handlers_to_listing_buttons();
 
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
         var achievement_id = $(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19);
@@ -26,7 +26,7 @@ function add_keypress_to_inputs() {
         }
     });
 }
-function add_handlers_to_buttons() {
+function add_handlers_to_listing_buttons() {
     $('#new_achievement_button').click(function () {
         createAchievement(0, $('#new_achievement_text_input').val());
         $('#new_achievement_text_input').val("");
@@ -60,24 +60,46 @@ function add_handlers_to_buttons() {
         $("#sort_" + sort_inverse + "_button").show();
     });
     //The following would be on both 
-    $(document).on("click", ".delete_achievement_button", function () {
-        id = $(".delete_achievement_button").attr('id');
+
+    $(document).on("change", ".change_rank_button", function (event) {        
+        id = event.target.attributes.id.nodeValue;
+        achievement_id=id.substr(4,id.length-4);
+        parent=0;
+        rank=$("#rank" + achievement_id).val();
+        console.log(achievement_id, rank, parent);
+        changeRank(achievement_id, rank, parent);        
+    });
+    $(document).on("click", ".change_quality_button", function (event) {  
+        id = event.target.attributes.id.nodeValue;        
+        achievement_id=id.substr(8,id.length-8);
+        state=id.substr(id,1,1)==="1";        
+        changeQuality(achievement_id, state);        
+    });    
+    $(document).on("click", ".delete_achievement_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
         achievement_id = JSON.parse(id.substr(6, id.length - 6));
         parent = 0;
         from_profile = false;
         deleteAchievement(achievement_id, parent, from_profile);
     });
-    $(document).on("change", ".change_rank_button", function () {
-        id = $(".change_rank_button").attr('id');
-        console.log(id);
-        achievement_id=id.substr(4,id.length-4)
+    $(document).on("click", ".change_work_button", function (event) {  
+        id = event.target.attributes.id.nodeValue;        
+        achievement_id=Number(id.substr(4,id.length-4));
+        status=$("#work_status"+achievement_id).val();
         parent=0;
-        rank=$("#rank" + achievement_id).val();
-        changeRank(achievement_id, rank, parent);
-    });
-
+        toggleWorkStatus(achievement_id, status, parent);
+    }); 
+    $(document).on("click", ".complete_button", function (event) {  
+        id = event.target.attributes.id.nodeValue;        
+        achievement_id=Number(id.substr(8,id.length-8));
+        completeAchievement(achievement_id);
+    }); 
 }
 
+function add_event_handlers_to_profile_buttons(){
+    
+
+}
 function softGenericReload(id) {
     if ($(document.body).attr('id') === "AchievementsList") {
         listAchievements("default");

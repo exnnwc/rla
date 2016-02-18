@@ -12,17 +12,14 @@ while ($achievement = $statement->fetchObject()) {
 }
 echo "</table>";
 list_completed_achievements();
-//onclick=\"deleteAchievement($achievement->id, $achievement->parent, 0);\" />
 function fetch_listing_menu($achievement) {
     $params= json_encode ([(int)$achievement->id, (int)$achievement->parent, false]);
     $rank_params=json_encode([(int)$achievement->id, "", (int)$achievement->parent]);
     $string = " <tr><td>
-                    <input id='delete$achievement->id' class='delete_achievement_button' type='button' value='X'
-                        
+                    <input id='delete$achievement->id' class='delete_achievement_button' type='button' value='X'                        
                 </td><td>
                     <input id='rank$achievement->id' type='number' 
-                        class='change_rank_button' value='$achievement->rank' style='width:32px;text-align:center;' />
-                    
+                        class='change_rank_button' value='$achievement->rank' style='width:32px;text-align:center;' />                    
                 </td>
                 <td>$achievement->power</td>
                 <td>$achievement->power_adj</td>
@@ -38,18 +35,18 @@ function fetch_next_three_menu_cells($achievement){
             ? " <td>
                     N/A
                 </td><td>
-                    <input type='button' value='On' onclick=\"changeQuality($achievement->id, false);\"/>
+                    <input id='0quality$achievement->id' class='change_quality_button' type='button' value='On'\"/>
                 </td><td>
                     N/A
                </td>" 
             : " <td>
-                    <input id='turn_work_on_$achievement->id' type='button' 
-                      class='change_work_button' value='" . convert_work_num_to_caption($achievement->work) . "' 
-                      onclick=\"toggleWorkStatus($achievement->id, $achievement->work, $achievement->parent);\"/>
+                    <input id='work$achievement->id' type='button' 
+                      class='change_work_button' value='" . convert_work_num_to_caption($achievement->work) . "' />
+                    <input id='work_status$achievement->id' type='hidden' value='". json_encode ((int)$achievement->work)."' />
                 </td><td>
-                    <input type='button' value='Off' onclick=\"changeQuality($achievement->id, true);\"/>
+                    <input id='1quality$achievement->id' class='change_quality_button'  type='button' value='Off'\"/>
                 </td><td>
-                    <input type='button' value='' onclick=\"completeAchievement($achievement->id);\"/>
+                    <input id='complete$achievement->id' class='complete_button' type='button' />
                 </td>"; 
     
 }

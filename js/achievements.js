@@ -159,7 +159,6 @@ function createAchievement(parent, name) {
 }
 
 function deleteAchievement(id, parent, fromProfile) {
-   console.log (typeof(id), parent, fromProfile);
     if (!testIfVariableIsNumber(id, "id")
             || !testIfVariableIsNumber(parent, "parent")
             || !testIfVariableIsBoolean(fromProfile, "fromProfile")) {
@@ -187,7 +186,7 @@ function deleteAchievement(id, parent, fromProfile) {
 }
 
 function toggleWorkStatus(id, status, parent) {
-    //FIX I'd like to implement this AJAX call as a separate function 
+    //FIX I'd like to implement fetch_max_work_status AJAX call as a separate function 
     //but this is a quick fix that I don't imagine will have negative repercussions.    
     if (!testIfVariableIsNumber(id, "id")
             || !testIfVariableIsNumber(status, "status")
@@ -204,7 +203,6 @@ function toggleWorkStatus(id, status, parent) {
                     status = -1;
                 }
                 status++;
-                console.log("new status is" + status);
                 changeWorkStatus(id, status, parent);
             });
 }
