@@ -77,7 +77,6 @@ function changeQuality(id, new_quality) {
 }
 
 function changeRank(id, new_rank, parent) {
-    console.log(id, new_rank, parent);
     if (!testIfVariableIsNumber(id, "id")
             || !testIfVariableIsNumber(new_rank, "new_rank")
             || !testIfVariableIsNumber(parent, "parent")) {
@@ -208,7 +207,6 @@ function toggleWorkStatus(id, status, parent) {
 }
 
 function uncompleteAchievement(id) {
-    //complete and uncomplete could be folded into one function.
     if (!testIfVariableIsNumber(id, "id")){
         return;        
     }

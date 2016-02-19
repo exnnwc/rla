@@ -42,7 +42,6 @@ function displayProfile(id) {
                 } else if (result == "0") {
                     $("#achievement_profile").html("This achievement has been deleted.");
                 } else {
-                    console.log(result);
                     $("#achievement_profile").html("This profile does not exist. You should not being see this message. Delete this before production.");
                 }
             });

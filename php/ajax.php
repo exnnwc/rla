@@ -1,12 +1,12 @@
 <?php
 
-include ("achievements.php");
-include ("work.php");
-include ("actions.php");
-include ("display.php");
-include ("notes.php");
-include ("requirements.php");
-include ("relations.php");
+require_once ("achievements.php");
+require_once ("work.php");
+require_once ("actions.php");
+require_once ("display.php");
+require_once ("notes.php");
+require_once ("requirements.php");
+require_once ("relations.php");
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
     case "cancel_work":
         cancel_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));

@@ -16,8 +16,7 @@ function displayHistory() {
 function displayQueue() {
     $.ajax({
         method: "POST",
-        url: "/rla/php/ajax.php",
-        data: {function_to_be_called: "display_queue"}
+        url: "/rla/php/queue.php",
     })
             .done(function (result) {
                 //console.log(result);

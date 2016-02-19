@@ -13,10 +13,8 @@ while ($achievement = $statement->fetchObject()) {
 echo "</table>";
 list_completed_achievements();
 function fetch_listing_menu($achievement) {
-    $params= json_encode ([(int)$achievement->id, (int)$achievement->parent, false]);
-    $rank_params=json_encode([(int)$achievement->id, "", (int)$achievement->parent]);
     $string = " <tr><td>
-                    <input id='delete$achievement->id' class='delete_achievement_button' type='button' value='X'                        
+                    <input id='delete$achievement->id' class='delete_achievement_button' type='button' value='X' />                        
                 </td><td>
                     <input id='rank$achievement->id' type='number' 
                         class='change_rank_button' value='$achievement->rank' style='width:32px;text-align:center;' />                    
@@ -123,7 +121,7 @@ function list_completed_achievements(){
                         <div>
                             <span>Created:". date("m/d/y", strtotime($achievement->created)) ."</span>            
                             <span>Completed:". date("m/d/y", strtotime($achievement->completed)) ."</span>
-                            <input type='button' value='Cancel' onclick=\"uncompleteAchievement($achievement->id);\" />                                
+                            <input id='cancel$achievement->id' class='cancel_completion_button' type='button' value='Cancel' />                                
                         </div>
                 </div>";
     }

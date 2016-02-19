@@ -1,9 +1,10 @@
 <?php
 
 include_once ("config.php");
-
+require_once("achievements.php");
+require_once("actions.php");
+require_once("display.php");
 function cancel_work($action_id) {
-    echo $achievement_id;
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update work set active=0 where active=1 and action_id=? order by created desc limit 1");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
@@ -89,6 +90,7 @@ function convert_work_num_to_caption($work) {
 }
 
 function create_work($action_id) {
+    echo "YO";
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $action = fetch_action($action_id);
     /* switch ($action->$type) {
@@ -117,7 +119,6 @@ function days_since_last_worked($action_id) {
 
 function has_achievement_been_worked_on($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $achievement = fetch_achievement($id);
     $statement = $connection->prepare("select count(*) from actions where achievement_id=? and active=1");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
@@ -137,7 +138,6 @@ function has_achievement_been_worked_on($id) {
 }
 
 function has_action_been_worked_on($action_id) {
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $action = fetch_action($action_id);
     if (when_last_worked($action_id) == "12/31/69") {
         return false;
@@ -203,20 +203,19 @@ function when_last_worked($action_id) {
 }
 
 function should_it_have_been_worked_on($id) {
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $action = fetch_action($id);
-    $days_since_last_worked = days_since_last_worked($id);
+    $days_since_last_work = days_since_last_worked($id);
 
-    if (!$days_since_last_worked) {
+    if (!$days_since_last_work) {
         return false;
         //deal with when it has no previous work history
     }
 
-    if ($action->work == 2 && $days_since_last_worked > 0) {
+    if ($action->work == 2 && $days_since_last_work > 0) {
         return true;
-    } else if ($action->work == 3 && $days_since_last_worked > 6) {
+    } else if ($action->work == 3 && $days_since_last_work > 6) {
         return true;
-    } else if ($action->work == 4 && $days_since_last_worked > 28) {
+    } else if ($action->work == 4 && $days_since_last_work > 28) {
         return true;
     }
 

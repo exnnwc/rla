@@ -8,14 +8,14 @@ $(document.body).ready(function () {
         listAchievements("default");
         countAchievements();
         add_keypress_to_inputs();
-
-        add_handlers_to_listing_buttons();
+        add_handlers_to_index(0, false);
 
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
-        var achievement_id = $(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19);
+        var achievement_id = Number($(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19));
         document.title = SITE_NAME + " - #" + achievement_id;
 
         displayProfile(Number(achievement_id));
+        add_handlers_to_index(0, true);
     }
 });
 function add_keypress_to_inputs() {
@@ -33,9 +33,6 @@ function add_handlers_to_listing_buttons() {
     });
     $("#hide_achievements_button").click(function () {
         $('#sorting_menu').hide();
-        $(".new_shit").on("click", function () {
-            console.log("ASDFAS");
-        });
         $('#list_of_achievements').hide();
         $('#hide_achievements_button').hide();
         $('#show_achievements_button').show();
@@ -61,44 +58,46 @@ function add_handlers_to_listing_buttons() {
     });
     //The following would be on both 
 
-    $(document).on("change", ".change_rank_button", function (event) {        
+    $(document).on("change", ".change_rank_button", function (event) {
         id = event.target.attributes.id.nodeValue;
-        achievement_id=id.substr(4,id.length-4);
-        parent=0;
-        rank=$("#rank" + achievement_id).val();
-        console.log(achievement_id, rank, parent);
-        changeRank(achievement_id, rank, parent);        
+        achievement_id = id.substr(4, id.length - 4);
+        parent = 0;
+        rank = $("#rank" + achievement_id).val();
+        changeRank(achievement_id, rank, parent);
     });
-    $(document).on("click", ".change_quality_button", function (event) {  
-        id = event.target.attributes.id.nodeValue;        
-        achievement_id=id.substr(8,id.length-8);
-        state=id.substr(id,1,1)==="1";        
-        changeQuality(achievement_id, state);        
-    });    
+    $(document).on("click", ".change_quality_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = id.substr(8, id.length - 8);
+        state = id.substr(id, 1, 1) === "1";
+        changeQuality(achievement_id, state);
+    });
+
+
+}
+
+function add_handlers_to_index(parent, from_profile) {
+    $(document).on("click", ".cancel_completion_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = Number(id.substr(6, id.length - 6));
+        uncompleteAchievement(achievement_id);
+    });
+
+    $(document).on("click", ".change_work_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = Number(id.substr(4, id.length - 4));
+        status = $("#work_status" + achievement_id).val();
+        toggleWorkStatus(achievement_id, status, parent);
+    });
+    $(document).on("click", ".complete_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = Number(id.substr(8, id.length - 8));
+        completeAchievement(achievement_id);
+    });
     $(document).on("click", ".delete_achievement_button", function (event) {
         id = event.target.attributes.id.nodeValue;
         achievement_id = JSON.parse(id.substr(6, id.length - 6));
-        parent = 0;
-        from_profile = false;
         deleteAchievement(achievement_id, parent, from_profile);
     });
-    $(document).on("click", ".change_work_button", function (event) {  
-        id = event.target.attributes.id.nodeValue;        
-        achievement_id=Number(id.substr(4,id.length-4));
-        status=$("#work_status"+achievement_id).val();
-        parent=0;
-        toggleWorkStatus(achievement_id, status, parent);
-    }); 
-    $(document).on("click", ".complete_button", function (event) {  
-        id = event.target.attributes.id.nodeValue;        
-        achievement_id=Number(id.substr(8,id.length-8));
-        completeAchievement(achievement_id);
-    }); 
-}
-
-function add_event_handlers_to_profile_buttons(){
-    
-
 }
 function softGenericReload(id) {
     if ($(document.body).attr('id') === "AchievementsList") {

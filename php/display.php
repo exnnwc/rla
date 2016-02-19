@@ -2,27 +2,7 @@
 
 require_once("work.php");
 
-function display_queue() {
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->query("select * from achievements where active=1 and quality=false and work>0 order by rank asc");
-    $statement->execute();
-    while ($achievement = $statement->fetchObject()) {
-        if (!has_achievement_been_worked_on($achievement->id) && is_it_the_appropriate_day($achievement->work)) {
-            echo "  <div>
-                        <div style='font-weight:bold;'>
-                            <a href='" . SITE_ROOT . "/?rla=$achievement->id'>
-                                $achievement->name [" . convert_work_num_to_caption($achievement->work) . "]
-                            </a>
-                        </div>";
-            $action_statement = $connection->query("select * from actions where active=1 and achievement_id=$achievement->id");
-            $action_statement->execute();
-            while ($action = $action_statement->fetchObject()) {
-                echo "  <div style='margin-left:16px;'>" . fetch_action_listing($action) . "</div>";
-            }
-            echo "      </div>";
-        }
-    }
-}
+
 
 function fetch_action_listing($action) {
     $string = "<span style='margin-left:20px;cursor:pointer;";
@@ -144,12 +124,12 @@ function list_relations($achievement_id) {
     $statement->bindValue(":id", $achievement_id, PDO::PARAM_INT);
     $statement->execute();
     while ($result = $statement->fetch(PDO::FETCH_NUM)) {
-        $achievement_id_from_result = $result[0];
+        $db_achievement_id = $result[0];
         $achievement_name = $result[1];
         $relation_id = $result[2];
         echo "  <div>
                     <input type='button' value='X' onclick=\"deleteRelation($relation_id, $achievement_id)\" />
-                    <a href='" . \SITE_ROOT . "?rla=$achievement_id_from_result'>$achievement_name</a>
+                    <a href='" . \SITE_ROOT . "?rla=$db_achievement_id'>$achievement_name</a>
                 </div>";
     }
 }
@@ -174,7 +154,7 @@ function list_requirements($id, $type) {
         echo "  <div>
                     <input type='button' value='X' 
                       onclick=\"deleteRequirement($requirement_id, $requirement_required);\" />
-                    <a href='http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla=$achievement_id'>$achievement_name</a>
+                    <a href='".SITE_ROOT."?rla=$achievement_id'>$achievement_name</a>
                 </div>";
     }
 }

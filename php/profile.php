@@ -29,9 +29,10 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 </h1>
 <div>
     <?php if ($achievement->completed == 0): ?>
-        <input type="button" value="Complete" onclick="completeAchievement(<?php echo $achievement->id; ?>);" />
+        <input id='complete<?php echo $achievement->id;?>' value="Complete" class='complete_button' type='button' />
     <?php endif; ?>
 
+        <!--EVENT-->
     <div id="new_achievement_name_div" style="display:none;">
         <input maxlength="255" id="new_achievement_name" type="text" value="<?= $achievement->name ?>" 
                onkeypress="if (event.keyCode === 13) {
@@ -52,8 +53,8 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
            onclick="$('#new_achievement_name_div').hide();
                    $('#show_new_achievement_name').show();
                    $('#hide_new_achievement_name').hide();" />
-
-    <input id='delete_achievement_<?php echo $achievement->id; ?>' class='delete_button' type='button' value='Delete' />
+    <!--END EVENT-->
+    <input id='delete<?php echo $achievement->id; ?>' class='delete_achievement_button' type='button' value='Delete' />
 </div>
 <div>
     <?php echo $achievement->quality ? "Quality" : "Achievement";?>
@@ -71,7 +72,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <?php
 ($achievement->completed != 0)
         and print ("Completed:<span style='margin-left:8px;'>" . date($pref_date_format, strtotime($achievement->completed))
-                . "</span><input style='margin-left:8px;' type='button' value='Cancel' onclick=\"uncompleteAchievement($achievement->id);\" />");
+                . "</span><input style='margin-left:8px;' id='cancel$achievement->id' class='cancel_completion_button' type='button' value='Cancel' />")
 ?>
 </div>
 <div> 
@@ -81,8 +82,10 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     </div>
     <div>
         Work: <?php echo convert_work_num_to_caption($achievement->work) . " ($achievement->work)"; ?>
-        <input type="button" value="Toggle work status" 
-               onclick="toggleWorkStatus(<?php echo "$achievement->id, $achievement->work, $achievement->parent"; ?>);" />         
+        <input id='work<?php echo $achievement->id; ?>' type='button' 
+               class='change_work_button' value='Toggle Work Status' />
+        <input id='work_status<?php echo $achievement->id; ?>' type='hidden' value='<?php echo json_encode ((int)$achievement->work); ?>' />
+        
     </div>
     <div>
 <?php
@@ -305,7 +308,7 @@ function fetch_nav_menu($id, $rank, $parent) {
 function generate_select_achievement_menu($parent, $id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $string = " <select id='achievement_id' style='text-align:center;'
-                  onchange=\"window.location.assign('http://" . $_SERVER['SERVER_NAME'] . "/rla/?rla='+$('#achievement_id').val())\">
+                  onchange=\"window.location.assign('". SITE_ROOT. "?rla='+$('#achievement_id').val())\">
                     <option>Go to another achievement here</option>";
 
     $statement = $connection->prepare("select * from achievements where active=1 and parent=? and id!=? order by name asc");
