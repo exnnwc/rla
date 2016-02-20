@@ -34,26 +34,11 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 
         <!--EVENT-->
     <div id="new_achievement_name_div" style="display:none;">
-        <input maxlength="255" id="new_achievement_name" type="text" value="<?= $achievement->name ?>" 
-               onkeypress="if (event.keyCode === 13) {
-                           changeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
-                           $('#show_new_achievement_name').show();
-                           $('#hide_new_achievement_name').hide();
-                       }"/>
-        <input type="button" value="Change name" 
-               onclick="changeName(<?php echo $achievement->id; ?>, $('#new_achievement_name').val());
-                       $('#show_new_achievement_name').show();
-                       $('#hide_new_achievement_name').hide();"/>
+        <input maxlength="255" id="new_achievement_name" type="text" value="<?= $achievement->name ?>"/>
+        <input id='edit_achievement_name_button' type="button" value="Change name"/>
     </div>
-    <input id="show_new_achievement_name" type="button" value="Change Name" 
-           onclick="$('#new_achievement_name_div').show();
-                   $('#show_new_achievement_name').hide();
-                   $('#hide_new_achievement_name').show();" />
-    <input id="hide_new_achievement_name" type="button" value="Cancel" style="display:none" 
-           onclick="$('#new_achievement_name_div').hide();
-                   $('#show_new_achievement_name').show();
-                   $('#hide_new_achievement_name').hide();" />
-    <!--END EVENT-->
+    <input id="show_new_achievement_name" type="button" value="Change Name"/>
+    <input id="hide_new_achievement_name" type="button" value="Cancel" style="display:none"/>
     <input id='delete<?php echo $achievement->id; ?>' class='delete_achievement_button' type='button' value='Delete' />
 </div>
 <div>
@@ -94,35 +79,21 @@ echo $achievement->documented ? "Documented (Requires proof of completion)" . di
     </div>
     <h3>
         Actions
-        <input id="hide_new_actions" type="button" value="-" style="display:none"
-               onclick="$('#new_actions').hide();
-                       $('#hide_new_actions').hide();
-                       $('#show_new_actions').show();" />
-        <input id="show_new_actions" type="button" value="+" style="" 
-               onclick="$('#new_actions').show();
-                       $('#hide_new_actions').show();
-                       $('#show_new_actions').hide();" />        
+        <input id="hide_new_actions" type="button" value="-" style="display:none"/>
+        <input id="show_new_actions" type="button" value="+" style=""/>        
     </h3>
     <div id="new_actions" style="display:none;">
         <div>
             <select id="list_of_current_actions<?php echo $achievement->id; ?>"> </select>
         </div>
-        <input id="new_action_input" type="text" 
-               onkeypress="  if (event.keyCode == 13) {
-                           listAllActions(<?php echo $achievement->id ?>);
-                           createAction(<?php echo $achievement->id ?>, this.value);
-                       }" 
-               /> 
-        <input type="button" value="Create Action" onclick="listAllActions(<?php echo $achievement->id ?>);
-                createAction(<?php echo $achievement->id ?>, $('#new_action_input').val())"/>
+        <input id="new_action_input" type="text"/> 
+        <input id='create_action_button' type="button" value="Create Action" />
     </div>
 </div>
 <div id="actions<?php echo $achievement->id; ?>"> </div>
 <h3>
     Description
-    <input id="show_new_description" type='button' value='Edit' onclick="$('#current_description').hide();
-            $('#new_description_input').show();
-            $('#show_new_description').hide();"/>
+    <input id="show_new_description" type='button' value='Edit' />
 </h3>
 <span id="current_description">
            <?php
@@ -134,36 +105,21 @@ echo $achievement->documented ? "Documented (Requires proof of completion)" . di
     <?php echo $achievement->description ? $achievement->description : ""; ?>
     </textarea>
     <div>
-        <input type="button" value="Cancel" 
-               onclick=" $('#new_description_input').hide();
-                       $('#show_new_description').show();" />
-        <input type='button' value='Submit' 
-               onclick="changeDescription(<?php echo $achievement->id; ?>, $('#new_description').val())" />
+        <input id="hide_new_description" type="button" value="Cancel" />
+        <input id='change_description' type='button' value='Submit' />
     </div>
 </span>
 </div>
 <div>
     <h3>
         Children
-        <input id="hide_new_children" type="button" value="-" style="display:none"
-               onclick="$('#new_children').hide();
-                       $('#hide_new_children').hide();
-                       $('#show_new_children').show();" />
-        <input id="show_new_children" type="button" value="+" style="" 
-               onclick="$('#new_children').show();
-                       $('#hide_new_children').show();
-                       $('#show_new_children').hide();" />
+        <input id="hide_new_children" type="button" value="-" style="display:none"/>
+        <input id="show_new_children" type="button" value="+" style=""/>
 
     </h3>
     <div id="new_children" style="display:none">
-        <input id="new_achievement<?php echo $achievement->id; ?>" type='text' maxlength="255" 
-               onkeypress="if (event.keyCode == 13) {
-                           createAchievement(<?php echo $achievement->id; ?>, this.value);
-                           this.value = '';
-                       }"/>
-        <input type="button" value="Quick Create" 
-               onclick="createAchievement(<?php echo $achievement->id; ?>, $('#new_achievement<?php echo $achievement->id; ?>').val());
-                       $('#new_achievement<?php echo $achievement->id; ?>').val('');"/>
+        <input id="new_child_name" type='text' maxlength="255"/>
+        <input id="create_child" type="button" value="Quick Create"/>
     </div>
     <div id='child_achievements_of_<?php echo $achievement->id; ?>'>
     </div>
@@ -172,14 +128,8 @@ echo $achievement->documented ? "Documented (Requires proof of completion)" . di
 
 <h2 style='text-align:center;'>
     Other Achievements
-    <input id="hide_other_achievements" type="button" value="-" style="float:left;"
-           onclick="$('#other_achievements<?php echo $achievement->id ?>').hide();
-                   $('#hide_other_achievements').hide();
-                   $('#show_other_achievements').show();" />
-    <input id="show_other_achievements" type="button" value="+" style="float:left;display:none;" 
-           onclick="$('#other_achievements<?php echo $achievement->id ?>').show();
-                   $('#hide_other_achievements').show();
-                   $('#show_other_achievements').hide();" />
+    <input id="hide_other_achievements" type="button" value="-" style="float:left;" />
+    <input id="show_other_achievements" type="button" value="+" style="float:left;display:none;" />
 </h2>
 <div id="other_achievements<?php echo $achievement->id ?>" style="">
     <h3>

@@ -7,7 +7,8 @@ $(document.body).ready(function () {
         document.title = SITE_NAME + " - Achievements List";
         listAchievements("default");
         countAchievements();
-        add_keypress_to_inputs();
+        add_keypress_to_listings();
+        add_button_handlers_to_listings
         add_handlers_to_index(0, false);
 
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
@@ -16,17 +17,12 @@ $(document.body).ready(function () {
 
         displayProfile(Number(achievement_id));
         add_handlers_to_index(0, true);
+        add_keypress_handlers_to_profile(achievement_id);
+        add_button_handlers_to_profile(achievement_id)
     }
 });
-function add_keypress_to_inputs() {
-    $('#new_achievement_text_input').keypress(function (event) {
-        if (event.which === 13) {
-            createAchievement(0, $('#new_achievement_text_input').val());
-            $('#new_achievement_text_input').val("");
-        }
-    });
-}
-function add_handlers_to_listing_buttons() {
+
+function add_button_handlers_to_listings() {
     $('#new_achievement_button').click(function () {
         createAchievement(0, $('#new_achievement_text_input').val());
         $('#new_achievement_text_input').val("");
@@ -56,8 +52,6 @@ function add_handlers_to_listing_buttons() {
         $("#sort_" + sort_by + "_button").hide();
         $("#sort_" + sort_inverse + "_button").show();
     });
-    //The following would be on both 
-
     $(document).on("change", ".change_rank_button", function (event) {
         id = event.target.attributes.id.nodeValue;
         achievement_id = id.substr(4, id.length - 4);
@@ -70,6 +64,78 @@ function add_handlers_to_listing_buttons() {
         achievement_id = id.substr(8, id.length - 8);
         state = id.substr(id, 1, 1) === "1";
         changeQuality(achievement_id, state);
+    });
+
+
+}
+function add_button_handlers_to_profile(id) {
+    $(document).on("click", "#edit_achievement_name_button", function () {
+        changeName(id, $('#new_achievement_name').val());
+        $('#show_new_achievement_name').show();
+        $('#hide_new_achievement_name').hide();
+    });
+
+    $(document).on("click", "#show_new_achievement_name", function () {
+        $('#new_achievement_name_div').show();
+        $('#show_new_achievement_name').hide();
+        $('#hide_new_achievement_name').show();
+    });
+
+    $(document).on("click", "#hide_new_achievement_name", function () {
+        $('#new_achievement_name_div').hide();
+        $('#show_new_achievement_name').show();
+        $('#hide_new_achievement_name').hide();
+    });
+    $(document).on("click", "#hide_new_actions", function () {
+        $('#new_actions').hide();
+        $('#hide_new_actions').hide();
+        $('#show_new_actions').show();
+    });
+    $(document).on("click", "#show_new_actions", function () {
+        $('#new_actions').show();
+        $('#hide_new_actions').show();
+        $('#show_new_actions').hide();
+    });
+    $(document).on("click", "#create_action_button", function () {
+        listAllActions(id);
+        createAction(id, $("#new_action_input").val());
+    });
+    $(document).on("click", "#show_new_description", function () {
+        $('#current_description').hide();
+        $('#new_description_input').show();
+        $('#show_new_description').hide();
+    });
+    $(document).on("click", "#hide_new_description", function () {
+        $('#new_description_input').hide();
+        $('#show_new_description').show();
+    });
+    $(document).on("click", "#change_description", function () {
+        changeDescription(id, $('#new_description').val());
+    });
+    $(document).on("click", "#hide_new_children", function () {
+        $('#new_children').hide();
+        $('#hide_new_children').hide();
+        $('#show_new_children').show();
+    });
+    $(document).on("click", "#show_new_children", function () {
+        console.log("ASDFA");
+        $('#new_children').show();
+        $('#hide_new_children').show();
+        $('#show_new_children').hide();
+    });
+    $(document).on("click", "#create_child", function () {
+        createAchievement(id, $('#new_child_name').val());
+        $('#new_child_name').val('');
+    });
+    $(document).on("click", "#hide_other_achievements", function () {
+        $('#other_achievements' + id).hide();
+        $('#hide_other_achievements').hide();
+        $('#show_other_achievements').show();
+    });
+    $(document).on("click", "#show_other_achievements", function () {
+        $('#other_achievements'+id).show();
+        $('#hide_other_achievements').show();
+        $('#show_other_achievements').hide();
     });
 
 
@@ -99,6 +165,39 @@ function add_handlers_to_index(parent, from_profile) {
         deleteAchievement(achievement_id, parent, from_profile);
     });
 }
+
+function add_keypress_handlers_to_listings() {
+    $('#new_achievement_text_input').keypress(function (event) {
+        if (event.which === 13) {
+            createAchievement(0, $('#new_achievement_text_input').val());
+            $('#new_achievement_text_input').val("");
+        }
+    });
+}
+
+function add_keypress_handlers_to_profile(id) {
+    $(document).on("keypress", "#new_achievement_name", function (event) {
+        if (event.which === 13) {
+            changeName(id, $('#new_achievement_name').val());
+            $('#show_new_achievement_name').show();
+            $('#hide_new_achievement_name').hide();
+        }
+    });
+    $(document).on("keypress", "#new_action_input", function (event) {
+        if (event.which === 13) {
+            listAllActions(id);
+            createAction(id, $("#new_action_input").val());
+        }
+    });
+    $(document).on("keypress", "#new_child_name", function (event) {
+        if (event.which === 13) {
+            createAchievement(id, $("#new_child_name").val());
+            $('#new_child_name').val('');
+        }
+    });
+}
+
+
 function softGenericReload(id) {
     if ($(document.body).attr('id') === "AchievementsList") {
         listAchievements("default");
