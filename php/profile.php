@@ -15,7 +15,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 
 <div id="navbar" style='text-align:center'>
     <div style="margin:5px;">
-        <a href="<?= SITE_ROOT ?>">List</a>
+        <a href="<?= SITE_ROOT ?>">Achievements List</a>
     </div><div style="margin-bottom:10px;">
 
         <a href="<?= SITE_ROOT ?>/?rla=<?php echo fetch_random_achievement_id() ?>">Random</a>
@@ -32,14 +32,13 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
         <input id='complete<?php echo $achievement->id;?>' value="Complete" class='complete_button' type='button' />
     <?php endif; ?>
 
-        <!--EVENT-->
     <div id="new_achievement_name_div" style="display:none;">
         <input maxlength="255" id="new_achievement_name" type="text" value="<?= $achievement->name ?>"/>
         <input id='edit_achievement_name_button' type="button" value="Change name"/>
     </div>
     <input id="show_new_achievement_name" type="button" value="Change Name"/>
     <input id="hide_new_achievement_name" type="button" value="Cancel" style="display:none"/>
-    <input id='delete<?php echo $achievement->id; ?>' class='delete_achievement_button' type='button' value='Delete' />
+    <input id='delete<?php echo $achievement->id; ?>' class='delete_achievement_button' type='button' value='X' title='Delete Achievement #<?php echo $achievement->id; ?>'/>
 </div>
 <div>
     <?php echo $achievement->quality ? "Quality" : "Achievement";?>
@@ -63,13 +62,12 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div> 
     Rank:<?php echo $achievement->rank; ?>
     <div>
-        Power:<?php echo $achievement->power; ?>
+        Power:<?php echo $achievement->power_adj; ?>
     </div>
     <div>
-        Work: <?php echo convert_work_num_to_caption($achievement->work) . " ($achievement->work)"; ?>
+        Work: <?php echo convert_work_num_to_caption($achievement->work); ?>
         <input id='work<?php echo $achievement->id; ?>' type='button' 
-               class='change_work_button' value='Toggle Work Status' />
-        <input id='work_status<?php echo $achievement->id; ?>' type='hidden' value='<?php echo json_encode ((int)$achievement->work); ?>' />
+               class='change_work_button' />
         
     </div>
     <div>
