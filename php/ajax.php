@@ -119,6 +119,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "toggle_documentation_status":
         toggle_documentation_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "toggle_work_status":
+        toggle_work_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
     case "uncomplete_achievement":
         uncomplete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;

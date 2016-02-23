@@ -81,14 +81,6 @@ function change_rank($id, $new_rank) {
     activate_achievement($achievement->id);
 }
 
-function change_work_status_of_achievement($id, $status) {
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set work=? where id=?");
-    $statement->bindValue(1, $status, PDO::PARAM_INT);
-    $statement->bindValue(2, $id, PDO::PARAM_INT);
-    $statement->execute();
-    update_work_status_for_related_actions($id, $status);
-}
 
 function complete_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
@@ -233,7 +225,14 @@ function toggle_documentation_status($id) {
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
-
+function toggle_work_status($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement=fetch_achievement($id);
+    $statement = $connection->prepare("update achievements set work=? where id=?");
+    $statement->bindValue(1, !$achievement->work, PDO::PARAM_BOOL);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
 function update_rank($id, $new_rank) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set rank=? where id=?");

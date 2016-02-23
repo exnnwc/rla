@@ -23,7 +23,6 @@ $(document.body).ready(function () {
 });
 
 function add_button_handlers_to_listings() {
-    console.log("Adding...");
     $('#new_achievement_button').click(function () {
         createAchievement(0, $('#new_achievement_text_input').val());
         $('#new_achievement_text_input').val("");
@@ -73,6 +72,9 @@ function add_button_handlers_to_listings() {
 
 }
 function add_button_handlers_to_profile(id) {
+    $(document).on("dblclick", "#achievement_name", function(){
+       //This is the appropriate handler to try and change the name on a double click.. 
+    });
     $(document).on("click", "#edit_achievement_name_button", function () {
         changeName(id, $('#new_achievement_name').val());
         $('#show_new_achievement_name').show();
@@ -254,11 +256,10 @@ function add_handlers_to_index(parent, from_profile) {
         uncompleteAchievement(achievement_id);
     });
 
-    $(document).on("click", ".change_work_button", function (event) {
+    $(document).on("change", ".change_work_button", function (event) {
         id = event.target.attributes.id.nodeValue;
         achievement_id = Number(id.substr(4, id.length - 4));
-        status = $("#work_status" + achievement_id).val();
-        toggleWorkStatus(achievement_id, status, parent);
+        toggleWorkStatus(achievement_id);
     });
     $(document).on("click", ".complete_button", function (event) {
         id = event.target.attributes.id.nodeValue;
@@ -307,6 +308,7 @@ function add_keypress_handlers_to_profile(id) {
 function softGenericReload(id) {
     if ($(document.body).attr('id') === "AchievementsList") {
         listAchievements("default");
+        countAchievements();
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
         displayProfile(id);
     }

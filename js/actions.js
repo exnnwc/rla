@@ -10,6 +10,7 @@ function createAction(achievement_id, action) {
         data: {function_to_be_called: "create_action", achievement_id: achievement_id, action: action}
     })
             .done(function (result) {
+                console.log(result);
                 listAllActions(achievement_id);
                 //still not displaying properly
             });

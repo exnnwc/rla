@@ -12,15 +12,15 @@ while ($achievement = $statement->fetchObject()) {
 }
 echo "</table>";
 list_completed_achievements();
+
 function fetch_listing_menu($achievement) {
     $string = " <tr><td>
-                    <input id='delete$achievement->id' class='delete_achievement_button' type='button' value='X' />                        
+                    <input id='delete$achievement->id' class='delete_achievement_button' type='button' value='X' />
                 </td><td>
                     <input id='rank$achievement->id' type='number' 
-                        class='change_rank_button' value='$achievement->rank' style='width:32px;text-align:center;' />                    
+                        class='change_rank_button' value='$achievement->rank' style='width:50px;text-align:center;' />
                 </td>
-                <td>$achievement->power</td>
-                <td>$achievement->power_adj</td>
+                <td title='$achievement->power'>$achievement->power_adj </td>
                 ";
     $string = $string . fetch_next_three_menu_cells($achievement);
             
@@ -33,18 +33,11 @@ function fetch_next_three_menu_cells($achievement){
             ? " <td>
                     N/A
                 </td><td>
-                    <input id='0quality$achievement->id' class='change_quality_button' type='button' value='On'\"/>
-                </td><td>
-                    N/A
+                    <input id='0quality$achievement->id' class='change_quality_button' type='checkbox' checked \"/>
                </td>" 
-            : " <td>
-                    <input id='work$achievement->id' type='button' 
-                      class='change_work_button' value='" . convert_work_num_to_caption($achievement->work) . "' />
-                    <input id='work_status$achievement->id' type='hidden' value='". json_encode ((int)$achievement->work)."' />
+            : "<td> " . fetch_work_button($achievement) . "
                 </td><td>
-                    <input id='1quality$achievement->id' class='change_quality_button'  type='button' value='Off'\"/>
-                </td><td>
-                    <input id='complete$achievement->id' class='complete_button' type='button' />
+                    <input id='1quality$achievement->id' class='change_quality_button'  type='checkbox' \"/>
                 </td>"; 
     
 }
@@ -69,8 +62,8 @@ function fetch_order_query($sort_by) {
     //TEST $sort_by that the key is appropriate first.
     $order_by = 
        ["default" => " order by quality asc, rank asc",
-        "power" => " order by power asc",
-        "powerrev" => " order by power desc, rank asc",
+        "power" => " order by power_adj asc",
+        "powerrev" => " order by power_adj desc, rank asc",
         "power_adj" => " order by power_adj asc",
         "power_adjrev" => " order by power_adj desc, rank asc",
         "rank" => " order by rank asc",
@@ -91,16 +84,20 @@ function fetch_table_header() {
             </td>
             <td>Rank</td>
             <td>Power</td>
-            <td>Power (Adj)</td>
             <td>
                 <a href = '" . SITE_ROOT . "/work/' style = 'color:black;'>Work</a>
             </td>
             <td>Quality</td>
-            <td>Complete?</td>
             <td>Achievement Name</td>
             </tr>";
 }
-
+function fetch_work_button($achievement){
+        $string ="<input id='work$achievement->id' type='checkbox' class='change_work_button'";
+    $string = $achievement->work 
+        ? $string . " checked />"
+        : $string . "/>";
+    return $string;
+}
 function list_completed_achievements(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
     echo "<h3 style='text-align:center;'>Completed Achievements</h3>";
@@ -127,3 +124,5 @@ function list_completed_achievements(){
     }
     
 }
+
+

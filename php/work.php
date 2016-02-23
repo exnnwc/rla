@@ -72,7 +72,7 @@ function convert_work_num_to_caption($work) {
             return "Off";
             break;
         case 1:
-            return "Work-day";
+            return "On";
             break;
         case 2:
             return "Daily";
