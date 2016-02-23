@@ -183,7 +183,20 @@ function deleteAchievement(id, parent, fromProfile) {
                 });
     }
 }
-
+function toggleDocumentationStatus(id) {
+ 
+    if (!testIfVariableIsNumber(id, "id")){            
+        return;
+    }
+    $.ajax({
+        method: "POST",
+        url: "/rla/php/ajax.php",
+        data: {function_to_be_called: "toggle_documentation_status", id: id}
+    })
+            .done(function (result) {
+                displayProfile(id);
+            });
+}
 function toggleWorkStatus(id, status, parent) {
     //FIX I'd like to implement fetch_max_work_status AJAX call as a separate function 
     //but this is a quick fix that I don't imagine will have negative repercussions.    

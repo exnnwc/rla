@@ -2,8 +2,6 @@
 
 require_once("work.php");
 
-
-
 function fetch_action_listing($action) {
     $string = "<span style='margin-left:20px;cursor:pointer;";
     $string = has_action_been_worked_on($action->id) ? $string . "color:grey;text-decoration:line-through;' 
@@ -22,13 +20,9 @@ function fetch_action_listing($action) {
 }
 
 function fetch_child_menu($achievement) {
-    return "<input class='delete_button' type='button' value='X' />        
-            <input type='button' value='-' 
-                onclick=\"changeRank($achievement->id, " . ($achievement->rank + 1) . ", true, $achievement->parent);\"/>                    
-              <input type='number' style='width:32px;text-align:center;' value='$achievement->rank' 
-                  onkeypress=\"if (event.keyCode==13){changeRank($achievement->id, this.value, true, $achievement->parent); }\"/>
-              <input type='button' value='+' 
-                onclick=\"changeRank($achievement->id, " . ($achievement->rank - 1) . ", true, $achievement->parent);\"/>";
+    return "<input id='delete$achievement->id' class='delete_child_button' type='button' value='X' />
+            <input id='rank$achievement->id' type='number' 
+                class='change_child_rank_button' value='$achievement->rank' style='width:32px;text-align:center;' />";
 }
 
 function list_actions($achievement_id) {
@@ -38,8 +32,7 @@ function list_actions($achievement_id) {
     $statement->execute();
     while ($action = $statement->fetchObject()) {
         echo "  <div>
-                    <input type='button' value='X' 
-                        onclick=\"deleteAction($action->id, $action->achievement_id)\" />
+                    <input id='action$action->id' class='delete_action_button' type='button' value='X'/>
                     $action->name
                 </div>";
     }
@@ -101,7 +94,8 @@ function list_notes($achievement_id) {
     while ($note = $statement->fetchObject()) {
         echo "<div style='background-color:lightgray;width:800px;'>
                 <h6 style='background-color:white';margin:0px;>
-                    <input type='button' value='X' onclick=\"deleteNote($note->id, $note->achievement);\" /> "
+                    <input id='note$note->id' class='delete_note_button' type='button' value='X' /> "
+                
         . date("m/d/y h:i:s", strtotime($note->created))
         . "</h6>
                 <div style='padding:12px;'>" .
@@ -128,19 +122,19 @@ function list_relations($achievement_id) {
         $achievement_name = $result[1];
         $relation_id = $result[2];
         echo "  <div>
-                    <input type='button' value='X' onclick=\"deleteRelation($relation_id, $achievement_id)\" />
+                    <input id='relation$relation_id' class='delete_relation_button' type='button' value='X'/>
                     <a href='" . \SITE_ROOT . "?rla=$db_achievement_id'>$achievement_name</a>
                 </div>";
     }
 }
 
 function list_requirements($id, $type) {
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);       
-    $type_arr=["for"=>"by", "by"=>"for"];
-    $other_type=$type_arr[$type];
-    if (there_are_no_requirements($id,$type)){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $type_arr = ["for" => "by", "by" => "for"];
+    $other_type = $type_arr[$type];
+    if (there_are_no_requirements($id, $type)) {
         return;
-    }  
+    }
     $statement = $connection->prepare("select achievements.id, achievements.name, requirements.id, requirements.required_$type from achievements 
                                          inner join requirements on achievements.id=requirements.required_$other_type 
                                          where requirements.active=1 and required_$type=? order by achievements.name");
@@ -152,14 +146,14 @@ function list_requirements($id, $type) {
         $requirement_id = $result[2];
         $requirement_required = $result[3];
         echo "  <div>
-                    <input type='button' value='X' 
-                      onclick=\"deleteRequirement($requirement_id, $requirement_required);\" />
-                    <a href='".SITE_ROOT."?rla=$achievement_id'>$achievement_name</a>
+                    <input id='requirement$requirement_id' class='delete_requirement_button' type='button' value='X' />
+
+                    <a href='" . SITE_ROOT . "?rla=$achievement_id'>$achievement_name</a>
                 </div>";
     }
 }
 
-function there_are_no_requirements($id, $type){
+function there_are_no_requirements($id, $type) {
     if (count_requirements_with($id, $type) == 0) {
         echo "<div style=' font-style:italic;'>";
         if ($type == "for") {
@@ -168,6 +162,5 @@ function there_are_no_requirements($id, $type){
             echo "No other achievements require this achievement for completion.";
         }
         echo "</div>";
-        
-    }   
+    }
 }

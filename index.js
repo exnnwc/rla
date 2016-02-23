@@ -7,8 +7,8 @@ $(document.body).ready(function () {
         document.title = SITE_NAME + " - Achievements List";
         listAchievements("default");
         countAchievements();
-        add_keypress_to_listings();
-        add_button_handlers_to_listings
+        add_keypress_handlers_to_listings();
+        add_button_handlers_to_listings();
         add_handlers_to_index(0, false);
 
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
@@ -18,16 +18,18 @@ $(document.body).ready(function () {
         displayProfile(Number(achievement_id));
         add_handlers_to_index(0, true);
         add_keypress_handlers_to_profile(achievement_id);
-        add_button_handlers_to_profile(achievement_id)
+        add_button_handlers_to_profile(achievement_id);
     }
 });
 
 function add_button_handlers_to_listings() {
+    console.log("Adding...");
     $('#new_achievement_button').click(function () {
         createAchievement(0, $('#new_achievement_text_input').val());
         $('#new_achievement_text_input').val("");
     });
     $("#hide_achievements_button").click(function () {
+        console.log("asdfas");
         $('#sorting_menu').hide();
         $('#list_of_achievements').hide();
         $('#hide_achievements_button').hide();
@@ -53,7 +55,9 @@ function add_button_handlers_to_listings() {
         $("#sort_" + sort_inverse + "_button").show();
     });
     $(document).on("change", ".change_rank_button", function (event) {
+
         id = event.target.attributes.id.nodeValue;
+        console.log(id);
         achievement_id = id.substr(4, id.length - 4);
         parent = 0;
         rank = $("#rank" + achievement_id).val();
@@ -133,12 +137,114 @@ function add_button_handlers_to_profile(id) {
         $('#show_other_achievements').show();
     });
     $(document).on("click", "#show_other_achievements", function () {
-        $('#other_achievements'+id).show();
+        $('#other_achievements' + id).show();
         $('#hide_other_achievements').show();
         $('#show_other_achievements').hide();
     });
+    $(document).on("click", "#show_new_required_for", function () {
+        listNewRequirements(id);
+        $('#new_required_for').show();
+        $('#hide_new_required_for').show();
+        $('#show_new_required_for').hide();
+    });
+    $(document).on("click", "#hide_new_required_for", function () {
+        $('#new_required_for').hide();
+        $('#hide_new_required_for').hide();
+        $('#show_new_required_for').show();
+    });
+    $(document).on("click", "#create_required_for", function () {
+        createRequirement(id, $('#list_of_new_required_for' + id).val(), 'for');
+    });
+    $(document).on("click", "#show_new_required_by", function () {
+        listNewRequirements(id);
+        $('#new_required_by').show();
+        $('#hide_new_required_by').show();
+        $('#show_new_required_by').hide();
+    });
+    $(document).on("click", "#hide_new_required_by", function () {
+        $('#new_required_by').hide();
+        $('#hide_new_required_by').hide();
+        $('#show_new_required_by').show();
+    });
+    $(document).on("click", "#create_required_by", function () {
+        createRequirement($('#list_of_new_required_by' + id).val(), id, 'by');
+    });
+    $(document).on("click", "#show_new_relation", function () {
+        $('#new_relation').show();
+        $('#hide_new_relation').show();
+        $('#show_new_relation').hide();
+    });
+    $(document).on("click", "#hide_new_relation", function () {
+        $('#new_relation').hide();
+        $('#hide_new_relation').hide();
+        $('#show_new_relation').show();
+    });
+    $(document).on("click", "#create_relation", function () {
+        createRelation(id, $('#list_of_new_relations' + id).val());
+    });
+    $(document).on("click", "#show_notes", function () {
+        $('#all_notes').show();
+        $('#hide_notes').show();
+        $('#show_notes').hide();
+    });
+    $(document).on("click", "#hide_notes", function () {
+        $('#all_notes').hide();
+        $('#hide_notes').hide();
+        $('#show_notes').show();
+    });
+    $(document).on("click", "#show_new_notes", function () {
+        $('#show_new_notes').hide();
+        $('#new_notes').show();
+    });
+    $(document).on("click", "#cancel_new_note", function () {
+        $('#new_notes').hide();
+        $('#show_new_notes').show();
+    });
+    $(document).on("click", "#create_note", function () {
+        createNote($('#new_note_inputted').val(), id);
+        $('#new_notes').hide();
+        $('#hide_new_notes').hide();
+        $('#show_new_notes').show();
+        $('#new_note_inputted').val('');
+    });
+    $(document).on("click", "#change_documentation", function () {
+        toggleDocumentationStatus(id);
+    });
+    $(document).on("click", ".delete_child_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = JSON.parse(html_id.substr(6, html_id.length - 6));
+        deleteAchievement(achievement_id, id, true);
+    });
+    $(document).on("change", ".change_child_rank_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = html_id.substr(4, html_id.length - 4);
+        rank = $("#rank" + achievement_id).val();
+        changeRank(achievement_id, rank, id);
+    });
+    $(document).on("click", ".delete_action_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        action_id = html_id.substr(6, html_id.length - 6);
+        deleteAction(action_id, id);
+    });
+    $(document).on("click", ".delete_note_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        note_id = html_id.substr(4, html_id.length - 4);
+        deleteNote(note_id, id);
+    });
+    $(document).on("click", ".delete_relation_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        relation_id = html_id.substr(8, html_id.length - 8);
+        deleteRelation(relation_id, id);
+    });
+    $(document).on("click", ".delete_requirement_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        requirement_id = html_id.substr(11, html_id.length - 11);
+        deleteRequirement(requirement_id, id);
+    });
 
+    $(document).on("click", "", function () {
 
+    });
 }
 
 function add_handlers_to_index(parent, from_profile) {

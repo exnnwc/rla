@@ -1,6 +1,7 @@
 <?php
 
 require_once ("config.php");
+
 function achievement_name_exists($name, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from achievements where active=1 and name=? and parent=? limit 1");
@@ -220,6 +221,15 @@ function change_quality($id, $quality) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set quality=? where id=?");
     $statement->bindValue(1, $quality, PDO::PARAM_BOOL);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
+
+function toggle_documentation_status($id) {
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    $statement = $connection->prepare("update achievements set documented=? where id=?");
+    $statement->bindValue(1, !$achievement->documented, PDO::PARAM_BOOL);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
