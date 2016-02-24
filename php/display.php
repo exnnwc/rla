@@ -85,6 +85,7 @@ function list_new_relations() {
 
 function list_new_requirements($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    echo "<option >Please indicate which achievement you'd like to make a requirement.</option>";
     $statement = $connection->prepare("select * from achievements where active=1 and parent=0 order by name asc");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
@@ -95,6 +96,12 @@ function list_new_requirements($id) {
 
 function list_notes($achievement_id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("select count(*) from notes where active=1 and achievement=? order by created desc");
+    $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+    $statement->execute();
+    if ((int)$statement->fetchColumn()==0){
+        echo "<div style='font-style:italic;'>This achievement has no notes.</div>";
+    }
     $statement = $connection->prepare("select * from notes where active=1 and achievement=? order by created desc");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->execute();

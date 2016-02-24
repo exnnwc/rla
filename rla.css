@@ -1,3 +1,12 @@
 .hand{
     cursor:pointer;
 }
+.text-button{
+    color:grey;
+    font-size:16px;
+}
+.h-normal{
+    font-size:16px;
+    font-weight:normal;
+
+}

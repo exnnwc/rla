@@ -24,6 +24,15 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
         <?php echo fetch_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
     </div>    
 </div>
+<div>
+    <input id='delete<?php echo $achievement->id; ?>' 
+      class='delete_achievement_button' type='button' value='X' 
+      title='Delete Achievement #<?php echo $achievement->id; ?>' 
+      style="width:25px;height:25px;text-align:center;"/>
+    <?php if ($achievement->completed == 0 && !$achievement->documented): ?>
+        <input id='complete<?php echo $achievement->id;?>' value="&#10003;" class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
+    <?php endif; ?>
+</div>
 <h1 id="achievement_name" style='text-align:center;'> 
     
     <div id="show_new_achievement_name" class="hand"><?= $achievement->name ?> </div>
@@ -36,18 +45,27 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
         </div>
     </div>
 </h1>
-<div>
-    <input id='delete<?php echo $achievement->id; ?>' 
-      class='delete_achievement_button' type='button' value='X' 
-      title='Delete Achievement #<?php echo $achievement->id; ?>' 
-      style="width:25px;height:25px;text-align:center;"/>
-    <?php if ($achievement->completed == 0 && !$achievement->documented): ?>
-        <input id='complete<?php echo $achievement->id;?>' value="&#10003;" class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
-    <?php endif; ?>
-</div>
-<br>
-<div id="achievement_quality" class="hand">
+<div id="achievement_quality" class="hand" style="font-size:20px;text-decoration:underline;margin-bottom:8px;">
     <?php echo $achievement->quality ? "Quality" : "Achievement";?>
+</div>
+<div>
+         
+        <span id='work<?php echo $achievement->id; ?>' class='hand change_work_button'
+            <?php 
+                echo $achievement->work 
+                    ? "style='color:green;'>Active"
+                    : "style='color:darkred;'>Inactive";
+            ?>
+        </span>
+</div>
+<div>
+    <div id='change_documentation' class="hand" style="">
+        <?php
+            echo $achievement->documented 
+                    ? "Documented (Requires proof of completion)" 
+                    : "Undocumented (No proof of completion required)";
+        ?>
+    </div>
 </div>
 <div>
     Parent: 
@@ -61,8 +79,13 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div>
     <?php
     ($achievement->completed != 0)
-            and print ("Completed:<span style='margin-left:8px;'>" . date($pref_date_format, strtotime($achievement->completed))
-                    . "</span><input style='margin-left:8px;' id='cancel$achievement->id' class='cancel_completion_button' type='button' value='Cancel' />")
+            and print ("Completed:
+                        <span style='margin-left:8px;'>" 
+                            . date($pref_date_format, strtotime($achievement->completed))
+                    . " </span>
+                        <span id='cancel$achievement->id' class='text-button hand cancel_completion_button'>
+                            [ Undo ]
+                        </span>");
     ?>
 </div>
 <div> 
@@ -71,30 +94,11 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div>
         Power: <?php echo $achievement->power_adj; ?>
 </div>
-<div>
-        Work: 
-        <span id='work<?php echo $achievement->id; ?>' class='hand change_work_button'
-            <?php 
-                echo $achievement->work 
-                    ? "style='color:green;'>Active"
-                    : "style='color:red;'>Inactive";
-            ?>
-        </span>
-</div>
-<div>
-    <div id='change_documentation' class="hand" style="">
-        <?php
-            echo $achievement->documented 
-                    ? "Documented (Requires proof of completion)" 
-                    : "Undocumented (No proof of completion required)";
-        ?>
-    </div>
-</div>
 <h3>
         Actions 
-        <span style="font-size:16px;font-weight:normal;">
-            <span id="hide_new_actions" class="hand" style="display:none">[ - ]</span>
-            <span id="show_new_actions" class="hand" style="">[ New ]</span>
+        <span class="h-normal">
+            <span id="hide_new_actions" class="hand text-button" style="display:none">[ - ]</span>
+            <span id="show_new_actions" class="hand text-button" style="">[ New ]</span>
         </span>
      
 </h3>    
@@ -109,7 +113,9 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div id="actions<?php echo $achievement->id; ?>"> </div>
 <h3>
     Description
-    <input id="show_new_description" type='button' value='Edit' />
+    <span class="h-normal">
+       <span id="show_new_description" class="hand text-button show_new_description">[ Edit ]</span>
+    </span>
 </h3>
 <span id="current_description">
            <?php
@@ -117,12 +123,10 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
            ?>
 </span>
 <span id="new_description_input" style="display:none">
-    <textarea maxlength="20000" id="new_description" style="width:600px;height:150px;">
-    <?php echo $achievement->description ? $achievement->description : ""; ?>
-    </textarea>
+    <textarea maxlength="20000" id="new_description" style="width:600px;height:150px;"><?php echo $achievement->description ? $achievement->description : ""; ?></textarea>
     <div>
-        <input id="hide_new_description" type="button" value="Cancel" />
         <input id='change_description' type='button' value='Submit' />
+        <input id="hide_new_description" type="button" value="Cancel" />
     </div>
 </span>
 </div>
@@ -142,33 +146,35 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 </div>
 
 
-<h2 style='text-align:center;'>
+<h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
+
     Other Achievements
-    <input id="hide_other_achievements" type="button" value="-" style="float:left;" />
-    <input id="show_other_achievements" type="button" value="+" style="float:left;display:none;" />
+    <span id="hide_other_achievements" class="h-normal hand text-button" style="float:left;">[ - ]</span>
+    <span id="show_other_achievements" class="h-normal hand text-button" style="float:left;display:none;">[ + ]</span>
+
 </h2>
 <div id="other_achievements<?php echo $achievement->id ?>" style="">
     <h3>
         Required For Completion
-        <input id="show_new_required_for" type="button" value="+" style="margin-left:5px;"/>
-        <input id="hide_new_required_for" type="button" value="-" style="margin-left:5px;display:none;"/>
+        <span id="show_new_required_for" class="h-normal hand text-button" style="margin-left:5px;">[ + ]</span>
+        <span id="hide_new_required_for" class="h-normal hand text-button" style="margin-left:5px;display:none;">[ - ]</span>
     </h3>
     <div id="new_required_for" style="display:none;">
         <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
         <select id="list_of_new_required_for<?php echo $achievement->id; ?>"></select><br>
-        <input id="create_required_for" type="button" value="Required for completion"/>
+        <input id="create_required_for" type="button" value="Require For Completion"/>
     </div>
     <div id="required_for_<?php echo $achievement->id ?>"></div>
 
     <h3>
         Required By Others
-        <input id="show_new_required_by" type="button" value="+" style="margin-left:5px;" />
-        <input id="hide_new_required_by" type="button" value="-" style="margin-left:5px;display:none;"/>
+<!--        <span id="show_new_required_by" class="h-normal hand text-button" style="margin-left:5px;">[ + ]</span>-->
+        <span id="hide_new_required_by" class="h-normal hand text-button" style="margin-left:5px;display:none;">[ - ]</span>
     </h3>
     <div id="new_required_by" style="display:none;">
         <div id="requirements_error<?php echo $achievement->id; ?>" style="color:red;"></div>
         <select id="list_of_new_required_by<?php echo $achievement->id; ?>"></select><br>       
-        <input id="create_required_by" type="button" value="Required by others" />
+        <input id="create_required_by" type="button" value="Create Requirement For Other Achievement" />
     </div>
     <div id="required_by_<?php echo $achievement->id ?>"></div>
 
@@ -176,8 +182,8 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     <div>
         <h3>
             Related
-            <input id="show_new_relation" type="button" value="+" style="" />
-            <input id="hide_new_relation" type="button" value="-"   style="display:none;"/>
+            <span id="show_new_relation" class="h-normal hand text-button" style="margin-left:5px;">[ + ]</span>
+            <span id="hide_new_relation" class="h-normal hand text-button" style="margin-left:5px;display:none;">[ - ]</span>
         </h3>
         <div id="new_relation" style="display:none;">
             <select id="list_of_new_relations<?php echo $achievement->id ?>" style="text-align:center;">
@@ -193,23 +199,24 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 </div>
 
 <div>
-    <h2 style='text-align:center;'>
+    <h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
         Notes    
-        <input id="show_notes" type="button" value="+" style="float:left;display:none;"/>
-        <input id="hide_notes" type="button" value="-" style="float:left;" />
+            <span id="show_notes" class="h-normal hand text-button" style="float:left;display:none;">[ + ]</span>
+            <span id="hide_notes" class="h-normal hand text-button" style="float:left;">[ - ]</span>
     </h2>
     <div id="all_notes">
-        <input id="show_new_notes" type="button" value="Create Note"/>
+        <div id="show_new_notes" class="hand text-button">[ New ]</div>
         <div id="new_notes" style="display:none;">
             <textarea id="new_note_inputted" style='width:400px;height:100px;'></textarea>
             <div>
-                <input id="cancel_new_note" type="button" value="Cancel"/>
                 <input id="create_note" type="button" value="Create Note"/>
+                <input id="cancel_new_note" type="button" value="Cancel"/>
             </div>
         </div>
-        <div id="list_of_notes<?php echo $achievement->id; ?>"></div>
+        <div id="list_of_notes<?php echo $achievement->id; ?>" style='margin-top:16px;'></div>
     </div>
 </div>
+<div style='padding:20px;'>&nbsp;</div>
 
 <?php
 
@@ -230,7 +237,7 @@ function fetch_nav_menu($id, $rank, $parent) {
     $string = $string . generate_select_achievement_menu($parent, $id);
     $string = ($rank < fetch_highest_rank($parent)) ? $string . "   <div title='$next_achievement->name' style='float:right'>
                             <a href='" . SITE_ROOT . "/?rla=$next_achievement->id'>Next</a>
-                        </div>" : $string . "   <div class='right'>Next</div>";
+                        </div>" : $string . "   <div style='float:right;margin-right:8px;'>Next</div>";
     return $string;
 }
 
