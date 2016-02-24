@@ -27,6 +27,13 @@ function fetch_child_menu($achievement) {
 
 function list_actions($achievement_id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("select count(*) from actions where active=1 and achievement_id=? order by name");
+    $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+    $statement->execute();
+    if ((int)$statement->fetchColumn()==0){
+        echo "<div style='font-style:italic'>No actions registered for this achievement.</div>";
+        return;
+    }
     $statement = $connection->prepare("select * from actions where active=1 and achievement_id=? order by name");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->execute();
@@ -61,7 +68,7 @@ function list_new_actions() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from actions where reference=0 and active=1");
     $statement->execute();
-    echo "<option></option>";
+    echo "<option>Select from previous actions here</option>";
     while ($action = $statement->fetchObject()) {
         echo "<option value='$action->id'>$action->name</option>";
     }

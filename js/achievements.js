@@ -197,6 +197,21 @@ function toggleDocumentationStatus(id) {
                 displayProfile(id);
             });
 }
+
+function toggleQuality(id){
+    if (!testIfVariableIsNumber(id, "id")){            
+        return;
+    }
+    $.ajax({
+        method: "POST",
+        url: "/rla/php/ajax.php",
+        data: {function_to_be_called: "toggle_quality", id: id}
+    })
+            .done(function (result) {
+                softGenericReload(id);
+            });
+}
+
 function toggleWorkStatus(id) {
     //FIX I'd like to implement fetch_max_work_status AJAX call as a separate function 
     //but this is a quick fix that I don't imagine will have negative repercussions.    

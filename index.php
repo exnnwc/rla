@@ -2,6 +2,7 @@
 
 <html>
     <head>
+        <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/rla.css">
         <!--Replace this with a web link when the site goes live.-->
         <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
         <script src="index.js"></script>

@@ -25,22 +25,28 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     </div>    
 </div>
 <h1 id="achievement_name" style='text-align:center;'> 
-    <?= $achievement->name ?> 
+    
+    <div id="show_new_achievement_name" class="hand"><?= $achievement->name ?> </div>
+    <div id="hide_new_achievement_name" style="display:none;">
+        <div>
+        <textarea maxlength="255" id="new_achievement_name"   style="width:640px;height:160px;font-size:32px;text-align:center;"><?= $achievement->name ?></textarea>
+        </div><div>
+        <input id='edit_achievement_name_button' type="button" value="Change name"/>
+        <input id="hide_achievement_button" type="button" value="Cancel"/>
+        </div>
+    </div>
 </h1>
 <div>
-    <?php if ($achievement->completed == 0): ?>
-        <input id='complete<?php echo $achievement->id;?>' value="Complete" class='complete_button' type='button' />
+    <input id='delete<?php echo $achievement->id; ?>' 
+      class='delete_achievement_button' type='button' value='X' 
+      title='Delete Achievement #<?php echo $achievement->id; ?>' 
+      style="width:25px;height:25px;text-align:center;"/>
+    <?php if ($achievement->completed == 0 && !$achievement->documented): ?>
+        <input id='complete<?php echo $achievement->id;?>' value="&#10003;" class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
     <?php endif; ?>
-
-    <div id="new_achievement_name_div" style="display:none;">
-        <input maxlength="255" id="new_achievement_name" type="text" value="<?= $achievement->name ?>"/>
-        <input id='edit_achievement_name_button' type="button" value="Change name"/>
-    </div>
-    <input id="show_new_achievement_name" type="button" value="Change Name"/>
-    <input id="hide_new_achievement_name" type="button" value="Cancel" style="display:none"/>
-    <input id='delete<?php echo $achievement->id; ?>' class='delete_achievement_button' type='button' value='X' title='Delete Achievement #<?php echo $achievement->id; ?>'/>
 </div>
-<div>
+<br>
+<div id="achievement_quality" class="hand">
     <?php echo $achievement->quality ? "Quality" : "Achievement";?>
 </div>
 <div>
@@ -53,38 +59,50 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     Created: <?php echo date($pref_date_format, strtotime($achievement->created)); ?>
 </div>
 <div>
-<?php
-($achievement->completed != 0)
-        and print ("Completed:<span style='margin-left:8px;'>" . date($pref_date_format, strtotime($achievement->completed))
-                . "</span><input style='margin-left:8px;' id='cancel$achievement->id' class='cancel_completion_button' type='button' value='Cancel' />")
-?>
+    <?php
+    ($achievement->completed != 0)
+            and print ("Completed:<span style='margin-left:8px;'>" . date($pref_date_format, strtotime($achievement->completed))
+                    . "</span><input style='margin-left:8px;' id='cancel$achievement->id' class='cancel_completion_button' type='button' value='Cancel' />")
+    ?>
 </div>
 <div> 
-    Rank:<?php echo $achievement->rank; ?>
-    <div>
-        Power:<?php echo $achievement->power_adj; ?>
+    Rank: <?php echo $achievement->rank; ?>
+</div>
+<div>
+        Power: <?php echo $achievement->power_adj; ?>
+</div>
+<div>
+        Work: 
+        <span id='work<?php echo $achievement->id; ?>' class='hand change_work_button'
+            <?php 
+                echo $achievement->work 
+                    ? "style='color:green;'>Active"
+                    : "style='color:red;'>Inactive";
+            ?>
+        </span>
+</div>
+<div>
+    <div id='change_documentation' class="hand" style="">
+        <?php
+            echo $achievement->documented 
+                    ? "Documented (Requires proof of completion)" 
+                    : "Undocumented (No proof of completion required)";
+        ?>
     </div>
-    <div>
-        Work: <?php echo convert_work_num_to_caption($achievement->work); ?>
-        <input id='work<?php echo $achievement->id; ?>' type='button' 
-               class='change_work_button' />
-        
-    </div>
-    <div>
-<?php
-echo $achievement->documented ? "Documented (Requires proof of completion)" . display_documentation_menu($achievement->id, 0) : "Undocumented (No proof of completion required)" . display_documentation_menu($achievement->id, 1);
-?>
-    </div>
-    <h3>
-        Actions
-        <input id="hide_new_actions" type="button" value="-" style="display:none"/>
-        <input id="show_new_actions" type="button" value="+" style=""/>        
-    </h3>
+</div>
+<h3>
+        Actions 
+        <span style="font-size:16px;font-weight:normal;">
+            <span id="hide_new_actions" class="hand" style="display:none">[ - ]</span>
+            <span id="show_new_actions" class="hand" style="">[ New ]</span>
+        </span>
+     
+</h3>    
     <div id="new_actions" style="display:none;">
         <div>
-            <select id="list_of_current_actions<?php echo $achievement->id; ?>"> </select>
+            <select id="list_of_current_actions<?php echo $achievement->id; ?>" class="list_of_current_actions"> </select>
         </div>
-        <input id="new_action_input" type="text"/> 
+        <input id="new_action_input" type="text" value="Create new action here"/> 
         <input id='create_action_button' type="button" value="Create Action" />
     </div>
 </div>

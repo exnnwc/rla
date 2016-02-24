@@ -1,5 +1,7 @@
 
 function createAction(achievement_id, action) {
+    console.log(achievement_id);
+    console.log(action);
     if (!testIfVariableIsNumber(achievement_id, "achievement_id") 
             || !testIfVariableIsString(action, "action") || !testStringForMaxLength(action, 255, "action") ){
        return;

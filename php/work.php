@@ -69,10 +69,10 @@ function convert_work_num_to_caption($work) {
             return 5;
             break;
         case 0:
-            return "Off";
+            return "Inactive";
             break;
         case 1:
-            return "On";
+            return "Active";
             break;
         case 2:
             return "Daily";

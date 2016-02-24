@@ -14,10 +14,10 @@ $(document.body).ready(function () {
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
         var achievement_id = Number($(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19));
         document.title = SITE_NAME + " - #" + achievement_id;
-
         displayProfile(Number(achievement_id));
         add_handlers_to_index(0, true);
         add_keypress_handlers_to_profile(achievement_id);
+
         add_button_handlers_to_profile(achievement_id);
     }
 });
@@ -72,9 +72,8 @@ function add_button_handlers_to_listings() {
 
 }
 function add_button_handlers_to_profile(id) {
-    $(document).on("dblclick", "#achievement_name", function(){
-       //This is the appropriate handler to try and change the name on a double click.. 
-    });
+        
+
     $(document).on("click", "#edit_achievement_name_button", function () {
         changeName(id, $('#new_achievement_name').val());
         $('#show_new_achievement_name').show();
@@ -87,7 +86,7 @@ function add_button_handlers_to_profile(id) {
         $('#hide_new_achievement_name').show();
     });
 
-    $(document).on("click", "#hide_new_achievement_name", function () {
+    $(document).on("click", "#hide_achievement_button", function () {
         $('#new_achievement_name_div').hide();
         $('#show_new_achievement_name').show();
         $('#hide_new_achievement_name').hide();
@@ -103,8 +102,11 @@ function add_button_handlers_to_profile(id) {
         $('#show_new_actions').hide();
     });
     $(document).on("click", "#create_action_button", function () {
+        //If there's a value in input box and no select option
+        //if there's no value in input box and a selection option
+        //if both are filled out ERROR
+        createAction(id, "TEST");
         listAllActions(id);
-        createAction(id, $("#new_action_input").val());
     });
     $(document).on("click", "#show_new_description", function () {
         $('#current_description').hide();
@@ -209,7 +211,8 @@ function add_button_handlers_to_profile(id) {
         $('#show_new_notes').show();
         $('#new_note_inputted').val('');
     });
-    $(document).on("click", "#change_documentation", function () {
+    $(document).on("click", "#change_documentation", function (event) {
+        console.log(event.target);
         toggleDocumentationStatus(id);
     });
     $(document).on("click", ".delete_child_button", function (event) {
@@ -243,9 +246,36 @@ function add_button_handlers_to_profile(id) {
         requirement_id = html_id.substr(11, html_id.length - 11);
         deleteRequirement(requirement_id, id);
     });
+    $(document).on("click", "#hide_achievement_information", function () {
+        $("#hide_achievement_information").hide();
+        $("#show_achievement_information").show();
+        $("#achievement_info").hide();
+    });
+    $(document).on("click", "#show_achievement_information", function () {
+        $("#hide_achievement_information").show();
+        $("#show_achievement_information").hide();
+        $("#achievement_info").show();
+    });    
+    $(document).on("click", ".change_work_button", function () {
+        toggleWorkStatus(id);
+    });
+    $(document).on("click", "#achievement_quality", function () {
+        toggleQuality(id);
+    });    
+
+    $(document).on("click", "#new_action_input", function () {
+        if ( $("#new_action_input").val()==="Create new action here"){
+            $("#new_action_input").val("");
+            
+        }        
+    });    
+    $(document).on("change", ".list_of_current_actions", function (event) {
+        $("#new_action_input").val("");
+  
+    });   
 
     $(document).on("click", "", function () {
-
+        
     });
 }
 
