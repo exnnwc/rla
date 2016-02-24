@@ -49,7 +49,6 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     <?php echo $achievement->quality ? "Quality" : "Achievement";?>
 </div>
 <div>
-         
         <span id='work<?php echo $achievement->id; ?>' class='hand change_work_button'
             <?php 
                 echo $achievement->work 
@@ -94,12 +93,20 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div>
         Power: <?php echo $achievement->power_adj; ?>
 </div>
+<div >
+    Tags: <span id='list_of_tags<?php echo $achievement->id; ?>' style='margin-right:8px;'>None</span>
+    <span id="show_new_tags" class="hand text-button h-normal" style='display:none;'> [ + ] </span>
+    <span id='new_tags'>
+        <span id="hide_new_tags" class="hand text-button h-normal" > [ - ] </span>
+        <span id="list_of_new_tags<?php echo $achievement->id; ?>"></span>
+        <input id="new_tag_input" type='text' style="width:140px;">
+        <input id="create_tag" type='button' value='New Tag'>
+    </span>
+</div>
 <h3>
         Actions 
-        <span class="h-normal">
-            <span id="hide_new_actions" class="hand text-button" style="display:none">[ - ]</span>
-            <span id="show_new_actions" class="hand text-button" style="">[ New ]</span>
-        </span>
+            <span id="hide_new_actions" class="hand text-button h-normal" style="display:none">[ - ]</span>
+            <span id="show_new_actions" class="hand text-button h-normal" style="">[ New ]</span>
      
 </h3>    
     <div id="new_actions" style="display:none;">

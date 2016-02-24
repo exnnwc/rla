@@ -7,6 +7,7 @@ require_once ("display.php");
 require_once ("notes.php");
 require_once ("requirements.php");
 require_once ("relations.php");
+require_once("tags.php");
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
     case "cancel_work":
         cancel_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
@@ -59,6 +60,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "create_requirement":
         create_requirement(filter_input(INPUT_POST, 'required_for', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'required_by', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "create_tag":
+        create_tag(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+        break;
     case "create_work":
         create_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -76,6 +80,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "delete_requirement":
         delete_requirement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
+    case "delete_tag":
+        delete_tag(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "delete_top_action":
         delete_top_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
@@ -107,6 +114,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "list_new_requirements":
         list_new_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "list_new_tags":
+        list_new_tags(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
     case "list_notes":
         list_notes(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -115,6 +125,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "list_requirements":
         list_requirements(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING));
+        break;
+    case "list_tags":
+        list_tags(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "toggle_documentation_status":
         toggle_documentation_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));

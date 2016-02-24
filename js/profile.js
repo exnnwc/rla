@@ -22,6 +22,7 @@ function displayProfile(id) {
         data: {function_to_be_called: "is_it_active", id: id}
     })
             .done(function (result) {
+                //CHANGE THIS to allow for errors
                 if (result === "1") {
                     $.ajax({
                         method: "POST",
@@ -32,11 +33,13 @@ function displayProfile(id) {
                                 $("#achievement_profile").html(result);
                                 listActions(id);
                                 listNewActions(id);
+                                listNewRelations(id);
+                                listNewTags(id);
                                 listRequirements(id, "for");
                                 listRequirements(id, "by");
                                 displayChildren(id);
                                 listRelations(id);
-                                listNewRelations(id);
+                                listTags(id);
                                 listNotes(id);
                             });
                 } else if (result == "0") {
@@ -145,4 +148,35 @@ function listRequirements(id, type) {
             .done(function (result) {
                 $("#required_" + type + "_" + id).html(result);
             });
+}
+
+function listTags(id){
+    if (!testIfVariableIsNumber(id, "id")){
+        return;
+    } 
+    $.ajax({
+        method:"POST",
+        url:"/rla/php/ajax.php",
+        data:{function_to_be_called: "list_tags", id:id}
+    })
+        .done(function (result){
+            $("#list_of_tags"+id).html(result);
+        });
+}
+    
+
+
+function listNewTags(id){
+    if (!testIfVariableIsNumber(id, "id")){
+        return;
+    } 
+    $.ajax({
+        method:"POST",
+        url:"/rla/php/ajax.php",
+        data:{function_to_be_called: "list_new_tags", id:id}
+    })
+        .done(function (result){
+            
+            $("#list_of_new_tags"+id).html(result);
+        });
 }

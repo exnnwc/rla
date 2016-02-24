@@ -274,6 +274,29 @@ function add_button_handlers_to_profile(id) {
   
     });   
 
+    $(document).on("click", "#show_new_tags", function (event) {
+        $("#show_new_tags").hide();
+        $("#new_tags").show();
+    });
+    $(document).on("click", "#hide_new_tags", function (event) {
+        $("#show_new_tags").show();
+        $("#new_tags").hide();
+    });
+    $(document).on("click", "#create_tag", function (event) {
+        name=$("#new_tag_input").val();
+        createTag(id, name);
+    });
+    $(document).on("click", ".delete_tag", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        tag_id = Number(html_id.substr(6, html_id.length - 6));
+        deleteTag(tag_id, id);
+    });
+    $(document).on("click", ".create_this_tag", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        tag_id = Number(id.substr(7, id.length - 7));
+        name=$("#new_tag"+tag_id).html();
+        createTag(id, name);
+    });
     $(document).on("click", "", function () {
         
     });
@@ -300,6 +323,9 @@ function add_handlers_to_index(parent, from_profile) {
         id = event.target.attributes.id.nodeValue;
         achievement_id = JSON.parse(id.substr(6, id.length - 6));
         deleteAchievement(achievement_id, parent, from_profile);
+    });
+    $(document).on("click", "", function (event) {
+
     });
 }
 

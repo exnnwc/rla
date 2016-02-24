@@ -94,6 +94,17 @@ function list_new_requirements($id) {
     }
 }
 
+function list_new_tags($achievement_id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("select * from tags where active=1 and achievement_id=0 order by name asc");
+    $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($tag = $statement->fetchObject()){
+        if (!is_it_already_tagged($achievement_id, $tag->name)){
+            echo "<span id='new_tag$tag->id' class='create_this_tag hand text-button'> $tag->name </span>"; 
+        }
+    }
+}
 function list_notes($achievement_id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from notes where active=1 and achievement=? order by created desc");
@@ -164,6 +175,17 @@ function list_requirements($id, $type) {
 
                     <a href='" . SITE_ROOT . "?rla=$achievement_id'>$achievement_name</a>
                 </div>";
+    }
+}
+
+function list_tags($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("select * from tags where active=1 and achievement_id=? order by name asc");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($tag = $statement->fetchObject()){
+       echo "<input id='delete$tag->id' class='delete_tag hand text-button' type='button' value='X' />
+             <span class='tag'> $tag->name </span>"; 
     }
 }
 

@@ -10,3 +10,8 @@
     font-weight:normal;
 
 }
+.tag{
+    background-color:lightgrey;
+    margin-right:8px;
+    padding:4px;
+}
