@@ -92,6 +92,7 @@ function changeRank(id, new_rank, parent) {
         data: {function_to_be_called: "change_rank", id: id, new_rank: new_rank}
     })
             .done(function (result) {
+                console.log(result);
                 softGenericReload(parent);
             });
 }

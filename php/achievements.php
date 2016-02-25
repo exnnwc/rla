@@ -59,6 +59,8 @@ function change_power($id, $power) {
 }
 
 function change_rank($id, $new_rank) {
+    //I also need to check to see if there are holes in the ranks.
+
     $achievement = fetch_achievement($id);
     update_rank($id, $new_rank);
     deactivate_achievement($achievement->id);
@@ -185,7 +187,7 @@ function fetch_random_achievement_id() {
 function fix_achievement_ranks($field, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $connection->exec("set @rank=0");
-    $connection->exec("update achievements set rank=@rank:=@rank+1 where active=1 and parent=$parent order by $field");
+    $connection->exec("update achievements set rank=@rank:=@rank+1 where active=1 and parent=$parent order by $field ");
 }
 
 function is_it_active($id) {
@@ -200,8 +202,9 @@ function rank_achievements($achievement, $new_rank) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $connection->exec("set @rank=$new_rank");
     if ($new_rank - $achievement->rank > 0) {
-        $connection->exec("update achievements set rank=@rank:=@rank-1 where active=1 and parent=$achievement->parent and rank<=$new_rank order by rank");
+        $connection->exec("update achievements set rank=@rank:=@rank-1 where active=1 and parent=$achievement->parent and rank<=$new_rank order by rank desc");
     } else if ($new_rank - $achievement->rank < 0) {
+        
         $connection->exec("update achievements set rank=@rank:=@rank+1 where active=1 and parent=$achievement->parent and rank>=$new_rank order by rank");
     } else if ($new_rank - $achievement->rank == 0) {
         //BAD - new rank should not be the same as the old
