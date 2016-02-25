@@ -62,6 +62,12 @@ function change_rank($id, $new_rank) {
     //I also need to check to see if there are holes in the ranks.
 
     $achievement = fetch_achievement($id);
+    $highest_rank=fetch_highest_rank($achievement->parent);
+    if (fetch_num_of_achievements($achievement) != $highest_rank){
+        //BAD - Holes in rank. 
+        fix_achievement_ranks("updated", $achievement->parent);
+        exit;
+    } 
     update_rank($id, $new_rank);
     deactivate_achievement($achievement->id);
     if ($new_rank <= 0) {
@@ -73,7 +79,7 @@ function change_rank($id, $new_rank) {
         //BAD - ranks shouldn't be duplicated 
     }
     //if user picks a new rank too big
-    if ($new_rank > (fetch_highest_rank($achievement->parent))) {
+    if ($new_rank > $highest_rank) {
         activate_achievement($achievement->id);
         fix_achievement_ranks("rank", $achievement->parent);
         exit;
@@ -175,7 +181,14 @@ function fetch_highest_rank($parent) {
     $statement = $connection->prepare("select rank from achievements where active=1 and parent=? order by rank desc limit 1");
     $statement->bindValue(1, $parent, PDO::PARAM_INT);
     $statement->execute();
-    return $statement->fetchColumn();
+    return (int)$statement->fetchColumn();
+}
+
+function fetch_num_of_achievements($achievement){
+
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection -> query ("select count(*) from achievements where active=1 and parent=$achievement->parent");
+    return (int)$statement->fetchColumn();
 }
 
 function fetch_random_achievement_id() {
