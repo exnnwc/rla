@@ -83,7 +83,7 @@ function change_rank($id, $new_rank) {
 
 function complete_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set completed=now() where id=?");
+    $statement = $connection->prepare("update achievements set active=0, completed=now() where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }

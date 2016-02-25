@@ -105,7 +105,7 @@ function fetch_work_button($achievement){
 function list_completed_achievements(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
     echo "<h3 style='text-align:center;'>Completed Achievements</h3>";
-    $statement=$connection->query("select count(*) from achievements where active=1 and completed!=0");
+    $statement=$connection->query("select count(*) from achievements where active=0 and completed!=0");
     if ((int)$statement->fetchColumn()==0){
         echo "<div>None.</div>";
         return;
