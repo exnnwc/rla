@@ -1,7 +1,6 @@
 <?php
 
 require_once ("config.php");
-
 function achievement_name_exists($name, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from achievements where active=1 and name=? and parent=? limit 1");
@@ -194,7 +193,7 @@ function is_it_active($id) {
     $statement = $connection->prepare("select active from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
-    echo $statement->fetchColumn();
+    echo json_encode((boolean)$statement->fetchColumn());
 }
 
 function rank_achievements($achievement, $new_rank) {

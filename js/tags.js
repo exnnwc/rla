@@ -17,6 +17,7 @@ function deleteTag(id, achievement_id){
         data:{function_to_be_called:"delete_tag", id:id}
     })
         .done(function(result){
+            console.log(result);
             displayProfile(achievement_id);
         });
 }

@@ -73,9 +73,19 @@ function add_button_handlers_to_listings() {
        filterListings(); 
     });
 
+    $("#show_filter").click(function () {
+        $("#show_filter").hide();
+        $("#hide_filter").show();
+        $("#filter_menu").show();
+    });
+    $("#hide_filter").click(function () {
+        $("#show_filter").show();
+        $("#hide_filter").hide();
+        $("#filter_menu").hide();
+    });
 }
 function add_button_handlers_to_profile(id) {
-
+ 
 
     $(document).on("click", "#edit_achievement_name_button", function () {
         changeName(id, $('#new_achievement_name').val());
@@ -105,10 +115,16 @@ function add_button_handlers_to_profile(id) {
         $('#show_new_actions').hide();
     });
     $(document).on("click", "#create_action_button", function () {
-        //If there's a value in input box and no select option
-        //if there's no value in input box and a selection option
-        //if both are filled out ERROR
-        createAction(id, "TEST");
+        select_val= $("#list_of_current_actions"+id).val();
+        input_val= $("#new_action_input").val();
+        console.log( select_val, "XXX", input_val);
+        if (select_val && input_val){
+            //ERROR - don't do anything. 
+            return;
+        }
+        name=input_val ? input_val : select_val;
+        console.log(name);
+        createAction(id, name);
         listAllActions(id);
     });
     $(document).on("click", "#show_new_description", function () {
@@ -269,7 +285,6 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click", "#new_action_input", function () {
         if ($("#new_action_input").val() === "Create new action here") {
             $("#new_action_input").val("");
-
         }
     });
     $(document).on("change", ".list_of_current_actions", function (event) {
@@ -300,6 +315,15 @@ function add_button_handlers_to_profile(id) {
         name = $("#new_tag" + tag_id).html();
         console.log(id, name);
         createTag(id, name);
+    });
+    $(document).on("keypress", "#new_tag_input", function (event) {
+        if (event.key =="Enter"){
+            name = $("#new_tag_input").val();
+            createTag(id, name);
+        }
+    });
+    $(document).on("click", "", function () {
+
     });
     $(document).on("click", "", function () {
 
@@ -351,6 +375,7 @@ function add_keypress_handlers_to_profile(id) {
         }
     });
     $(document).on("keypress", "#new_action_input", function (event) {
+        $("#list_of_current_actions"+id).val("");
         if (event.which === 13) {
             listAllActions(id);
             createAction(id, $("#new_action_input").val());

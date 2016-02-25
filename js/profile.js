@@ -23,7 +23,13 @@ function displayProfile(id) {
     })
             .done(function (result) {
                 //CHANGE THIS to allow for errors
-                if (result === "1") {
+                try {
+                    var active = JSON.parse(result);
+                }   catch (e){
+                    //BAD
+                    document.write(result);
+                } 
+                if (active) {
                     $.ajax({
                         method: "POST",
                         url: "/rla/php/profile.php",
@@ -42,11 +48,9 @@ function displayProfile(id) {
                                 listTags(id);
                                 listNotes(id);
                             });
-                } else if (result == "0") {
+                } else if (!active) {
                     $("#achievement_profile").html("This achievement has been deleted.");
-                } else {
-                    $("#achievement_profile").html("This profile does not exist. You should not being see this message. Delete this before production.");
-                }
+                } 
             });
 }
 function listActions(achievement_id) {

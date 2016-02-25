@@ -22,10 +22,7 @@ echo "</table>";
 list_completed_achievements();
 
 function fetch_listing_menu($achievement) {
-    $string = " <tr><td >
-                    <input id='delete$achievement->id' class='delete_achievement_button' 
-                      type='button' value='X' />
-                </td><td>
+    $string = " <tr><td>
                     <input id='rank$achievement->id' type='number' 
                         class='change_rank_button' value='$achievement->rank' style='width:50px;text-align:center;' />
                 </td>
@@ -88,8 +85,7 @@ function fetch_order_query($sort_by) {
 
 function fetch_table_header() {
     return
-            "<tr><td>
-            </td>
+            "<tr>
             <td>Rank</td>
             <td>Power</td>
             <td>

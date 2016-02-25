@@ -1,6 +1,10 @@
 .hand{
     cursor:pointer;
 }
+
+.hand:hover{
+    text-decoration:underline;
+}
 .text-button{
     color:grey;
     font-size:16px;

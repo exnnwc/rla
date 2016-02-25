@@ -46,10 +46,10 @@ require_once ("php/config.php");
                         <span id="working_total" style='color:green'></span> + 
                         <span id="quality_total" style='color:gray;'></span>]/
                         <span id="nonworking_total" style='color:red'></span>)</span></span>
-                <span class="hand text-button">[ Filter ]</span>
-                <span class="hand">[ Hide Filter ]</span>
+                <span id='show_filter' class="hand text-button">[ Filter ]</span>
+                <span id='hide_filter' class="hand text-button" style='display:none;'>[ Hide Filter ]</span>
             </div>
-            <div id="filter_menu">
+            <div id="filter_menu" style="display:none">
                 Tags:<span id="list_of_filter_tags"></span>
             </div>
 

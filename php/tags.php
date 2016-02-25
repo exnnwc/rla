@@ -11,7 +11,7 @@ function create_tag($achievement_id, $name){
     if (!is_it_already_tagged($achievement_id, $name)){
         insert_tag_into_db($achievement_id,$name);
             $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-            $statement = $connection ->prepare("update tags set tally=tally+1 where achievement_id=0 and name=?");
+            $statement = $connection ->prepare("update tags set tally=tally+1 where active=1 and achievement_id=0 and name=?");
             $statement->bindValue(1, $name, PDO::PARAM_INT);
             $statement->execute();            
     }
@@ -23,10 +23,10 @@ function delete_tag ($id){
     $statement = $connection ->prepare("update tags set active=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
-    $statement->$connection->prepare("update tags set tally=tally-1 where active=1 and achievement_id=0 and name=?");
+    $statement = $connection->prepare("update tags set tally=tally-1 where active=1 and achievement_id=0 and name=?");
     $statement->bindValue(1, $tag->name, PDO::PARAM_STR);
     $statement->execute();
-         
+    $connection->exec("update tags set active=0 where achievement_id=0 and tally=0");
 }
 
 function fetch_tag($id){
