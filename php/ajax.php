@@ -105,6 +105,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "list_actions":
         list_actions(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "list_filter_tags":
+        list_filter_tags();
+        break;
     case "list_new_actions":
         list_new_actions();
         break;

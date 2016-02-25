@@ -1,4 +1,6 @@
-<?php include ("php/config.php"); ?>
+<?php 
+require_once ("php/config.php"); 
+?>
 
 <html>
     <head>
@@ -26,8 +28,8 @@
     </head>
 
     <?php
-    $rla = isset($_GET['rla']) ? filter_input(INPUT_GET, 'rla', FILTER_SANITIZE_NUMBER_INT) : 0 ;
-    
+    $rla = isset($_GET['rla']) ? filter_input(INPUT_GET, 'rla', FILTER_SANITIZE_NUMBER_INT) : 0;
+
     if ($rla == 0):
         ?>
         <body id="AchievementsList">
@@ -39,24 +41,30 @@
             <div>
                 <input id="hide_achievements_button" type='button' value='Hide'  />
                 <input id="show_achievements_button" type='button' value='Show' style="display:none" />
-            <span>Total: <span id="achievement_count"><span id="achievement_total"></span>
-                    ([
-                    <span id="working_total" style='color:green'></span> + 
-	 <span id="quality_total" style='color:gray;'></span>]/
-         <span id="nonworking_total" style='color:red'></span>)</span></span>
+                <span>Total: <span id="achievement_count"><span id="achievement_total"></span>
+                        ([
+                        <span id="working_total" style='color:green'></span> + 
+                        <span id="quality_total" style='color:gray;'></span>]/
+                        <span id="nonworking_total" style='color:red'></span>)</span></span>
+                <span class="hand text-button">[ Filter ]</span>
+                <span class="hand">[ Hide Filter ]</span>
             </div>
-<!--
-            <span id="sorting_menu">
-                <input id="sort_rank_button" class="sort_button" type="button" value="Rank &#8595;"/>
-                <input id="sort_rankrev_button" class="sort_button"  type='button' value="Rank &#8593;"  style="display:none" />
-                <input id="sort_power_button" class="sort_button"  type="button" value="Power &#8595;" />
-                <input id="sort_powerrev_button" class="sort_button"  type="button" value="Power &#8593;" style="display:none"/>
-                <input id="sort_name_button"  class="sort_button" type="button" value="Name &#8595;" />
-                <input id="sort_namerev_button"  class="sort_button" type="button" value="Name &#8593;"  style="display:none"/>
-                <input id="sort_created_button"  class="sort_button" type="button" value="Time &#8595;" />
-                <input id="sort_createdrev_button"  class="sort_button" type="button" value="Time &#8593;"  style="display:none"/>
-            </span>
--->
+            <div id="filter_menu">
+                Tags:<span id="list_of_filter_tags"></span>
+            </div>
+
+            <!--
+                        <span id="sorting_menu">
+                            <input id="sort_rank_button" class="sort_button" type="button" value="Rank &#8595;"/>
+                            <input id="sort_rankrev_button" class="sort_button"  type='button' value="Rank &#8593;"  style="display:none" />
+                            <input id="sort_power_button" class="sort_button"  type="button" value="Power &#8595;" />
+                            <input id="sort_powerrev_button" class="sort_button"  type="button" value="Power &#8593;" style="display:none"/>
+                            <input id="sort_name_button"  class="sort_button" type="button" value="Name &#8595;" />
+                            <input id="sort_namerev_button"  class="sort_button" type="button" value="Name &#8593;"  style="display:none"/>
+                            <input id="sort_created_button"  class="sort_button" type="button" value="Time &#8595;" />
+                            <input id="sort_createdrev_button"  class="sort_button" type="button" value="Time &#8593;"  style="display:none"/>
+                        </span>
+            -->
             <div id="list_of_achievements"></div>
         <?php elseif ($rla > 0): ?>
         <body id="achievement_number_<?php echo $rla; ?>" >

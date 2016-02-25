@@ -71,7 +71,7 @@ function changeQuality(id, new_quality) {
         data: {function_to_be_called: "change_quality", id: id, new_quality: new_quality}
     })
             .done(function (result) {
-                listAchievements("default");
+                listAchievements("default", "default");
                 countAchievements();
             });
 }
@@ -178,7 +178,7 @@ function deleteAchievement(id, parent, fromProfile) {
                             displayChildren(parent);
                         }
                     } else if (fromProfile === false) {
-                        listAchievements("default");
+                        listAchievements("default", "default");
                     }
                 });
     }

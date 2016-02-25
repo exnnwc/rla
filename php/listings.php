@@ -1,12 +1,20 @@
 <?php
-require_once("work.php");
+
 
 require_once ("config.php");
+require_once("tags.php");
+require_once("work.php");
+
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 $sort_by=filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING);
 
 echo "<table style='text-align:center;'>" . fetch_table_header();
-$statement = $connection->query("select * from achievements where active=1 and parent=0 and completed=0" . fetch_order_query($sort_by));
+if (isset($_POST['filter'])){
+    $query=process_filter_to_query($_POST['filter']);
+} else if (!isset($_POST['filter'])){
+    $query=process_filter_to_query("default");   
+}
+$statement = $connection->query($query . fetch_order_query($sort_by));
 while ($achievement = $statement->fetchObject()) {
     echo fetch_listing_row($achievement);
 }
@@ -125,4 +133,26 @@ function list_completed_achievements(){
     
 }
 
+function display_tag_filters(){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
+    $statement = $connection -> query ("select * from tags where active=1 and achievement_id=0");
+    while ($tag = $statement->fetchObject()){
+        echo "<span>$tag->name($tag->tally)</span>";
+    }
+    
+}
 
+function process_filter_to_query($filter){
+    if ($filter=="default" || empty($filter)){
+        return "select * from achievements where active=1 and parent=0 and completed=0";
+    }
+    foreach($filter["filter_tags"] as $tag){                
+        $tag=fetch_tag($tag);
+         $string = !isset($string) 
+            ? " name=\"$tag->name\"" 
+            : $string .  " or name=\"$tag->name\"";
+    }
+        $string = $string . ")";
+            return "select * from achievements where active=1 and parent=0 and completed=0 and 
+                    id in (select distinct achievement_id from tags where active=1 and $string";
+}

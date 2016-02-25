@@ -5,7 +5,8 @@ $(document.body).ready(function () {
 
     if ($(document.body).attr('id') === "AchievementsList") {
         document.title = SITE_NAME + " - Achievements List";
-        listAchievements("default");
+        displayFilterMenu();
+        listAchievements("default", "default");
         countAchievements();
         add_keypress_handlers_to_listings();
         add_button_handlers_to_listings();
@@ -49,7 +50,7 @@ function add_button_handlers_to_listings() {
         } else if (sort_by.substr((sort_by.length - 3), 3) != "rev") {
             var sort_inverse = sort_by + "rev";
         }
-        listAchievements(sort_by);
+        listAchievements("default", sort_by);
         $("#sort_" + sort_by + "_button").hide();
         $("#sort_" + sort_inverse + "_button").show();
     });
@@ -68,11 +69,13 @@ function add_button_handlers_to_listings() {
         state = id.substr(id, 1, 1) === "1";
         changeQuality(achievement_id, state);
     });
-
+    $(document).on("click", ".filter_menu", function (event) {
+       filterListings(); 
+    });
 
 }
 function add_button_handlers_to_profile(id) {
-        
+
 
     $(document).on("click", "#edit_achievement_name_button", function () {
         changeName(id, $('#new_achievement_name').val());
@@ -255,24 +258,24 @@ function add_button_handlers_to_profile(id) {
         $("#hide_achievement_information").show();
         $("#show_achievement_information").hide();
         $("#achievement_info").show();
-    });    
+    });
     $(document).on("click", ".change_work_button", function () {
         toggleWorkStatus(id);
     });
     $(document).on("click", "#achievement_quality", function () {
         toggleQuality(id);
-    });    
+    });
 
     $(document).on("click", "#new_action_input", function () {
-        if ( $("#new_action_input").val()==="Create new action here"){
+        if ($("#new_action_input").val() === "Create new action here") {
             $("#new_action_input").val("");
-            
-        }        
-    });    
+
+        }
+    });
     $(document).on("change", ".list_of_current_actions", function (event) {
         $("#new_action_input").val("");
-  
-    });   
+
+    });
 
     $(document).on("click", "#show_new_tags", function (event) {
         $("#show_new_tags").hide();
@@ -283,7 +286,7 @@ function add_button_handlers_to_profile(id) {
         $("#new_tags").hide();
     });
     $(document).on("click", "#create_tag", function (event) {
-        name=$("#new_tag_input").val();
+        name = $("#new_tag_input").val();
         createTag(id, name);
     });
     $(document).on("click", ".delete_tag", function (event) {
@@ -292,13 +295,14 @@ function add_button_handlers_to_profile(id) {
         deleteTag(tag_id, id);
     });
     $(document).on("click", ".create_this_tag", function (event) {
-        id = event.target.attributes.id.nodeValue;
-        tag_id = Number(id.substr(7, id.length - 7));
-        name=$("#new_tag"+tag_id).html();
+        html_id = event.target.attributes.id.nodeValue;
+        tag_id = Number(html_id.substr(7, html_id.length - 7));
+        name = $("#new_tag" + tag_id).html();
+        console.log(id, name);
         createTag(id, name);
     });
     $(document).on("click", "", function () {
-        
+
     });
 }
 
@@ -363,7 +367,7 @@ function add_keypress_handlers_to_profile(id) {
 
 function softGenericReload(id) {
     if ($(document.body).attr('id') === "AchievementsList") {
-        listAchievements("default");
+        listAchievements("default", "default");
         countAchievements();
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
         displayProfile(id);

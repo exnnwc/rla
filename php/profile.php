@@ -94,9 +94,9 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
         Power: <?php echo $achievement->power_adj; ?>
 </div>
 <div >
-    Tags: <span id='list_of_tags<?php echo $achievement->id; ?>' style='margin-right:8px;'>None</span>
-    <span id="show_new_tags" class="hand text-button h-normal" style='display:none;'> [ + ] </span>
-    <span id='new_tags'>
+    Tags: <span id='list_of_tags<?php echo $achievement->id; ?>' style='margin-right:8px;'></span>
+    <span id="show_new_tags" class="hand text-button h-normal" style=''> [ + ] </span>
+    <span id='new_tags' style='display:none;'>
         <span id="hide_new_tags" class="hand text-button h-normal" > [ - ] </span>
         <span id="list_of_new_tags<?php echo $achievement->id; ?>"></span>
         <input id="new_tag_input" type='text' style="width:140px;">

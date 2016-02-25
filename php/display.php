@@ -30,7 +30,7 @@ function list_actions($achievement_id) {
     $statement = $connection->prepare("select count(*) from actions where active=1 and achievement_id=? order by name");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->execute();
-    if ((int)$statement->fetchColumn()==0){
+    if ((int) $statement->fetchColumn() == 0) {
         echo "<div style='font-style:italic'>No actions registered for this achievement.</div>";
         return;
     }
@@ -64,6 +64,13 @@ function list_children($id) {
     }
 }
 
+function list_filter_tags(){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->query("select * from tags where active=1 and achievement_id=0");
+    while ($tag = $statement->fetchObject()){
+        echo "<input name='filtered_tags' type='checkbox' class='filter_menu' value='$tag->id'/><span class='hand text-button'>$tag->name ($tag->tally)</span>";
+    }
+}
 function list_new_actions() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from actions where reference=0 and active=1");
@@ -94,23 +101,24 @@ function list_new_requirements($id) {
     }
 }
 
-function list_new_tags($achievement_id){
+function list_new_tags($achievement_id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select * from tags where active=1 and achievement_id=0 order by name asc");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->execute();
-    while ($tag = $statement->fetchObject()){
-        if (!is_it_already_tagged($achievement_id, $tag->name)){
-            echo "<span id='new_tag$tag->id' class='create_this_tag hand text-button'> $tag->name </span>"; 
+    while ($tag = $statement->fetchObject()) {
+        if (!is_it_already_tagged($achievement_id, $tag->name)) {
+            echo "<span id='new_tag$tag->id' class='create_this_tag hand text-button' style='margin-left:8px;'>$tag->name</span>";
         }
     }
 }
+
 function list_notes($achievement_id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from notes where active=1 and achievement=? order by created desc");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->execute();
-    if ((int)$statement->fetchColumn()==0){
+    if ((int) $statement->fetchColumn() == 0) {
         echo "<div style='font-style:italic;'>This achievement has no notes.</div>";
     }
     $statement = $connection->prepare("select * from notes where active=1 and achievement=? order by created desc");
@@ -120,7 +128,6 @@ function list_notes($achievement_id) {
         echo "<div style='background-color:lightgray;width:800px;'>
                 <h6 style='background-color:white';margin:0px;>
                     <input id='note$note->id' class='delete_note_button' type='button' value='X' /> "
-                
         . date("m/d/y h:i:s", strtotime($note->created))
         . "</h6>
                 <div style='padding:12px;'>" .
@@ -178,14 +185,21 @@ function list_requirements($id, $type) {
     }
 }
 
-function list_tags($id){
+function list_tags($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("select count(*) from tags where active=1 and achievement_id=? order by name asc");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    if ((int)$statement->fetchColumn()==0){
+        echo "None.";
+        return;
+    }
     $statement = $connection->prepare("select * from tags where active=1 and achievement_id=? order by name asc");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
-    while ($tag = $statement->fetchObject()){
-       echo "<input id='delete$tag->id' class='delete_tag hand text-button' type='button' value='X' />
-             <span class='tag'> $tag->name </span>"; 
+    while ($tag = $statement->fetchObject()) {
+        echo "<input id='delete$tag->id' class='delete_tag hand text-button' type='button' value='X' />
+             <span class='tag'> $tag->name </span>";
     }
 }
 
