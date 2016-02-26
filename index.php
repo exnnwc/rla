@@ -42,10 +42,7 @@ require_once ("php/config.php");
                 <input id="hide_achievements_button" type='button' value='Hide'  />
                 <input id="show_achievements_button" type='button' value='Show' style="display:none" />
                 <span>Total: <span id="achievement_count"><span id="achievement_total"></span>
-                        ([
-                        <span id="working_total" style='color:green'></span> + 
-                        <span id="quality_total" style='color:gray;'></span>]/
-                        <span id="nonworking_total" style='color:red'></span>)</span></span>
+                        ( <span id="working_total" style='color:green'></span> / <span id="nonworking_total" style='color:red'></span> )</span></span>
                 <span id='show_filter' class="hand text-button">[ Filter ]</span>
                 <span id='hide_filter' class="hand text-button" style='display:none;'>[ Hide Filter ]</span>
             </div>

@@ -136,7 +136,6 @@ function countAchievements() {
             .done(function (result) {
                 count = JSON.parse(result);
                 $("#working_total").html(count.working);
-                $("#quality_total").html(count.qualities);
                 $("#nonworking_total").html(count.not_working);
                 $("#achievement_total").html(count.total);
             });

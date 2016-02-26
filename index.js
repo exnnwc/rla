@@ -122,9 +122,11 @@ function add_button_handlers_to_profile(id) {
             //ERROR - don't do anything. 
             return;
         }
-        name=input_val ? input_val : select_val;
-        console.log(name);
-        createAction(id, name);
+        if (input_val){
+            createAction(id, input_val);
+        } else if (!input_val){
+            associateAction(id, select_val);
+        }
         listAllActions(id);
     });
     $(document).on("click", "#show_new_description", function () {
@@ -375,10 +377,9 @@ function add_keypress_handlers_to_profile(id) {
         }
     });
     $(document).on("keypress", "#new_action_input", function (event) {
-        $("#list_of_current_actions"+id).val("");
         if (event.which === 13) {
-            listAllActions(id);
             createAction(id, $("#new_action_input").val());
+            listAllActions(id);
         }
     });
     $(document).on("keypress", "#new_child_name", function (event) {

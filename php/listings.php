@@ -42,8 +42,6 @@ function fetch_next_three_menu_cells($achievement){
                     <input id='0quality$achievement->id' class='change_quality_button' type='checkbox' checked \"/>
                </td>" 
             : "<td> " . fetch_work_button($achievement) . "
-                </td><td>
-                    <input id='1quality$achievement->id' class='change_quality_button'  type='checkbox' \"/>
                 </td>"; 
     
 }
@@ -65,7 +63,6 @@ function fetch_listing_row($achievement) {
 }
 
 function fetch_order_query($sort_by) {
-    //TEST $sort_by that the key is appropriate first.
     $order_by = 
        ["default" => " order by quality asc, rank asc",
         "power" => " order by power_adj asc",
@@ -88,10 +85,7 @@ function fetch_table_header() {
             "<tr>
             <td>Rank</td>
             <td>Power</td>
-            <td>
-                <a href = '" . SITE_ROOT . "/work/' style = 'color:black;'>Work</a>
-            </td>
-            <td>Quality</td>
+            <td>Active</td>
             <td>Achievement Name</td>
             </tr>";
 }
@@ -128,7 +122,24 @@ function list_completed_achievements(){
     }
     
 }
+function list_qualities(){
+    echo "<h1>Qualities</h1>";
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
+    $statement = $connection->query("select * from achievements where quality=1 and deleted=0");
+    while ($quality= $statement->fetchObject()){
+        echo "  <div>
+                    <span>
+                        <input id='rank$quality->id' type='number' 
+                          class='change_rank_button' value='$quality->rank' style='width:50px;text-align:center;' />
+                    </span><span>
+                        <a href='" . SITE_ROOT . "/?rla=$quality->id'";
+            
+        echo "          $quality->name
+                    </span>
+                </div>";
+    }
 
+}
 function display_tag_filters(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
     $statement = $connection -> query ("select * from tags where active=1 and achievement_id=0");
@@ -139,8 +150,10 @@ function display_tag_filters(){
 }
 
 function process_filter_to_query($filter){
+    $generic_query="select * from achievements where deleted=0 and parent=0 and completed=0 and quality=0";
+
     if ($filter=="default" || empty($filter)){
-        return "select * from achievements where active=1 and parent=0 and completed=0";
+        return $generic_query;
     }
     foreach($filter["filter_tags"] as $tag){                
         $tag=fetch_tag($tag);
@@ -149,6 +162,6 @@ function process_filter_to_query($filter){
             : $string .  " or name=\"$tag->name\"";
     }
         $string = $string . ")";
-            return "select * from achievements where active=1 and parent=0 and completed=0 and 
-                    id in (select distinct achievement_id from tags where active=1 and $string";
+            return "$generic_query and 
+                      id in (select distinct achievement_id from tags where active=1 and $string";
 }

@@ -9,6 +9,10 @@ require_once ("requirements.php");
 require_once ("relations.php");
 require_once("tags.php");
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
+    case "associate_action":
+echo "YO";
+        associate_action(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
+        break;
     case "cancel_work":
         cancel_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -46,7 +50,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         create_achievement(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'parent', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "create_action":
-        create_action(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'reference', FILTER_SANITIZE_NUMBER_INT));
+        create_action(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING));
         break;
     case "create_new_action":
         create_new_action(filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING));

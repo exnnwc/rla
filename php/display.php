@@ -73,9 +73,9 @@ function list_filter_tags(){
 }
 function list_new_actions() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->query("select * from actions where reference=0 and active=1");
+    $statement = $connection->query("select * from actions where achievement_id=0 and active=1");
     $statement->execute();
-    echo "<option>Select from previous actions here</option>";
+    echo "<option value=''>Select from previous actions here</option>";
     while ($action = $statement->fetchObject()) {
         echo "<option value='$action->id'>$action->name</option>";
     }

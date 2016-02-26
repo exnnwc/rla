@@ -45,9 +45,6 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
         </div>
     </div>
 </h1>
-<div id="achievement_quality" class="hand" style="font-size:20px;text-decoration:underline;margin-bottom:8px;">
-    <?php echo $achievement->quality ? "Quality" : "Achievement";?>
-</div>
 <div>
         <span id='work<?php echo $achievement->id; ?>' class='hand change_work_button'
             <?php 

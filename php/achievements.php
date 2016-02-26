@@ -3,7 +3,7 @@
 require_once ("config.php");
 function achievement_name_exists($name, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("select count(*) from achievements where active=1 and name=? and parent=? limit 1");
+    $statement = $connection->prepare("select count(*) from achievements where deleted=0 and name=? and parent=? limit 1");
     $statement->bindValue(1, $name, PDO::PARAM_STR);
     $statement->bindValue(2, $parent, PDO::PARAM_INT);
     $statement->execute();
@@ -12,14 +12,14 @@ function achievement_name_exists($name, $parent) {
 
 function activate_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set active=1 where id=?");
+    $statement = $connection->prepare("update achievements set deleted=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
 
 function are_ranks_duplicated($parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->query("SELECT COUNT(*) as count FROM achievements where parent=$parent and active=1 GROUP BY rank HAVING COUNT(*) > 1");
+    $statement = $connection->query("SELECT COUNT(*) as count FROM achievements where parent=$parent and deleted=0 GROUP BY rank HAVING COUNT(*) > 1");
     if ((int) $statement->fetchColumn() > 0) {
         return true;
     }
@@ -91,7 +91,7 @@ function change_rank($id, $new_rank) {
 
 function complete_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set active=0, completed=now() where id=?");
+    $statement = $connection->prepare("update achievements set deleted=1, completed=now() where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
@@ -100,13 +100,13 @@ function count_achievements() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $data = [];
 
-    $statement = $connection->query("select count(*) from achievements where quality=false and active=1 and parent=0 and  work>0");
+    $statement = $connection->query("select count(*) from achievements where quality=false and deleted=0 and parent=0 and  work>0");
     $num_of_working_achievements = (int) $statement->fetchColumn();
 
-    $statement = $connection->query("select count(*) from achievements where active=1 and quality=true");
+    $statement = $connection->query("select count(*) from achievements where deleted=0 and quality=true");
     $num_of_qualities = (int) $statement->fetchColumn();
 
-    $statement = $connection->query("select count(*) from achievements where active=1 and parent=0");
+    $statement = $connection->query("select count(*) from achievements where deleted=0 and parent=0");
     $num_of_achievements = (int) $statement->fetchColumn();
 
     $num_of_nonworking_achievements = $num_of_achievements - $num_of_working_achievements - $num_of_qualities;
@@ -139,7 +139,7 @@ function create_achievement($name, $parent) {
 
 function deactivate_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set active=0 where id=?");
+    $statement = $connection->prepare("update achievements set deleted=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
@@ -148,7 +148,7 @@ function delete_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     deactivate_achievement($id);
     $achievement = fetch_achievement($id);
-    $connection->exec("update achievements set rank=rank-1 where active=1 and parent=$achievement->parent and rank>=$achievement->rank");
+    $connection->exec("update achievements set rank=rank-1 where deleted=0 and parent=$achievement->parent and rank>=$achievement->rank");
 }
 
 function fetch_achievement($id) {
@@ -169,7 +169,7 @@ function fetch_achievement_name($id) {
 
 function fetch_achievement_by_rank_and_parent($rank, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("select * from achievements where active=1 and rank=? and parent=?");
+    $statement = $connection->prepare("select * from achievements where deleted=0 and rank=? and parent=?");
     $statement->bindValue(1, $rank, PDO::PARAM_INT);
     $statement->bindValue(2, $parent, PDO::PARAM_INT);
     $statement->execute();
@@ -178,7 +178,7 @@ function fetch_achievement_by_rank_and_parent($rank, $parent) {
 
 function fetch_highest_rank($parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("select rank from achievements where active=1 and parent=? order by rank desc limit 1");
+    $statement = $connection->prepare("select rank from achievements where deleted=0 and parent=? order by rank desc limit 1");
     $statement->bindValue(1, $parent, PDO::PARAM_INT);
     $statement->execute();
     return (int)$statement->fetchColumn();
@@ -187,38 +187,38 @@ function fetch_highest_rank($parent) {
 function fetch_num_of_achievements($achievement){
 
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection -> query ("select count(*) from achievements where active=1 and parent=$achievement->parent");
+    $statement = $connection -> query ("select count(*) from achievements where deleted=0 and parent=$achievement->parent");
     return (int)$statement->fetchColumn();
 }
 
 function fetch_random_achievement_id() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->query("select id from achievements where active=1 and parent=0 order by rand() limit 1");
+    $statement = $connection->query("select id from achievements where deleted=0 and parent=0 order by rand() limit 1");
     return $statement->fetchColumn();
 }
 
 function fix_achievement_ranks($field, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $connection->exec("set @rank=0");
-    $connection->exec("update achievements set rank=@rank:=@rank+1 where active=1 and parent=$parent order by $field ");
+    $connection->exec("update achievements set rank=@rank:=@rank+1 where deleted=0 and parent=$parent order by $field ");
 }
 
 function is_it_active($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("select active from achievements where id=?");
+    $statement = $connection->prepare("select deleted from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
-    echo json_encode((boolean)$statement->fetchColumn());
+    echo json_encode(!(boolean)$statement->fetchColumn());
 }
 
 function rank_achievements($achievement, $new_rank) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $connection->exec("set @rank=$new_rank");
     if ($new_rank - $achievement->rank > 0) {
-        $connection->exec("update achievements set rank=@rank:=@rank-1 where active=1 and parent=$achievement->parent and rank<=$new_rank order by rank desc");
+        $connection->exec("update achievements set rank=@rank:=@rank-1 where deleted=0 and parent=$achievement->parent and rank<=$new_rank order by rank desc");
     } else if ($new_rank - $achievement->rank < 0) {
         
-        $connection->exec("update achievements set rank=@rank:=@rank+1 where active=1 and parent=$achievement->parent and rank>=$new_rank order by rank");
+        $connection->exec("update achievements set rank=@rank:=@rank+1 where deleted=0 and parent=$achievement->parent and rank>=$new_rank order by rank");
     } else if ($new_rank - $achievement->rank == 0) {
         //BAD - new rank should not be the same as the old
     }
