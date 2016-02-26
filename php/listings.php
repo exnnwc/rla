@@ -49,11 +49,9 @@ function fetch_listing_row($achievement) {
     $string = fetch_listing_menu($achievement)
             . " <td style='text-align:left'>
                 <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
-    if ($achievement->quality) {
-        $string = $string . "color:gray;";
-    } else if ($achievement->work) {
+    if ($achievement->active) {
         $string = $string . "color:green;";
-    } else if (!$achievement->work) {
+    } else if (!$achievement->active) {
         $string = $string . "color:red;";
     }
     $string = $string . "    '>
@@ -90,10 +88,17 @@ function fetch_table_header() {
             </tr>";
 }
 function fetch_work_button($achievement){
+
+    $string="<input type='button'  id='active$achievement->id' class='toggle_activity' style='background-color:";
+    $string = !$achievement->active 
+        ? $string . "green;' />"
+        : $string . "red;' />";
+   /* 
         $string ="<input id='work$achievement->id' type='checkbox' class='change_work_button'";
     $string = $achievement->work 
         ? $string . " checked />"
         : $string . "/>";
+*/
     return $string;
 }
 function list_completed_achievements(){
