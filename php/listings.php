@@ -89,17 +89,11 @@ function fetch_table_header() {
 }
 function fetch_work_button($achievement){
 
-    $string="<input type='button'  id='active$achievement->id' class='toggle_activity' style='background-color:";
+    $string="<input type='button'  id='activity$achievement->id' ";
     $string = !$achievement->active 
-        ? $string . "green;' />"
-        : $string . "red;' />";
-   /* 
-        $string ="<input id='work$achievement->id' type='checkbox' class='change_work_button'";
-    $string = $achievement->work 
-        ? $string . " checked />"
-        : $string . "/>";
-*/
-    return $string;
+        ? $string . "class='activate_button' style='background-color:green;' />"
+        : $string .  "class='deactivate_button' style='background-color:red;' />";
+   return $string;
 }
 function list_completed_achievements(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    

@@ -354,6 +354,16 @@ function add_handlers_to_index(parent, from_profile) {
         achievement_id = JSON.parse(id.substr(6, id.length - 6));
         deleteAchievement(achievement_id, parent, from_profile);
     });
+    $(document).on("click", ".activate_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = JSON.parse(id.substr(8, id.length - 8));
+        activateAchievement(achievement_id);
+    });
+    $(document).on("click", ".deactivate_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = JSON.parse(id.substr(8, id.length - 8));
+        deactivateAchievement(achievement_id);
+    });
     $(document).on("click", "", function (event) {
 
     });

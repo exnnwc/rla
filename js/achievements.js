@@ -1,3 +1,31 @@
+function activateAchievement(id){
+    if (!testIfVariableIsNumber(id, "id")){
+        return;
+    }
+
+    $.ajax({
+        method:"POST",
+        url:"/rla/php/ajax.php",
+        data:{function_to_be_called: "activate_achievement", id:id}
+    })
+        .done(function(result){
+            softGenericReload(id);    
+        });
+}
+function deactivateAchievement(id) {
+    if (!testIfVariableIsNumber(id, "id")){
+        return;
+    }
+
+    $.ajax({
+        method: "POST",
+        url: "/rla/php/ajax.php",
+        data: {function_to_be_called: "deactivate_achievement", id: id}
+    })
+            .done(function (result) {
+                softGenericReload(id);
+            });
+}
 function changeDescription(id, description) {
     if (!testIfVariableIsNumber(id, "id")
             || !testStringForMaxLength(description, 20000, "description")) {

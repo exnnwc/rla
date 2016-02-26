@@ -12,7 +12,7 @@ function achievement_name_exists($name, $parent) {
 
 function activate_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set deleted=0 where id=?");
+    $statement = $connection->prepare("update achievements set active=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
@@ -139,14 +139,16 @@ function create_achievement($name, $parent) {
 
 function deactivate_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set deleted=1 where id=?");
+    $statement = $connection->prepare("update achievements set active=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
 
 function delete_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    deactivate_achievement($id);
+    $statement = $connection->prepare("update achievements set deleted=1 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
     $achievement = fetch_achievement($id);
     $connection->exec("update achievements set rank=rank-1 where deleted=0 and parent=$achievement->parent and rank>=$achievement->rank");
 }
@@ -271,4 +273,14 @@ function uncomplete_achievement($id) {
     $statement = $connection->prepare("update achievements set completed=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
+}
+
+function undelete_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    $statement = $connection->prepare("update achievements set deleted=0 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    update_rank($id, fetch_highest_rank($achievement->parent)+1);
+
 }
