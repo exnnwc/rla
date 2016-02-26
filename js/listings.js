@@ -12,7 +12,6 @@ function filterListings(){
     listAchievements(filter, "default");
 }
 function listAchievements(filter, sort_by) {
-    console.log(filter)
     if (!testIfVariableIsString(sort_by, "sort_by")){        
         return;
     }

@@ -42,17 +42,10 @@ function add_button_handlers_to_listings() {
         $('#show_achievements_button').hide();
     });
 
-    $(".sort_button").click(function (event) {
+    $(document).on ("click", ".sort_button" , function (event) {
         var button_id = event.target.id;
         var sort_by = button_id.substr(5, (button_id.length - 12));
-        if (sort_by.substr((sort_by.length - 3), 3) === "rev") {
-            var sort_inverse = sort_by.substr(0, (sort_by.length - 3));
-        } else if (sort_by.substr((sort_by.length - 3), 3) != "rev") {
-            var sort_inverse = sort_by + "rev";
-        }
         listAchievements("default", sort_by);
-        $("#sort_" + sort_by + "_button").hide();
-        $("#sort_" + sort_inverse + "_button").show();
     });
     $(document).on("change", ".change_rank_button", function (event) {
 

@@ -7,8 +7,10 @@ require_once("work.php");
 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 $sort_by=filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING);
-
-echo "<table style='text-align:center;'>" . fetch_table_header();
+if ($sort_by=="default"){
+    $sort_by="rank"; 
+}
+echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
 if (isset($_POST['filter'])){
     $query=process_filter_to_query($_POST['filter']);
 } else if (!isset($_POST['filter'])){
@@ -78,14 +80,29 @@ function fetch_order_query($sort_by) {
     return $order_by[$sort_by];
 }
 
-function fetch_table_header() {
-    return
-            "<tr>
-            <td>Rank</td>
-            <td>Power</td>
-            <td>Active</td>
-            <td>Achievement Name</td>
-            </tr>";
+function fetch_table_header($sort_by) {
+    $headers=["Rank", "Power", "Active", "Name"];
+    $string="<tr>";
+    foreach ($headers as $header){
+        
+        $string=$string."<td id='sort_";
+        $string =  $sort_by==strtolower($header) 
+            ? $string . strtolower($header)."rev"
+            : $string . strtolower($header);
+
+
+        $string = $string . "_button' class='hand text-button sort_button'>";
+        if ($sort_by==strtolower($header)."rev"){
+           $string=$string . "&uarr;"; 
+        }
+        $string = $string . $header;
+        if ($sort_by==strtolower($header)  || ($sort_by=="default" && $header=="Rank")){
+           $string=$string . "&darr;"; 
+        }
+        $string = $string . "</td>";
+    }
+    $string = $string . "</tr>";
+    return $string;
 }
 function fetch_work_button($achievement){
 
