@@ -10,7 +10,7 @@ function create_relation($a, $b) {
     $statement->bindValue(2, $b, PDO::PARAM_INT);
     $statement->execute();
     if ($statement->fetchColumn() > 0) {
-        //BAD 
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($a, $b): More than one relation registered.");        
         return;
     }
         $statement = $connection->prepare("insert into relations(a,b) values (?,?)");

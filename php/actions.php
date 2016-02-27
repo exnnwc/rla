@@ -10,7 +10,7 @@ function action_already_associated($achievement_id, $action_id){
         //WARN User trying to associate an action that's already been associated.
         return true;
     } else if ($num_of_actions>1){
-        //BAD There should not be more than one action registered.
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($achievement_id, $action_id): More than one action registered for this achievement.");
         return true;
     }
 
@@ -26,7 +26,7 @@ function action_already_exists($achievement_id, $action){
         //WARN Action already exists.
         return true;
     } else if ($num_of_records>1){
-        //BAD There should not be more than one action with the same name registered.
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($achievement_id, $action_id): More than one action registered for this achievement.");
         return true;
     }
 
@@ -45,7 +45,7 @@ function top_action_already_exists($achievement_id, $action){
         associate_action($achievement_id, $action_id); 
         return true; 
     } else if ($num_of_records>1){
-        //BAD There should not be more than one zero action.
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($achievement_id, $action_id): More than one action registered for this achievement.");
         return true;
     }
 }
@@ -107,23 +107,7 @@ function fetch_action($id) {
     return $statement->fetchObject();
 }
 
-function fetch_action_by_name($name){
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("select count (*) from actions where active=1 and name=?");
-    $statement->bindValue(1, $name, PDO::PARAM_STR);
-    $statement->execute();
-    $num_of_records=(int)$statement->fetchColumn();
-    if ($num_of_records==0){
-        return false;
-    } else if ($num_of_records>1){
-        //BAD Should not be more than one active action with the same name.
-        return false;
-    }
-    $statement = $connection -> prepare ("select * from actions where active=1 and name=?");
-    $statement->bindValue(1, $name, PDO::PARAM_STR);
-    $statement->execute();
-    return $statement->fetchObject();
-}
+
 function update_work_status_for_related_actions($achievement_id, $new_work){    
     //I may eventually allow actions to have separate work schedules than their attached achievements.
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    

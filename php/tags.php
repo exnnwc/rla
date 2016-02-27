@@ -7,14 +7,14 @@ function check_tag_integrity(){
     while ($tag=$statement->fetchObject()){
         $achievement=fetch_achievement($tag->achievement_id);
         if ($achievement->deleted){
-            //BAD Tag should have been deleted.
+            error_log("Line #".__LINE__ . " " . __FUNCTION__ . "(): Tag should have been deleted.");                
             deactivate_tag($tag->id);
         }
     }
     $statement = $connection -> query ("select * from tags where active=1 and achievement_id=0");
     while ($top_tag=$statement->fetchObject()){
         if ($top_tag->tally==0){
-            //BAD
+            error_log("Line #".__LINE__ . " " . __FUNCTION__ . "(): Top tag id #$top_tag->id's tally is 0.");                
             deactivate_tag($top_tag->id);
         } else if ($top_tag->tally>0){
             $statement=$connection->prepare("select count(*) from tags where active=1 and achievement_id!=0 and name=?");
@@ -26,11 +26,11 @@ function check_tag_integrity(){
             var_dump($statement, $top_tag->name);
             }
             if ($num_of_associated_tags==0){
-                //BAD
+                error_log("Line #".__LINE__ . " " . __FUNCTION__ . "(): No tags associated with top tag id #$top_tag->id");                
                 deactivate_tag($top_tag->id);
             }
             if ((int)$top_tag->tally!=$num_of_associated_tags){
-                //BAD tags did not equal associated
+                error_log("Line #".__LINE__ . " " . __FUNCTION__ . "(): Top tag #$top_tag->id's tally does not match number of associated tags.");                                
                $connection->exec("update tags set tally=$num_of_associated_tags where id=$top_tag->id");
             }
         }

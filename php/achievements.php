@@ -63,20 +63,20 @@ function change_rank($id, $new_rank) {
 
     $achievement = fetch_achievement($id);
     $highest_rank=fetch_highest_rank($achievement->parent);
-    if (fetch_num_of_achievements($achievement) != $highest_rank){
-        //BAD - Holes in rank. 
+    if (fetch_num_of_achievements($achievement) != $highest_rank){        
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Holes in rank");
         fix_achievement_ranks("updated", $achievement->parent);
         exit;
     } 
     update_rank($id, $new_rank);
     deactivate_achievement($achievement->id);
     if ($new_rank <= 0) {
-        //BAD - shouldn't be able to change rank to 0 or a negative
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Shouldn't be able to change rank to 0 or negative");
     }
     if (are_ranks_duplicated($achievement->parent)) {
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Ranks duplicated.");
         fix_achievement_ranks("updated", $achievement->parent);
-        exit;
-        //BAD - ranks shouldn't be duplicated 
+        exit;        
     }
     //if user picks a new rank too big
     if ($new_rank > $highest_rank) {
@@ -222,7 +222,7 @@ function rank_achievements($achievement, $new_rank) {
         
         $connection->exec("update achievements set rank=@rank:=@rank+1 where deleted=0 and parent=$achievement->parent and rank>=$new_rank order by rank");
     } else if ($new_rank - $achievement->rank == 0) {
-        //BAD - new rank should not be the same as the old
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($achievement->id, $new_rank): New rank should not be the same as the old.");
     }
 }
 

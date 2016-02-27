@@ -8,7 +8,7 @@ function create_requirement($for, $by) {
     $statement->bindValue(2,$by, PDO::PARAM_INT);
     $statement->execute();
     if ($statement->fetchColumn()>0){
-         //BAD This is already required.";
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($for, $by): This is already required.");                
         return;
     } 
     $statement = $connection->prepare("insert into requirements (required_for, required_by) values (?, ?)");
