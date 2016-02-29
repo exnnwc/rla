@@ -8,6 +8,7 @@ require_once ("notes.php");
 require_once ("requirements.php");
 require_once ("relations.php");
 require_once("tags.php");
+require_once("todo.php");
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
     case "activate_achievement":
         activate_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
@@ -68,6 +69,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "create_tag":
         create_tag(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+        break;
+    case "create_todo":
+        create_todo(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "create_work":
         create_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
@@ -138,6 +142,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "list_tags":
         list_tags(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
+    case "list_todo":
+        list_todo(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "toggle_documentation_status":
         toggle_documentation_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));

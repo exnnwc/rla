@@ -45,6 +45,7 @@ function displayProfile(id) {
                                 displayChildren(id);
                                 listRelations(id);
                                 listTags(id);
+                                listToDo(id);
                                 listNotes(id);
                             });
                 } else if (!active) {

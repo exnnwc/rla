@@ -19,6 +19,7 @@ check_tag_integrity();
         <script src="<?php echo SITE_ROOT; ?>/js/requirements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/notes.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/tags.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/todo.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/work.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>
         <!--<script src="rla.js"></script>-->

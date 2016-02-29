@@ -25,7 +25,18 @@ function are_ranks_duplicated($parent) {
     }
     return false;
 }
-
+function change_achievement_to_deleted($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set deleted=1 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
+function change_achievement_to_undeleted($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set deleted=0 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
 function change_description($id, $description) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set description=? where id=?");
@@ -58,6 +69,14 @@ function change_power($id, $power) {
     $statement->execute();
 }
 
+function change_quality($id, $quality) {
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set quality=? where id=?");
+    $statement->bindValue(1, $quality, PDO::PARAM_BOOL);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
+
 function change_rank($id, $new_rank) {
     $achievement = fetch_achievement($id);
     $highest_rank=fetch_highest_rank($achievement->parent);
@@ -67,9 +86,10 @@ function change_rank($id, $new_rank) {
         return;
     } 
     update_rank($id, $new_rank);
-    deactivate_achievement($achievement->id);
+    change_achievement_to_deleted($achievement->id);
     if ($new_rank <= 0) {
         error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Shouldn't be able to change rank to 0 or negative");
+        return;
     }
     if (are_ranks_duplicated($achievement->parent)) {
         error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Ranks duplicated.");
@@ -82,7 +102,7 @@ function change_rank($id, $new_rank) {
         return;
     }
     rank_achievements($achievement, $new_rank);
-    activate_achievement($achievement->id);
+    change_achievement_to_undeleted($achievement->id);
 }
 
 
@@ -97,7 +117,7 @@ function count_achievements() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $data = [];
 
-    $statement = $connection->query("select count(*) from achievements where quality=false and deleted=0 and parent=0 and  work>0");
+    $statement = $connection->query("select count(*) from achievements where deleted=0 and parent=0 and  active=1");
     $num_of_working_achievements = (int) $statement->fetchColumn();
 
     $statement = $connection->query("select count(*) from achievements where deleted=0 and quality=true");
@@ -143,10 +163,8 @@ function deactivate_achievement($id) {
 
 function delete_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set deleted=1 where id=?");
-    $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();
     $achievement = fetch_achievement($id);
+    change_achievement_to_deleted($id);
     $connection->exec("update achievements set rank=rank-1 where deleted=0 and parent=$achievement->parent and rank>=$achievement->rank");
     //This is a quick fix. May require a deleted tag so that tags can still stay active when an achievement is deleted.
     $connection->exec("update tags set active=0 where achievement_id=$id");
@@ -225,13 +243,6 @@ function rank_achievements($achievement, $new_rank) {
     }
 }
 
-function change_quality($id, $quality) {
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set quality=? where id=?");
-    $statement->bindValue(1, $quality, PDO::PARAM_BOOL);
-    $statement->bindValue(2, $id, PDO::PARAM_INT);
-    $statement->execute();
-}
 
 function toggle_documentation_status($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
@@ -277,9 +288,6 @@ function uncomplete_achievement($id) {
 function undelete_achievement($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
-    $statement = $connection->prepare("update achievements set deleted=0 where id=?");
-    $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();
+    change_achievement_to_undeleted($id);
     update_rank($id, fetch_highest_rank($achievement->parent)+1);
-
 }

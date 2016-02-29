@@ -172,7 +172,7 @@ function display_tag_filters() {
 function process_filter_to_query($filter) {
     $generic_query = "select * from achievements where deleted=0 and parent=0 and completed=0 and quality=0";
 
-    if ($filter == "clear" || empty($filter)) {
+    if ($filter == "clear" || $filter=="default" || empty($filter)) {
         return $generic_query;
     }
     foreach ($filter["filter_tags"] as $tag) {

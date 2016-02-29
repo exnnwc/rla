@@ -205,7 +205,29 @@ function list_tags($id) {
              <span class='tag'> $tag->name </span>";
     }
 }
+function list_todo($achievement_id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement=$connection->prepare("select * from ToDo where active=1 and achievement_id=?");
+    $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($todo=$statement->fetchObject()){
+        echo "  <div>
+                    <input type='checkbox'/>
+                    <Span id='todo_caption$todo->id' class='show_new_todo hand' title='Click to edit'
+                        style='padding-left:8px;background-color:lightgrey;' >";
+        echo $todo->name==NULL 
+            ? "Input here."
+            : $todo->name; 
+        echo "      </span>
+                    <span id='todo_input$todo->id' style='display:none;'>
+                        <input type='text' value='$todo->name' />
+                        <input type='button' value='Submit' />
+                    </span>
+                    <input type='button' value='X' />
+                </div>";
+    }
 
+}
 function there_are_no_requirements($id, $type) {
     if (count_requirements_with($id, $type) == 0) {
         echo "<div style=' font-style:italic;'>";

@@ -1,6 +1,7 @@
 <?php
 require_once ("achievements.php");
 require_once ("config.php");
+require_once("string.php");
 require_once ("work.php");
 $pref_date_format = "F j, Y g:i:s";
 
@@ -100,6 +101,12 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
         <input id="create_tag" type='button' value='New Tag'>
     </span>
 </div>
+
+<h3>
+    To Do 
+            <span id="todo<?php echo $achievement->id;?>" class="create_todo hand text-button h-normal" style="">[ New ]</span>
+</h3>
+    <div id="todo_list"></div>
 <h3>
         Actions 
             <span id="hide_new_actions" class="hand text-button h-normal" style="display:none">[ - ]</span>
@@ -123,7 +130,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 </h3>
 <span id="current_description">
            <?php
-           echo $achievement->description ? $achievement->description : "<div style=' font-style:italic;'>There is no description.</div>";
+           echo $achievement->description ? format_appropriately($achievement->description) : "<div style=' font-style:italic;'>There is no description.</div>";
            ?>
 </span>
 <span id="new_description_input" style="display:none">

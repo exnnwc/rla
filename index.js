@@ -319,10 +319,21 @@ function add_button_handlers_to_profile(id) {
             createTag(id, name);
         }
     });
-    $(document).on("click", "", function () {
+    $(document).on("click", ".create_todo", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = Number(html_id.substr(4, html_id.length - 4));
+        createToDo(achievement_id);
+    });
+    $(document).on("click", ".show_new_todo", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        todo_id = Number(html_id.substr(12, html_id.length - 12));
+        $("#todo_input"+todo_id).show();
+        $("#todo_caption"+todo_id).hide();
+    });
+    $(document).on("click", "", function (event) {
 
     });
-    $(document).on("click", "", function () {
+    $(document).on("click", "", function (event) {
 
     });
 }
