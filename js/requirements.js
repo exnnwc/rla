@@ -1,5 +1,4 @@
 function createRequirement(required_for, required_by, type) {
-    console.log(required_for + " " + required_by + " " + type);
     if (required_for === required_by){
         if (type == "for") {
             $("#requirements_error" + required_for).html("Achievement cannot be a requirement of itself.");

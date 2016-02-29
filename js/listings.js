@@ -2,8 +2,7 @@ function displayFilterMenu(){
     listFilterTags();
 }
 
-function filterListings(){
-
+function filterListings(){    
     var filter_tags=[];
     $("input[name='filtered_tags']:checked").each(function (){
        filter_tags.push(Number(this.value));

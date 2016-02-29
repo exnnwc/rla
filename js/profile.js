@@ -22,11 +22,10 @@ function displayProfile(id) {
         data: {function_to_be_called: "is_it_active", id: id}
     })
             .done(function (result) {
-                //CHANGE THIS to allow for errors
                 try {
                     var active = JSON.parse(result);
                 }   catch (e){
-                    //BAD
+                    //BAD some kind of error happened
                     document.write(result);
                 } 
                 if (active) {

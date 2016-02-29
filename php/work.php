@@ -25,7 +25,6 @@ function check_work() {
             case 2:
                 $statement = $connection->query("select count(*) from work where active=1 and action_id=0 and work=3 and dayofweek(created)=1;");
                 if (date("D", time()) == "Sun" || (int) $statement->fetchColumn() == 0) {
-                    echo "WEEKLY CHECK";
                     $statement = $connection->query("select * from actions 
                             where active=1 and work=3 and id not in 
                             (select action_id from work where active=1 and worked=true and week(created)=week(current_date-interval 1 week))");
@@ -34,7 +33,6 @@ function check_work() {
             case 3:
                 $statement = $connection->query("select count(*) from work where active=1 and action_id=0 and work=4 and dayofmonth(created)=1;");
                 if (date("j", time()) == "1" || (int) $statement->fetchColumn() == 0) {
-                    echo "MONTHLY CHECK";
                     $statement = $connection->query("select * from actions where active=1 and work=4 and id not in 
                         (select action_id from work where active=1 and worked=true and month(created)=month(current_date-interval 1 month))");
                 }
@@ -90,17 +88,9 @@ function convert_work_num_to_caption($work) {
 }
 
 function create_work($action_id) {
-    echo "YO";
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $action = fetch_action($action_id);
-    /* switch ($action->$type) {
-      case 0:
-      $query = "insert into work (action_id, work) values (?, $action->work)";
-      break;
-      case 1:
-      $query = "insert into work (action_id, quantity, work) values (?, ?, $action->work)";
-      break;
-      } */
+
     $statement = $connection->prepare("insert into work (action_id, work) values (?, $action->work)");
     $statement->bindValue(1, $action_id, PDO::PARAM_INT);
     $statement->execute();
@@ -157,13 +147,10 @@ function has_action_been_worked_on($action_id) {
             break;
         case 3:
             if (date("W", when_last_worked($action_id)) != date("W", time())) {
-                //echo "a";
                 return false;
             } else if (days_since_last_worked($action_id) < 7) {
-                //echo "b";
                 return true;
             } else {
-                //echo "c";
                 return false;
             }
             break;

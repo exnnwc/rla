@@ -47,14 +47,14 @@ function list_actions($achievement_id) {
 
 function list_children($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("select count(*) from achievements where active=1 and parent=? limit 1");
+    $statement = $connection->prepare("select count(*) from achievements where deleted=0 and parent=? limit 1");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     if ($statement->fetchColumn() == 0) {
         echo "<div style=' font-style:italic;'>This achievement has no children.</div>";
-        exit;
+        return;
     }
-    $statement = $connection->prepare("select * from achievements where active=1 and parent=? order by rank");
+    $statement = $connection->prepare("select * from achievements where deleted=0 and parent=? order by rank");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()) {
@@ -68,7 +68,10 @@ function list_filter_tags(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from tags where active=1 and achievement_id=0");
     while ($tag = $statement->fetchObject()){
-        echo "<input name='filtered_tags' type='checkbox' class='filter_menu' value='$tag->id'/><span class='hand text-button'>$tag->name ($tag->tally)</span>";
+        echo "  <input id='filter_by_".$tag->name."_checkbox' name='filtered_tags' type='checkbox' class='filter_menu' value='$tag->id'/>
+                <span id='filter_by_".$tag->name."_text_button' class='hand text-button filter_text_button'>
+                    $tag->name ($tag->tally)
+                </span>";
     }
 }
 function list_new_actions() {
@@ -83,7 +86,7 @@ function list_new_actions() {
 
 function list_new_relations() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->query("select * from achievements where active=1 order by name");
+    $statement = $connection->query("select * from achievements where deleted=0 order by name");
     echo "<option>Please indicate which achievement you'd like to create a relation for.</option>";
     while ($achievement = $statement->fetchObject()) {
         echo "<option value='$achievement->id'>$achievement->name</option>";
@@ -93,7 +96,7 @@ function list_new_relations() {
 function list_new_requirements($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     echo "<option >Please indicate which achievement you'd like to make a requirement.</option>";
-    $statement = $connection->prepare("select * from achievements where active=1 and parent=0 order by name asc");
+    $statement = $connection->prepare("select * from achievements where deleted=0 and parent=0 order by name asc");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()) {

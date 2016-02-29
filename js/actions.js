@@ -8,14 +8,11 @@ function associateAction(achievement_id, action_id){
         data: {function_to_be_called: "associate_action", achievement_id: achievement_id, action_id: action_id}
     })
             .done(function (result) {
-                console.log("ASSOCIATE_RESULT:"+result);
                 listAllActions(achievement_id);
             });
 
 }
 function createAction(achievement_id, action) {
-    console.log(achievement_id);
-    console.log(action);
     if (!testIfVariableIsNumber(achievement_id, "achievement_id") 
             || !testIfVariableIsString(action, "action") || !testStringForMaxLength(action, 255, "action") ){
        return;
@@ -26,7 +23,6 @@ function createAction(achievement_id, action) {
         data: {function_to_be_called: "create_action", achievement_id: achievement_id, action: action}
     })
             .done(function (result) {
-                console.log(result);
                 listAllActions(achievement_id);
             });
 

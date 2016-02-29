@@ -3,7 +3,7 @@
 require_once ("config.php");
 require_once("work.php");
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-$statement = $connection->query("select * from achievements where active=1 and quality=false and work>0 order by rank asc");
+$statement = $connection->query("select * from achievements where deleted=0 and quality=false and work>0 order by rank asc");
 $statement->execute();
 while ($achievement = $statement->fetchObject()) {
     if (!has_achievement_been_worked_on($achievement->id) && is_it_the_appropriate_day($achievement->work)) {
@@ -21,7 +21,7 @@ while ($achievement = $statement->fetchObject()) {
         echo "      </div>";
     }
 }
-$statement = $connection->query("select * from achievements where active=1 and quality=false and work>0 order by rank asc");
+$statement = $connection->query("select * from achievements where deleted=0 and quality=false and work>0 order by rank asc");
 $statement->execute();
 while ($achievement = $statement->fetchObject()) {
     if (has_achievement_been_worked_on($achievement->id) && is_it_the_appropriate_day($achievement->work)) {

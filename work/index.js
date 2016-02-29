@@ -19,7 +19,6 @@ function displayQueue() {
         url: "/rla/php/queue.php",
     })
             .done(function (result) {
-                //console.log(result);
                 $("#work_content").html(result);
             });
 }

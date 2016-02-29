@@ -240,9 +240,7 @@ function toggleQuality(id){
             });
 }
 
-function toggleWorkStatus(id) {
-    //FIX I'd like to implement fetch_max_work_status AJAX call as a separate function 
-    //but this is a quick fix that I don't imagine will have negative repercussions.    
+function toggleWorkStatus(id) { 
     if (!testIfVariableIsNumber(id, "id")) {
         return;
     }

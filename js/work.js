@@ -24,7 +24,6 @@ function createWork(action_id) {
         data: {function_to_be_called: "create_work", action_id: action_id}
     })
             .done(function (result) {
-                console.log(result);
                 displayWork();
             });
 }

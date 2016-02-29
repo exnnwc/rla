@@ -5,7 +5,6 @@
         $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
         $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
         $connection->exec("update achievements set power_adj=power where active=1");
-        //$update->execute();
         $statement = $connection->query("select * from achievements where parent=0");
         $statement->execute();
         while ($achievement = $statement->fetchObject()) {

@@ -59,14 +59,12 @@ function change_power($id, $power) {
 }
 
 function change_rank($id, $new_rank) {
-    //I also need to check to see if there are holes in the ranks.
-
     $achievement = fetch_achievement($id);
     $highest_rank=fetch_highest_rank($achievement->parent);
     if (fetch_num_of_achievements($achievement) != $highest_rank){        
         error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Holes in rank");
         fix_achievement_ranks("updated", $achievement->parent);
-        exit;
+        return;
     } 
     update_rank($id, $new_rank);
     deactivate_achievement($achievement->id);
@@ -76,13 +74,12 @@ function change_rank($id, $new_rank) {
     if (are_ranks_duplicated($achievement->parent)) {
         error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Ranks duplicated.");
         fix_achievement_ranks("updated", $achievement->parent);
-        exit;        
+        return;        
     }
-    //if user picks a new rank too big
     if ($new_rank > $highest_rank) {
         activate_achievement($achievement->id);
         fix_achievement_ranks("rank", $achievement->parent);
-        exit;
+        return;
     }
     rank_achievements($achievement, $new_rank);
     activate_achievement($achievement->id);
@@ -121,9 +118,9 @@ function count_achievements() {
 function create_achievement($name, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($parent);
-    if (achievement_name_exists($name, $parent)) {
-        //ERROR $name already exists.
-        exit;
+    if (achievement_name_exists($name, $parent)) {        
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($name, $parent): Achievement already exists by that name.");
+        return;
     }
     if ($parent == 0) {
         $query = "insert into achievements(name, parent, rank) values (?, ?, ?)";
@@ -151,6 +148,8 @@ function delete_achievement($id) {
     $statement->execute();
     $achievement = fetch_achievement($id);
     $connection->exec("update achievements set rank=rank-1 where deleted=0 and parent=$achievement->parent and rank>=$achievement->rank");
+    //This is a quick fix. May require a deleted tag so that tags can still stay active when an achievement is deleted.
+    $connection->exec("update tags set active=0 where achievement_id=$id");
 }
 
 function fetch_achievement($id) {

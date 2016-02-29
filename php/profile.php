@@ -251,7 +251,7 @@ function generate_select_achievement_menu($parent, $id) {
                   onchange=\"window.location.assign('". SITE_ROOT. "?rla='+$('#achievement_id').val())\">
                     <option>Go to another achievement here</option>";
 
-    $statement = $connection->prepare("select * from achievements where active=1 and parent=? and id!=? order by name asc");
+    $statement = $connection->prepare("select * from achievements where deleted=0 and parent=? and id!=? order by name asc");
     $statement->bindValue(1, $parent, PDO::PARAM_INT);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();

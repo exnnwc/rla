@@ -1,8 +1,6 @@
 var SITE_NAME = "Real Life Achievements";
 
 $(document.body).ready(function () {
-    //document.write("CHECK");
-
     if ($(document.body).attr('id') === "AchievementsList") {
         document.title = SITE_NAME + " - Achievements List";
         displayFilterMenu();
@@ -29,7 +27,6 @@ function add_button_handlers_to_listings() {
         $('#new_achievement_text_input').val("");
     });
     $("#hide_achievements_button").click(function () {
-        console.log("asdfas");
         $('#sorting_menu').hide();
         $('#list_of_achievements').hide();
         $('#hide_achievements_button').hide();
@@ -48,9 +45,7 @@ function add_button_handlers_to_listings() {
         listAchievements("default", sort_by);
     });
     $(document).on("change", ".change_rank_button", function (event) {
-
         id = event.target.attributes.id.nodeValue;
-        console.log(id);
         achievement_id = id.substr(4, id.length - 4);
         parent = 0;
         rank = $("#rank" + achievement_id).val();
@@ -76,6 +71,14 @@ function add_button_handlers_to_listings() {
         $("#hide_filter").hide();
         $("#filter_menu").hide();
     });
+    $(document).on("click", ".filter_text_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        tag= html_id.substr(10, html_id.length - (10+12));
+        $("#filter_by_"+tag+"_checkbox").prop("checked", !$("#filter_by_"+tag+"_checkbox").prop("checked"));
+        filterListings(); 
+    });
+    
+    
 }
 function add_button_handlers_to_profile(id) {
  
@@ -110,7 +113,6 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click", "#create_action_button", function () {
         select_val= $("#list_of_current_actions"+id).val();
         input_val= $("#new_action_input").val();
-        console.log( select_val, "XXX", input_val);
         if (select_val && input_val){
             //ERROR - don't do anything. 
             return;
@@ -140,7 +142,6 @@ function add_button_handlers_to_profile(id) {
         $('#show_new_children').show();
     });
     $(document).on("click", "#show_new_children", function () {
-        console.log("ASDFA");
         $('#new_children').show();
         $('#hide_new_children').show();
         $('#show_new_children').hide();
@@ -226,7 +227,6 @@ function add_button_handlers_to_profile(id) {
         $('#new_note_inputted').val('');
     });
     $(document).on("click", "#change_documentation", function (event) {
-        console.log(event.target);
         toggleDocumentationStatus(id);
     });
     $(document).on("click", ".delete_child_button", function (event) {
@@ -308,7 +308,6 @@ function add_button_handlers_to_profile(id) {
         html_id = event.target.attributes.id.nodeValue;
         tag_id = Number(html_id.substr(7, html_id.length - 7));
         name = $("#new_tag" + tag_id).html();
-        console.log(id, name);
         createTag(id, name);
     });
     $(document).on("keypress", "#new_tag_input", function (event) {

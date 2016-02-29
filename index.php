@@ -21,11 +21,6 @@ check_tag_integrity();
         <script src="<?php echo SITE_ROOT; ?>/js/work.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>
         <!--<script src="rla.js"></script>-->
-        <style>
-            .delete_button{
-                //background-color: blue;
-            }
-        </style>
         <title><?PHP echo SITE_NAME ?></title>
     </head>
 
