@@ -4,11 +4,15 @@ function displayFilterMenu(){
 
 function filterListings(){    
     var filter_tags=[];
+    filtered=false;
     $("input[name='filtered_tags']:checked").each(function (){
        filter_tags.push(Number(this.value));
+       filtered=true;
     });
     filter = {filter_tags:filter_tags};
-    listAchievements(filter, "default");
+    
+    filtered ? listAchievements(filter, "default") : listAchievements("clear", "default");
+    
 }
 function listAchievements(filter, sort_by) {
     if (!testIfVariableIsString(sort_by, "sort_by")){        

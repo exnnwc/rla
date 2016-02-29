@@ -1,4 +1,5 @@
 <?php 
+session_start();
 require_once ("php/config.php"); 
 require_once("php/tags.php");
 check_tag_integrity();
@@ -44,7 +45,16 @@ check_tag_integrity();
                 <span id='hide_filter' class="hand text-button" style='display:none;'>[ Hide Filter ]</span>
             </div>
             <div id="filter_menu" style="display:none">
-                Tags:<span id="list_of_filter_tags"></span>
+                <div>
+                    Tags
+                    <span id="clear_tags_button" class="hand text-button">
+                        [Clear]
+                    </span>
+                    :
+                    <span id="list_of_filter_tags"></span>
+                </div>
+                <input id="filter_button" class="" type="button" value="Filter" />
+                
             </div>
 
             <!--

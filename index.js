@@ -39,7 +39,7 @@ function add_button_handlers_to_listings() {
         $('#show_achievements_button').hide();
     });
 
-    $(document).on ("click", ".sort_button" , function (event) {
+    $(document).on("click", ".sort_button", function (event) {
         var button_id = event.target.id;
         var sort_by = button_id.substr(5, (button_id.length - 12));
         listAchievements("default", sort_by);
@@ -58,7 +58,6 @@ function add_button_handlers_to_listings() {
         changeQuality(achievement_id, state);
     });
     $(document).on("click", ".filter_menu", function (event) {
-       filterListings(); 
     });
 
     $("#show_filter").click(function () {
@@ -73,15 +72,19 @@ function add_button_handlers_to_listings() {
     });
     $(document).on("click", ".filter_text_button", function (event) {
         html_id = event.target.attributes.id.nodeValue;
-        tag= html_id.substr(10, html_id.length - (10+12));
-        $("#filter_by_"+tag+"_checkbox").prop("checked", !$("#filter_by_"+tag+"_checkbox").prop("checked"));
-        filterListings(); 
+        tag = html_id.substr(10, html_id.length - (10 + 12));
+        $("#filter_by_" + tag + "_checkbox").prop("checked", !$("#filter_by_" + tag + "_checkbox").prop("checked"));
     });
-    
-    
+    $("#filter_button").click(function () {
+        filterListings();
+    });
+    $("#clear_tags_button").click(function () {
+        $("input[name='filtered_tags']:checked").removeAttr('checked');
+    });
+
 }
 function add_button_handlers_to_profile(id) {
- 
+
 
     $(document).on("click", "#edit_achievement_name_button", function () {
         changeName(id, $('#new_achievement_name').val());
@@ -111,15 +114,15 @@ function add_button_handlers_to_profile(id) {
         $('#show_new_actions').hide();
     });
     $(document).on("click", "#create_action_button", function () {
-        select_val= $("#list_of_current_actions"+id).val();
-        input_val= $("#new_action_input").val();
-        if (select_val && input_val){
+        select_val = $("#list_of_current_actions" + id).val();
+        input_val = $("#new_action_input").val();
+        if (select_val && input_val) {
             //ERROR - don't do anything. 
             return;
         }
-        if (input_val){
+        if (input_val) {
             createAction(id, input_val);
-        } else if (!input_val){
+        } else if (!input_val) {
             associateAction(id, select_val);
         }
         listAllActions(id);
@@ -311,7 +314,7 @@ function add_button_handlers_to_profile(id) {
         createTag(id, name);
     });
     $(document).on("keypress", "#new_tag_input", function (event) {
-        if (event.key =="Enter"){
+        if (event.key == "Enter") {
             name = $("#new_tag_input").val();
             createTag(id, name);
         }

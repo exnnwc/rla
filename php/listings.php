@@ -1,20 +1,30 @@
 <?php
 
+session_start();
 
 require_once ("config.php");
 require_once("tags.php");
 require_once("work.php");
 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-$sort_by=filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING);
-if ($sort_by=="default"){
-    $sort_by="rank"; 
+$sort_by = filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING);
+if ($sort_by == "default") {
+    $sort_by = isset($_SESSION["sort_by"]) ? $_SESSION["sort_by"] : "rank";
 }
+$_SESSION["sort_by"] = $sort_by;
+
 echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
-if (isset($_POST['filter'])){
-    $query=process_filter_to_query($_POST['filter']);
-} else if (!isset($_POST['filter'])){
-    $query=process_filter_to_query("default");   
+
+$filter = isset($_POST['filter']) 
+    ? $_POST['filter'] 
+    : "default";
+if ($filter!="default") {
+    $query = process_filter_to_query($filter);
+    $_SESSION['filter'] = $_POST['filter'];
+} else if ($filter == "default") {
+    $query = isset($_SESSION['filter']) 
+        ? process_filter_to_query($_SESSION['filter']) 
+        : process_filter_to_query($filter);
 }
 $statement = $connection->query($query . fetch_order_query($sort_by));
 while ($achievement = $statement->fetchObject()) {
@@ -31,22 +41,20 @@ function fetch_listing_menu($achievement) {
                 <td title='$achievement->power'>$achievement->power_adj </td>
                 ";
     $string = $string . fetch_next_three_menu_cells($achievement);
-            
-        
+
+
     return $string;
 }
 
-function fetch_next_three_menu_cells($achievement){
-    return  $achievement->quality 
-            ? " <td>
+function fetch_next_three_menu_cells($achievement) {
+    return $achievement->quality ? " <td>
                     N/A
                 </td><td>
                     <input id='0quality$achievement->id' class='change_quality_button' type='checkbox' checked \"/>
-               </td>" 
-            : "<td> " . fetch_work_button($achievement) . "
-                </td>"; 
-    
+               </td>" : "<td> " . fetch_work_button($achievement) . "
+                </td>";
 }
+
 function fetch_listing_row($achievement) {
     $string = fetch_listing_menu($achievement)
             . " <td style='text-align:left'>
@@ -63,8 +71,7 @@ function fetch_listing_row($achievement) {
 }
 
 function fetch_order_query($sort_by) {
-    $order_by = 
-       ["default" => " order by quality asc, rank asc",
+    $order_by = ["default" => " order by quality asc, rank asc",
         "power" => " order by power_adj asc",
         "powerrev" => " order by power_adj desc, rank asc",
         "power_adj" => " order by power_adj asc",
@@ -81,47 +88,45 @@ function fetch_order_query($sort_by) {
 }
 
 function fetch_table_header($sort_by) {
-    $headers=["Rank", "Power", "Active", "Name"];
-    $string="<tr>";
-    foreach ($headers as $header){
-        
-        $string=$string."<td id='sort_";
-        $string =  $sort_by==strtolower($header) 
-            ? $string . strtolower($header)."rev"
-            : $string . strtolower($header);
+    $headers = ["Rank", "Power", "Active", "Name"];
+    $string = "<tr>";
+    foreach ($headers as $header) {
+
+        $string = $string . "<td id='sort_";
+        $string = $sort_by == strtolower($header) ? $string . strtolower($header) . "rev" : $string . strtolower($header);
 
 
         $string = $string . "_button' class='hand text-button sort_button'>";
-        if ($sort_by==strtolower($header)."rev"){
-           $string=$string . "&uarr;"; 
+        if ($sort_by == strtolower($header) . "rev") {
+            $string = $string . "&uarr;";
         }
         $string = $string . $header;
-        if ($sort_by==strtolower($header)  || ($sort_by=="default" && $header=="Rank")){
-           $string=$string . "&darr;"; 
+        if ($sort_by == strtolower($header) || ($sort_by == "default" && $header == "Rank")) {
+            $string = $string . "&darr;";
         }
         $string = $string . "</td>";
     }
     $string = $string . "</tr>";
     return $string;
 }
-function fetch_work_button($achievement){
 
-    $string="<input type='button'  id='activity$achievement->id' ";
-    $string = !$achievement->active 
-        ? $string . "class='activate_button' style='background-color:green;' />"
-        : $string .  "class='deactivate_button' style='background-color:red;' />";
-   return $string;
+function fetch_work_button($achievement) {
+
+    $string = "<input type='button'  id='activity$achievement->id' ";
+    $string = !$achievement->active ? $string . "class='activate_button' style='background-color:green;' />" : $string . "class='deactivate_button' style='background-color:red;' />";
+    return $string;
 }
-function list_completed_achievements(){
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
+
+function list_completed_achievements() {
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     echo "<h3 style='text-align:center;'>Completed Achievements</h3>";
-    $statement=$connection->query("select count(*) from achievements where active=0 and completed!=0");
-    if ((int)$statement->fetchColumn()==0){
+    $statement = $connection->query("select count(*) from achievements where active=0 and completed!=0");
+    if ((int) $statement->fetchColumn() == 0) {
         echo "<div>None.</div>";
         return;
     }
-    $statement=$connection->query("select * from achievements where completed!=0");
-    while ($achievement=$statement->fetchObject()){
+    $statement = $connection->query("select * from achievements where completed!=0");
+    while ($achievement = $statement->fetchObject()) {
         echo "  <div>
                     
                     <span style='font-weight:bold'>
@@ -130,54 +135,51 @@ function list_completed_achievements(){
                         </a>
                     </span>
                         <div>
-                            <span>Created:". date("m/d/y", strtotime($achievement->created)) ."</span>            
-                            <span>Completed:". date("m/d/y", strtotime($achievement->completed)) ."</span>
+                            <span>Created:" . date("m/d/y", strtotime($achievement->created)) . "</span>            
+                            <span>Completed:" . date("m/d/y", strtotime($achievement->completed)) . "</span>
                             <input id='cancel$achievement->id' class='cancel_completion_button' type='button' value='Cancel' />                                
                         </div>
                 </div>";
     }
-    
 }
-function list_qualities(){
+
+function list_qualities() {
     echo "<h1>Qualities</h1>";
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from achievements where quality=1 and deleted=0");
-    while ($quality= $statement->fetchObject()){
+    while ($quality = $statement->fetchObject()) {
         echo "  <div>
                     <span>
                         <input id='rank$quality->id' type='number' 
                           class='change_rank_button' value='$quality->rank' style='width:50px;text-align:center;' />
                     </span><span>
                         <a href='" . SITE_ROOT . "/?rla=$quality->id'";
-            
+
         echo "          $quality->name
                     </span>
                 </div>";
     }
-
 }
-function display_tag_filters(){
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
-    $statement = $connection -> query ("select * from tags where active=1 and achievement_id=0");
-    while ($tag = $statement->fetchObject()){
+
+function display_tag_filters() {
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->query("select * from tags where active=1 and achievement_id=0");
+    while ($tag = $statement->fetchObject()) {
         echo "<span>$tag->name($tag->tally)</span>";
     }
-    
 }
 
-function process_filter_to_query($filter){
-    $generic_query="select * from achievements where deleted=0 and parent=0 and completed=0 and quality=0";
+function process_filter_to_query($filter) {
+    $generic_query = "select * from achievements where deleted=0 and parent=0 and completed=0 and quality=0";
 
-    if ($filter=="default" || empty($filter)){
+    if ($filter == "clear" || empty($filter)) {
         return $generic_query;
     }
-    foreach($filter["filter_tags"] as $tag){                
-        $tag=fetch_tag($tag);
-         $string = !isset($string) 
-            ? " name=\"$tag->name\"" 
-            : $string .  " or name=\"$tag->name\"";
+    foreach ($filter["filter_tags"] as $tag) {
+        $tag = fetch_tag($tag);
+        $string = !isset($string) ? " name=\"$tag->name\"" : $string . " or name=\"$tag->name\"";
     }
-        $string = $string . ")";
-            return "$generic_query and 
+    $string = $string . ")";
+    return "$generic_query and 
                       id in (select distinct achievement_id from tags where active=1 and $string";
 }
