@@ -16,6 +16,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "associate_action":
         associate_action(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "cancel_todo":
+        cancel_todo(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
     case "cancel_work":
         cancel_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -37,6 +40,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "change_rank":
         change_rank(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_rank', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "change_todo_name":
+        change_todo_name(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING));
+        break;
     case "change_work_status_of_achievement":
         change_work_status_of_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'status', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -46,6 +52,10 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "complete_achievement":
         complete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "complete_todo":
+        complete_todo(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
+
     case "count_achievements":
         count_achievements();
         break;
@@ -96,6 +106,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "delete_tag":
         delete_tag(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        break;
+    case "delete_todo":
+        delete_todo(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "delete_top_action":
         delete_top_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
@@ -152,8 +165,8 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "toggle_quality":
         toggle_quality(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
-    case "toggle_work_status":
-        toggle_work_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+    case "toggle_active_status":
+        toggle_active_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "uncomplete_achievement":
         uncomplete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));

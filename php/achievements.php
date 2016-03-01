@@ -262,11 +262,11 @@ function toggle_quality($id){
     $statement->execute();    
 }
 
-function toggle_work_status($id){
+function toggle_active_status($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement=fetch_achievement($id);
-    $statement = $connection->prepare("update achievements set work=? where id=?");
-    $statement->bindValue(1, !$achievement->work, PDO::PARAM_BOOL);
+    $statement = $connection->prepare("update achievements set active=? where id=?");
+    $statement->bindValue(1, !$achievement->active, PDO::PARAM_BOOL);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }

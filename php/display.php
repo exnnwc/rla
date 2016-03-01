@@ -1,7 +1,11 @@
 <?php
 
 require_once("work.php");
-
+function display_todo_completion($todo){
+    echo $todo->completed!=0
+      ?"cancel_todo"
+      : "complete_todo";
+}
 function fetch_action_listing($action) {
     $string = "<span style='margin-left:20px;cursor:pointer;";
     $string = has_action_been_worked_on($action->id) ? $string . "color:grey;text-decoration:line-through;' 
@@ -207,23 +211,43 @@ function list_tags($id) {
 }
 function list_todo($achievement_id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement=$connection->prepare("select * from ToDo where active=1 and achievement_id=?");
+    
+    $statement=$connection->prepare("select count(*) from todo where active=1 and achievement_id=?");
+    $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+    $statement->execute();
+    if ((int)$statement->fetchColumn()==0){
+        echo "<div style='font-style:italic;'>None.</div>";
+        return;
+    }
+    $statement=$connection->prepare("select * from todo where active=1 and achievement_id=?");
     $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
     $statement->execute();
     while ($todo=$statement->fetchObject()){
         echo "  <div>
-                    <input type='checkbox'/>
+              <input id='delete_todo$todo->id' class='delete_todo' type='button' value='X' />
                     <Span id='todo_caption$todo->id' class='show_new_todo hand' title='Click to edit'
-                        style='padding-left:8px;background-color:lightgrey;' >";
+                        style='padding-left:8px;background-color:lightgrey;";
+        if ($todo->completed!=0){    
+            echo "text-decoration:line-through;";
+        }
+        echo "' >";
         echo $todo->name==NULL 
             ? "Input here."
             : $todo->name; 
         echo "      </span>
                     <span id='todo_input$todo->id' style='display:none;'>
-                        <input type='text' value='$todo->name' />
-                        <input type='button' value='Submit' />
+                        <input id='new_todo_input$todo->id' class='new_todo_input' type='text' value='$todo->name' />
+                        <!--<span id='change_todo$todo->id' class='change_todo hand text-button' >Submit</span>-->
                     </span>
-                    <input type='button' value='X' />
+                    <input id='";
+        display_todo_completion($todo);
+        echo "$todo->id' class='";
+        display_todo_completion($todo);
+        echo "' type='checkbox'";
+        if ($todo->completed!=0){
+            echo " checked";
+        }
+        echo "/>
                 </div>";
     }
 

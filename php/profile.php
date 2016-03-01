@@ -47,9 +47,10 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     </div>
 </h1>
 <div>
-        <span id='work<?php echo $achievement->id; ?>' class='hand change_work_button'
+        <span id='achievement_active<?php echo $achievement->id; ?>' class='hand toggle_active_status'
             <?php 
-                echo $achievement->work 
+                echo $achievement->active
+
                     ? "style='color:green;'>Active"
                     : "style='color:darkred;'>Inactive";
             ?>

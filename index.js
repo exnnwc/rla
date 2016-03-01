@@ -15,12 +15,22 @@ $(document.body).ready(function () {
         document.title = SITE_NAME + " - #" + achievement_id;
         displayProfile(Number(achievement_id));
         add_handlers_to_index(0, true);
+        add_behavior_handlers_to_profile(achievement_id);
         add_keypress_handlers_to_profile(achievement_id);
 
         add_button_handlers_to_profile(achievement_id);
     }
 });
 
+function add_behavior_handlers_to_profile(id){
+    $(document).on("focusout", ".new_todo_input", function (event) {
+        html_id = event.target.id;
+        todo_id = Number(html_id.substr(14, html_id.length - 14));
+        $("#todo_input"+todo_id).hide();
+        $("#todo_caption"+todo_id).show();
+    });
+
+}
 function add_button_handlers_to_listings() {
     $('#new_achievement_button').click(function () {
         createAchievement(0, $('#new_achievement_text_input').val());
@@ -273,8 +283,8 @@ function add_button_handlers_to_profile(id) {
         $("#show_achievement_information").hide();
         $("#achievement_info").show();
     });
-    $(document).on("click", ".change_work_button", function () {
-        toggleWorkStatus(id);
+    $(document).on("click", ".toggle_active_status", function () {
+        toggleActiveStatus(id);
     });
     $(document).on("click", "#achievement_quality", function () {
         toggleQuality(id);
@@ -329,6 +339,34 @@ function add_button_handlers_to_profile(id) {
         todo_id = Number(html_id.substr(12, html_id.length - 12));
         $("#todo_input"+todo_id).show();
         $("#todo_caption"+todo_id).hide();
+        setTimeout(function(){$("#todo_input"+todo_id).focus();}, 0);
+    });
+/*
+    $(document).on("click", ".change_todo", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        todo_id = Number(html_id.substr(11, html_id.length - 11));
+        $("#todo_input"+todo_id).hide();
+        $("#todo_caption"+todo_id).show();
+        changeToDoName(id, todo_id, $("#new_todo_input"+todo_id).val());
+    });
+*/
+    $(document).on("click", ".cancel_todo", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        todo_id = Number(html_id.substr(11, html_id.length - 11));
+        cancelToDo(id, todo_id);
+    });
+    $(document).on("click", ".complete_todo", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        todo_id = Number(html_id.substr(13, html_id.length - 13));
+        completeToDo(id, todo_id);
+    });
+    $(document).on("click", ".delete_todo", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        todo_id = Number(html_id.substr(11, html_id.length - 11));
+        deleteToDo(id, todo_id);
+    });
+    $(document).on("click", "", function (event) {
+
     });
     $(document).on("click", "", function (event) {
 
@@ -370,9 +408,6 @@ function add_handlers_to_index(parent, from_profile) {
         achievement_id = JSON.parse(id.substr(8, id.length - 8));
         deactivateAchievement(achievement_id);
     });
-    $(document).on("click", "", function (event) {
-
-    });
 }
 
 function add_keypress_handlers_to_listings() {
@@ -402,6 +437,15 @@ function add_keypress_handlers_to_profile(id) {
         if (event.which === 13) {
             createAchievement(id, $("#new_child_name").val());
             $('#new_child_name').val('');
+        }
+    });
+    $(document).on("keypress", ".new_todo_input", function (event) {
+        if (event.which === 13) {
+            html_id = event.target.attributes.id.nodeValue;
+            todo_id = Number(html_id.substr(14, html_id.length - 14));
+            $("#todo_input"+todo_id).hide();
+            $("#todo_caption"+todo_id).show();
+            changeToDoName(id, todo_id, $("#new_todo_input"+todo_id).val());
         }
     });
 }

@@ -240,14 +240,15 @@ function toggleQuality(id){
             });
 }
 
-function toggleWorkStatus(id) { 
+function toggleActiveStatus(id) { 
     if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
     $.ajax({
+    
         method: "POST",
         url:"/rla/php/ajax.php",
-        data: {function_to_be_called: "toggle_work_status", id:id}
+        data: {function_to_be_called: "toggle_active_status", id:id}
     })
         .done(function(result){
             console.log(result);
