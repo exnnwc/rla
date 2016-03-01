@@ -27,50 +27,44 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 </div>
 <div>
     <input id='delete<?php echo $achievement->id; ?>' 
-      class='delete_achievement_button' type='button' value='X' 
-      title='Delete Achievement #<?php echo $achievement->id; ?>' 
-      style="width:25px;height:25px;text-align:center;"/>
-    <?php if ($achievement->completed == 0 && !$achievement->documented): ?>
-        <input id='complete<?php echo $achievement->id;?>' value="&#10003;" class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
+           class='delete_achievement_button' type='button' value='X' 
+           title='Delete Achievement #<?php echo $achievement->id; ?>' 
+           style="width:25px;height:25px;text-align:center;"/>
+    <?php if ($achievement->completed == 0 &&!$achievement->documented): ?>    
+    <input id='complete<?php echo $achievement->id; ?>' value="&#10003;" class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
     <?php endif; ?>
-
     <span class='toggle_locked_status hand text-button'> 
         <?php
-            echo $achievement->locked==0 
-                ? "[ Lock ]"
-                : "[ Unlock ]";
+        echo $achievement->locked == 0 ? "[ Lock ]" : "[ Unlock ]";
         ?>
     </span>
 </div>
 <h1 id="achievement_name" style='text-align:center;'> 
-    
+
     <div id="show_new_achievement_name" class="hand"><?= $achievement->name ?> </div>
     <div id="hide_new_achievement_name" style="display:none;">
         <div>
-        <textarea maxlength="255" id="new_achievement_name"   style="width:640px;height:160px;font-size:32px;text-align:center;"><?= $achievement->name ?></textarea>
+            <textarea maxlength="255" id="new_achievement_name"   style="width:640px;height:160px;font-size:32px;text-align:center;"><?= $achievement->name ?></textarea>
         </div><div>
-        <input id='edit_achievement_name_button' type="button" value="Change name"/>
-        <input id="hide_achievement_button" type="button" value="Cancel"/>
+            <input id='edit_achievement_name_button' type="button" value="Change name"/>
+            <input id="hide_achievement_button" type="button" value="Cancel"/>
         </div>
     </div>
 </h1>
 <div>
-        <span id='achievement_active<?php echo $achievement->id; ?>' class='hand toggle_active_status'
-            <?php 
-                echo $achievement->active
+    <span id='achievement_active<?php echo $achievement->id; ?>' class='hand toggle_active_status'
+    <?php
+    echo $achievement->active ? "style='color:green;'>Active" : "style='color:darkred;'>Inactive";
+    ?>
+</span>
 
-                    ? "style='color:green;'>Active"
-                    : "style='color:darkred;'>Inactive";
-            ?>
-        </span>
-       
 </div>
 <div>
     <?php
-    if ($achievement->locked!=0){
-        echo "<span style='font-weight:bold;' title='Achievement's information cannot be changed.'>Locked </span>("
-          . date("m/d/y", strtotime($achievement->locked))
-          .")";
+    if ($achievement->locked != 0) {
+    echo "<span style='font-weight:bold;' title='Achievement's information cannot be changed.'>Locked </span>"
+    . date("m/d/y", strtotime($achievement->locked))
+    .")";
     }
     ?>
 
@@ -78,16 +72,18 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div>
     <div id='change_documentation' class="hand" style="">
         <?php
-            echo $achievement->documented 
-                    ? "Documented (Requires proof of completion)" 
-                    : "Undocumented (No proof of completion required)";
+        echo $achievement->documented
+        ? "Documented (Requires proof of completion)"
+        : "Undocumented (No proof of completion required)";
         ?>
     </div>
 </div>
 <div>
     Parent: 
     <?php
-    echo ($achievement->parent == 0) ? "Top level" : "<a href='" . SITE_ROOT . "/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
+    echo ($achievement->parent == 0)
+    ? "Top level"
+    : "<a href='" . SITE_ROOT . "/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
     ?>
 </div>
 <div>
@@ -96,10 +92,10 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div>
     <?php
     ($achievement->completed != 0)
-            and print ("Completed:
-                        <span style='margin-left:8px;'>" 
-                            . date($pref_date_format, strtotime($achievement->completed))
-                    . " </span>
+    and print ("Completed:
+                        <span style='margin-left:8px;'>"
+    . date($pref_date_format, strtotime($achievement->completed))
+    . " </span>
                         <span id='cancel$achievement->id' class='text-button hand cancel_completion_button'>
                             [ Undo ]
                         </span>");
@@ -109,7 +105,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     Rank: <?php echo $achievement->rank; ?>
 </div>
 <div>
-        Power: <?php echo $achievement->power_adj; ?>
+    Power: <?php echo $achievement->power_adj; ?>
 </div>
 <div >
     Tags: <span id='list_of_tags<?php echo $achievement->id; ?>' style='margin-right:8px;'></span>
@@ -124,40 +120,40 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 
 <h3>
     To Do 
-        <?php if ($achievement->locked==0):?>
-            <span id="todo<?php echo $achievement->id;?>" class="create_todo hand text-button h-normal" style="">[ New ]</span>
-        <?php endif; ?>
+    <?php if ($achievement->locked==0): ?>
+    <span id="todo<?php echo $achievement->id; ?>" class="create_todo hand text-button h-normal" style="">[ New ]</span>
+    <?php endif; ?>
 </h3>
-    <div id="todo_list"></div>
+<div id="todo_list"></div>
 <h3>
-        Actions 
-        <?php if ($achievement->locked==0):?>
-            <span id="hide_new_actions" class="hand text-button h-normal" style="display:none">[ - ]</span>
-            <span id="show_new_actions" class="hand text-button h-normal" style="">[ New ]</span>
-        <?endif;?>
-     
+    Actions 
+    <?php if ($achievement->locked==0): ?>
+    <span id="hide_new_actions" class="hand text-button h-normal" style="display:none">[ - ]</span>
+    <span id="show_new_actions" class="hand text-button h-normal" style="">[ New ]</span>
+    <?php endif;?>
+
 </h3>    
-    <div id="new_actions" style="display:none;">
-        <div>
-            <select id="list_of_current_actions<?php echo $achievement->id; ?>" class="list_of_current_actions"> </select>
-        </div>
-        <input id="new_action_input" type="text" value="Create new action here"/> 
-        <input id='create_action_button' type="button" value="Create Action" />
+<div id="new_actions" style="display:none;">
+    <div>
+        <select id="list_of_current_actions<?php echo $achievement->id; ?>" class="list_of_current_actions"> </select>
     </div>
+    <input id="new_action_input" type="text" value="Create new action here"/> 
+    <input id='create_action_button' type="button" value="Create Action" />
+</div>
 </div>
 <div id="actions<?php echo $achievement->id; ?>"> </div>
 <h3>
     Description
-        <?php if ($achievement->locked==0):?>
+    <?php if ($achievement->locked==0): ?>
     <span class="h-normal">
-       <span id="show_new_description" class="hand text-button show_new_description">[ Edit ]</span>
+        <span id="show_new_description" class="hand text-button show_new_description">[ Edit ]</span>
     </span>
-        <?php endif; ?>
+    <?php endif; ?>
 </h3>
 <span id="current_description">
-           <?php
-           echo $achievement->description ? format_appropriately($achievement->description) : "<div style=' font-style:italic;'>There is no description.</div>";
-           ?>
+    <?php
+    echo $achievement->description ? format_appropriately($achievement->description) : "<div style=' font-style:italic;'>There is no description.</div>";
+    ?>
 </span>
 <span id="new_description_input" style="display:none">
     <textarea maxlength="20000" id="new_description" style="width:600px;height:150px;"><?php echo $achievement->description ? $achievement->description : ""; ?></textarea>
@@ -170,7 +166,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div>
     <h3>
         Children
-        <?php if ($achievement->locked==0):?>
+        <?php if ($achievement->locked==0): ?>
         <input id="hide_new_children" type="button" value="-" style="display:none"/>
         <input id="show_new_children" type="button" value="+" style=""/>
         <?php endif; ?>
@@ -240,8 +236,8 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div>
     <h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
         Notes    
-            <span id="show_notes" class="h-normal hand text-button" style="float:left;display:none;">[ + ]</span>
-            <span id="hide_notes" class="h-normal hand text-button" style="float:left;">[ - ]</span>
+        <span id="show_notes" class="h-normal hand text-button" style="float:left;display:none;">[ + ]</span>
+        <span id="hide_notes" class="h-normal hand text-button" style="float:left;">[ - ]</span>
     </h2>
     <div id="all_notes">
         <div id="show_new_notes" class="hand text-button">[ New ]</div>
@@ -258,42 +254,41 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div style='padding:20px;'>&nbsp;</div>
 
 <?php
-
 function display_documentation_menu($id, $status) {
-    
-    $menu = $status 
-            ? "<input id='change_documentation' style='margin-left:8px;' type='button' value='Change to documented' />" 
-            : "<input id='change_documentation' style='margin-left:8px;' type='button' value='Change to undocumented' />";    
-    return $menu;
+
+$menu = $status
+? "<input id = 'change_documentation' style = 'margin-left:8px;' type = 'button' value = 'Change to documented' />"
+: "<input id = 'change_documentation' style = 'margin-left:8px;' type = 'button' value = 'Change to undocumented' />";
+return $menu;
 }
 
 function fetch_nav_menu($id, $rank, $parent) {
-    $prev_achievement = fetch_achievement_by_rank_and_parent($rank - 1, $parent);
-    $next_achievement = fetch_achievement_by_rank_and_parent($rank + 1, $parent);
-    $string = ($rank > 1) ? " <div title='$prev_achievement->name' style='float:left'>
-                <a href='" . SITE_ROOT . "/?rla=$prev_achievement->id'>Previous</a>
-            </div>" : " <div style='float:left;'>Previous</div>";
-    $string = $string . generate_select_achievement_menu($parent, $id);
-    $string = ($rank < fetch_highest_rank($parent)) ? $string . "   <div title='$next_achievement->name' style='float:right'>
-                            <a href='" . SITE_ROOT . "/?rla=$next_achievement->id'>Next</a>
-                        </div>" : $string . "   <div style='float:right;margin-right:8px;'>Next</div>";
-    return $string;
+$prev_achievement = fetch_achievement_by_rank_and_parent($rank - 1, $parent);
+$next_achievement = fetch_achievement_by_rank_and_parent($rank + 1, $parent);
+$string = ($rank > 1) ? " <div title = '$prev_achievement->name' style = 'float:left'>
+<a href = '" . SITE_ROOT . "/?rla=$prev_achievement->id'>Previous</a>
+</div>" : " <div style = 'float:left;'>Previous</div>";
+$string = $string . generate_select_achievement_menu($parent, $id);
+$string = ($rank < fetch_highest_rank($parent)) ? $string . " <div title = '$next_achievement->name' style = 'float:right'>
+<a href = '" . SITE_ROOT . "/?rla=$next_achievement->id'>Next</a>
+</div>" : $string . " <div style = 'float:right;margin-right:8px;'>Next</div>";
+return $string;
 }
 
 function generate_select_achievement_menu($parent, $id) {
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $string = " <select id='achievement_navigation_menu' style='text-align:center;'
-                  onchange=\"window.location.assign('". SITE_ROOT. "?rla='+$('#achievement_id').val())\">
+$connection = new PDO("mysql:host = " . DB_HOST . ";
+dbname = " . DB_NAME, DB_USER, DB_PWD);
+$string = " <select id = 'achievement_navigation_menu' style = 'text-align:center;'
+onchange = \"window.location.assign('" . SITE_ROOT . "?rla='+$('#achievement_id').val())\">
                     <option>Go to another achievement here</option>";
 
-    $statement = $connection->prepare("select * from achievements where deleted=0 and parent=? and id!=? order by name asc");
-    $statement->bindValue(1, $parent, PDO::PARAM_INT);
-    $statement->bindValue(2, $id, PDO::PARAM_INT);
-    $statement->execute();
-    while ($achievement = $statement->fetchObject()) {
-        $string = $string . "<option value='$achievement->id' > $achievement->name</option>";
-    }
-    $string = $string . "  </select>";
-    return $string;
+$statement = $connection->prepare("select * from achievements where deleted=0 and parent=? and id!=? order by name asc");
+$statement->bindValue(1, $parent, PDO::PARAM_INT);
+$statement->bindValue(2, $id, PDO::PARAM_INT);
+$statement->execute();
+while ($achievement = $statement->fetchObject()) {
+$string = $string . "<option value='$achievement->id' > $achievement->name</option>";
 }
-
+$string = $string . "  </select>";
+return $string;
+}
