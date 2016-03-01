@@ -33,6 +33,14 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     <?php if ($achievement->completed == 0 && !$achievement->documented): ?>
         <input id='complete<?php echo $achievement->id;?>' value="&#10003;" class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
     <?php endif; ?>
+
+    <span class='toggle_locked_status hand text-button'> 
+        <?php
+            echo $achievement->locked==0 
+                ? "[ Lock ]"
+                : "[ Unlock ]";
+        ?>
+    </span>
 </div>
 <h1 id="achievement_name" style='text-align:center;'> 
     
@@ -55,6 +63,17 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
                     : "style='color:darkred;'>Inactive";
             ?>
         </span>
+       
+</div>
+<div>
+    <?php
+    if ($achievement->locked!=0){
+        echo "<span style='font-weight:bold;' title='Achievement's information cannot be changed.'>Locked </span>("
+          . date("m/d/y", strtotime($achievement->locked))
+          .")";
+    }
+    ?>
+
 </div>
 <div>
     <div id='change_documentation' class="hand" style="">
@@ -105,13 +124,17 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 
 <h3>
     To Do 
+        <?php if ($achievement->locked==0):?>
             <span id="todo<?php echo $achievement->id;?>" class="create_todo hand text-button h-normal" style="">[ New ]</span>
+        <?php endif; ?>
 </h3>
     <div id="todo_list"></div>
 <h3>
         Actions 
+        <?php if ($achievement->locked==0):?>
             <span id="hide_new_actions" class="hand text-button h-normal" style="display:none">[ - ]</span>
             <span id="show_new_actions" class="hand text-button h-normal" style="">[ New ]</span>
+        <?endif;?>
      
 </h3>    
     <div id="new_actions" style="display:none;">
@@ -125,9 +148,11 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div id="actions<?php echo $achievement->id; ?>"> </div>
 <h3>
     Description
+        <?php if ($achievement->locked==0):?>
     <span class="h-normal">
        <span id="show_new_description" class="hand text-button show_new_description">[ Edit ]</span>
     </span>
+        <?php endif; ?>
 </h3>
 <span id="current_description">
            <?php
@@ -145,8 +170,10 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div>
     <h3>
         Children
+        <?php if ($achievement->locked==0):?>
         <input id="hide_new_children" type="button" value="-" style="display:none"/>
         <input id="show_new_children" type="button" value="+" style=""/>
+        <?php endif; ?>
 
     </h3>
     <div id="new_children" style="display:none">

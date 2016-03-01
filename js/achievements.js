@@ -251,11 +251,23 @@ function toggleActiveStatus(id) {
         data: {function_to_be_called: "toggle_active_status", id:id}
     })
         .done(function(result){
+            softGenericReload(id);
+        });
+}
+function toggleLockedStatus(id){
+    if (!testIfVariableIsNumber(id, "id")) {
+        return;
+    }
+    $.ajax({
+        method: "POST",
+        url:"/rla/php/ajax.php",
+        data: {function_to_be_called: "toggle_locked_status", id:id}
+    })
+        .done(function(result){
             console.log(result);
             softGenericReload(id);
         });
 }
-
 function uncompleteAchievement(id) {
     if (!testIfVariableIsNumber(id, "id")){
         return;        

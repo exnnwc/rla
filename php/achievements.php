@@ -270,6 +270,19 @@ function toggle_active_status($id){
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
+
+function toggle_locked_status($id){
+    echo "$id";
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement=fetch_achievement($id);
+    $status = $achievement->locked==0
+        ? "now()"
+        : "0";
+    $statement = $connection->prepare("update achievements set locked=$status where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
+    
 function update_rank($id, $new_rank) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set rank=? where id=?");

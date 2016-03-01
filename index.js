@@ -365,8 +365,8 @@ function add_button_handlers_to_profile(id) {
         todo_id = Number(html_id.substr(11, html_id.length - 11));
         deleteToDo(id, todo_id);
     });
-    $(document).on("click", "", function (event) {
-
+    $(document).on("click", ".toggle_locked_status", function (event) {
+           toggleLockedStatus(id);
     });
     $(document).on("click", "", function (event) {
 
