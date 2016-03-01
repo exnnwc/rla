@@ -19,3 +19,11 @@
     margin-right:8px;
     padding:4px;
 }
+.tag-box{
+    background-color:#a9a9a9;
+    padding-left:4px;
+    padding-top:2px;
+    padding-bottom:2px;
+    border:1px dotted grey ;
+border-radius:4px 4px 4px 4px;
+}

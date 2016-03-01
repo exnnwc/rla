@@ -205,8 +205,11 @@ function list_tags($id) {
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     while ($tag = $statement->fetchObject()) {
-        echo "<input id='delete$tag->id' class='delete_tag hand text-button' type='button' value='X' />
-             <span class='tag'> $tag->name </span>";
+        echo "  <span class='tag-box' style=''>
+
+                    <span class='' style=''> $tag->name </span>
+                    <span id='delete$tag->id' class='delete_tag hand ' style='color:darkred;'>[x]</span>
+                </span>";
     }
 }
 function list_todo($achievement_id){
