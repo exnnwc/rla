@@ -104,7 +104,7 @@ function list_filter_tags(){
             echo " checked";
         }
         echo "      />
-                <span id='filter_by_".$tag->name."_text_button' class='hand text-button filter_text_buttoni ";
+                <span id='filter_by_".$tag->name."_text_button' class='hand text-button filter_text_button ";
         if (isset($_SESSION['filter']['filter_tags']) && in_array($tag->id, $_SESSION['filter']['filter_tags'])){
             echo " active-filter active-tag";
         }

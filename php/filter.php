@@ -35,9 +35,9 @@ function process_filter_to_query($filter) {
     if (isset($filter["filter_tags"])) {
         foreach ($filter["filter_tags"] as $tag) {
             $tag = fetch_tag($tag);
-            $tag_filter = !isset($string) ? " name=\"$tag->name\"" : $tag_filter . " or name=\"$tag->name\"";
+            $tag_filter = !isset($tag_filter) ? "(name=\"$tag->name\"" : $tag_filter . " or name=\"$tag->name\"";
         }
-        $tag_filter = $tag_filter . ")";
+        $tag_filter = $tag_filter . "))";
         $query = $query . " and 
                 id in (select distinct achievement_id from tags where active=1 and $tag_filter";
     }
