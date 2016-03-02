@@ -33,44 +33,10 @@ while ($achievement = $statement->fetchObject()) {
 echo "</table>";
 list_completed_achievements();
 
-function fetch_listing_menu($achievement) {
-    $string = " <tr><td>
-                    <input id='rank$achievement->id' type='number' 
-                        class='change_rank_button' value='$achievement->rank' style='width:50px;text-align:center;' />
-                </td>
-                <td title='$achievement->power'>$achievement->power_adj </td>
-                ";
-    $string = $string . fetch_next_three_menu_cells($achievement);
 
-
-    return $string;
-}
-
-function fetch_next_three_menu_cells($achievement) {
-    return $achievement->quality ? " <td>
-                    N/A
-                </td><td>
-                    <input id='0quality$achievement->id' class='change_quality_button' type='checkbox' checked \"/>
-               </td>" : "<td> " . fetch_work_button($achievement) . "
-                </td>";
-}
-
-function fetch_listing_row($achievement) {
-    $string = fetch_listing_menu($achievement)
-            . " <td style='text-align:left'>
-                <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
-    if ($achievement->active) {
-        $string = $string . "color:green;";
-    } else if (!$achievement->active) {
-        $string = $string . "color:red;";
-    }
-    $string = $string . "    '>
-                                $achievement->name 
-                            </a></td></tr>";
-    return $string;
-}
 
 function fetch_order_query($sort_by) {
+    var_dump($sort_by);
     $order_by = ["default" => " order by quality asc, rank asc",
         "power" => " order by power_adj asc",
         "powerrev" => " order by power_adj desc, rank asc",
@@ -112,8 +78,6 @@ function fetch_table_header($sort_by) {
 
 function fetch_work_button($achievement) {
 
-    $string = "<input type='button'  id='activity$achievement->id' ";
-    $string = !$achievement->active ? $string . "class='activate_button' style='background-color:green;' />" : $string . "class='deactivate_button' style='background-color:red;' />";
     return $string;
 }
 

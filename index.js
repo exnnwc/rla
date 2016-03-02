@@ -22,16 +22,34 @@ $(document.body).ready(function () {
     }
 });
 
-function add_behavior_handlers_to_profile(id){
+function add_behavior_handlers_to_profile(id) {
     $(document).on("focusout", ".new_todo_input", function (event) {
         html_id = event.target.id;
         todo_id = Number(html_id.substr(14, html_id.length - 14));
-        $("#todo_input"+todo_id).hide();
-        $("#todo_caption"+todo_id).show();
+        $("#todo_input" + todo_id).hide();
+        $("#todo_caption" + todo_id).show();
     });
 
 }
 function add_button_handlers_to_listings() {
+    $(document).on("click", ".activate_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = JSON.parse(id.substr(8, id.length - 8));
+        activateAchievement(achievement_id, 0);
+    });
+    $(document).on("click", ".deactivate_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = JSON.parse(id.substr(8, id.length - 8));
+        deactivateAchievement(achievement_id, 0);
+    });    
+    $(document).on("change", ".change_rank_button", function (event) {
+        id = event.target.attributes.id.nodeValue;
+        achievement_id = id.substr(4, id.length - 4);
+        
+        rank = $("#rank" + achievement_id).val();
+        console.log(achievement_id, rank, 0);
+        changeRank(achievement_id, rank, 0);
+    });
     $('#new_achievement_button').click(function () {
         createAchievement(0, $('#new_achievement_text_input').val());
         $('#new_achievement_text_input').val("");
@@ -54,13 +72,14 @@ function add_button_handlers_to_listings() {
         var sort_by = button_id.substr(5, (button_id.length - 12));
         listAchievements("default", sort_by);
     });
-    $(document).on("change", ".change_rank_button", function (event) {
-        id = event.target.attributes.id.nodeValue;
-        achievement_id = id.substr(4, id.length - 4);
-        parent = 0;
-        rank = $("#rank" + achievement_id).val();
-        changeRank(achievement_id, rank, parent);
-    });
+    /*
+     $(document).on("change", ".change_rank_button", function (event) {
+     id = event.target.attributes.id.nodeValue;
+     achievement_id = id.substr(4, id.length - 4);
+     parent = 0;
+     rank = $("#rank" + achievement_id).val();
+     changeRank(achievement_id, rank, parent);
+     });*/
     $(document).on("click", ".change_quality_button", function (event) {
         id = event.target.attributes.id.nodeValue;
         achievement_id = id.substr(8, id.length - 8);
@@ -94,7 +113,24 @@ function add_button_handlers_to_listings() {
 
 }
 function add_button_handlers_to_profile(id) {
+    $(document).on("click", ".activate_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = JSON.parse(html_id.substr(8, html_id.length - 8));
+        activateAchievement(achievement_id, id);
+    });
+    $(document).on("click", ".deactivate_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = JSON.parse(html_id.substr(8, html_id.length - 8));
+        deactivateAchievement(achievement_id, id);
+    });     
+    $(document).on("change", ".change_rank_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = html_id.substr(4, html_id.length - 4);
 
+        rank = $("#rank" + achievement_id).val();
+        console.log(achievement_id, rank, id);
+        changeRank(achievement_id, rank, id);
+    });
 
     $(document).on("click", "#edit_achievement_name_button", function () {
         changeName(id, $('#new_achievement_name').val());
@@ -337,19 +373,21 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click", ".show_new_todo", function (event) {
         html_id = event.target.attributes.id.nodeValue;
         todo_id = Number(html_id.substr(12, html_id.length - 12));
-        $("#todo_input"+todo_id).show();
-        $("#todo_caption"+todo_id).hide();
-        setTimeout(function(){$("#todo_input"+todo_id).focus();}, 0);
+        $("#todo_input" + todo_id).show();
+        $("#todo_caption" + todo_id).hide();
+        setTimeout(function () {
+            $("#todo_input" + todo_id).focus();
+        }, 0);
     });
-/*
-    $(document).on("click", ".change_todo", function (event) {
-        html_id = event.target.attributes.id.nodeValue;
-        todo_id = Number(html_id.substr(11, html_id.length - 11));
-        $("#todo_input"+todo_id).hide();
-        $("#todo_caption"+todo_id).show();
-        changeToDoName(id, todo_id, $("#new_todo_input"+todo_id).val());
-    });
-*/
+    /*
+     $(document).on("click", ".change_todo", function (event) {
+     html_id = event.target.attributes.id.nodeValue;
+     todo_id = Number(html_id.substr(11, html_id.length - 11));
+     $("#todo_input"+todo_id).hide();
+     $("#todo_caption"+todo_id).show();
+     changeToDoName(id, todo_id, $("#new_todo_input"+todo_id).val());
+     });
+     */
     $(document).on("click", ".cancel_todo", function (event) {
         html_id = event.target.attributes.id.nodeValue;
         todo_id = Number(html_id.substr(11, html_id.length - 11));
@@ -366,7 +404,7 @@ function add_button_handlers_to_profile(id) {
         deleteToDo(id, todo_id);
     });
     $(document).on("click", ".toggle_locked_status", function (event) {
-           toggleLockedStatus(id);
+        toggleLockedStatus(id);
     });
     $(document).on("click", "", function (event) {
 
@@ -377,6 +415,7 @@ function add_button_handlers_to_profile(id) {
 }
 
 function add_handlers_to_index(parent, from_profile) {
+
     $(document).on("click", ".cancel_completion_button", function (event) {
         id = event.target.attributes.id.nodeValue;
         achievement_id = Number(id.substr(6, id.length - 6));
@@ -398,16 +437,7 @@ function add_handlers_to_index(parent, from_profile) {
         achievement_id = JSON.parse(id.substr(6, id.length - 6));
         deleteAchievement(achievement_id, parent, from_profile);
     });
-    $(document).on("click", ".activate_button", function (event) {
-        id = event.target.attributes.id.nodeValue;
-        achievement_id = JSON.parse(id.substr(8, id.length - 8));
-        activateAchievement(achievement_id);
-    });
-    $(document).on("click", ".deactivate_button", function (event) {
-        id = event.target.attributes.id.nodeValue;
-        achievement_id = JSON.parse(id.substr(8, id.length - 8));
-        deactivateAchievement(achievement_id);
-    });
+
 }
 
 function add_keypress_handlers_to_listings() {
@@ -443,9 +473,9 @@ function add_keypress_handlers_to_profile(id) {
         if (event.which === 13) {
             html_id = event.target.attributes.id.nodeValue;
             todo_id = Number(html_id.substr(14, html_id.length - 14));
-            $("#todo_input"+todo_id).hide();
-            $("#todo_caption"+todo_id).show();
-            changeToDoName(id, todo_id, $("#new_todo_input"+todo_id).val());
+            $("#todo_input" + todo_id).hide();
+            $("#todo_caption" + todo_id).show();
+            changeToDoName(id, todo_id, $("#new_todo_input" + todo_id).val());
         }
     });
 }

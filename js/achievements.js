@@ -1,4 +1,4 @@
-function activateAchievement(id){
+function activateAchievement(id, parent){
     if (!testIfVariableIsNumber(id, "id")){
         return;
     }
@@ -9,10 +9,10 @@ function activateAchievement(id){
         data:{function_to_be_called: "activate_achievement", id:id}
     })
         .done(function(result){
-            softGenericReload(id);    
+            softGenericReload(parent);    
         });
 }
-function deactivateAchievement(id) {
+function deactivateAchievement(id, parent) {
     if (!testIfVariableIsNumber(id, "id")){
         return;
     }
@@ -23,7 +23,7 @@ function deactivateAchievement(id) {
         data: {function_to_be_called: "deactivate_achievement", id: id}
     })
             .done(function (result) {
-                softGenericReload(id);
+                softGenericReload(parent);
             });
 }
 function changeDescription(id, description) {

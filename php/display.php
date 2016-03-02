@@ -1,5 +1,4 @@
 <?php
-
 require_once("work.php");
 function display_todo_completion($todo){
     echo $todo->completed!=0
@@ -28,7 +27,34 @@ function fetch_child_menu($achievement) {
             <input id='rank$achievement->id' type='number' 
                 class='change_child_rank_button' value='$achievement->rank' style='width:32px;text-align:center;' />";
 }
-
+function fetch_listing_row($achievement) {
+    //this could be written so much better.
+    $string = " <tr><td>
+                    <input id='rank$achievement->id' type='number' 
+                        class='change_rank_button' value='$achievement->rank' style='width:50px;text-align:center;' />
+                </td>";
+    if ($achievement->parent==0){
+        $string = $string . " <td title='$achievement->power'>$achievement->power_adj </td>";
+    }
+    $string = $string . "<td> 
+                    <input type='button'  id='activity$achievement->id' ";
+    $string = !$achievement->active 
+        ? $string . "  class='activate_button' style='background-color:green;' />" 
+        : $string . "  class='deactivate_button' style='background-color:red;' />";
+    $string = $string 
+        . "     </td><td style='text-align:left'>
+                    <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
+    if ($achievement->active) {
+        $string = $string . "color:green;";
+    } else if (!$achievement->active) {
+        $string = $string . "color:red;";
+    }
+    $string = $string . "'>
+                    $achievement->name 
+                    </a>
+                </td></tr>";
+    return $string;
+}
 function list_actions($achievement_id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from actions where active=1 and achievement_id=? order by name");
@@ -61,11 +87,11 @@ function list_children($id) {
     $statement = $connection->prepare("select * from achievements where deleted=0 and parent=? order by rank");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
+    echo "<table>";
     while ($achievement = $statement->fetchObject()) {
-        echo "  <div>" . fetch_child_menu($achievement)
-        . "         <a href='" . SITE_ROOT . "/?rla=$achievement->id'>$achievement->name </a>
-                </div>";
+        echo fetch_listing_row($achievement);
     }
+    echo "</table>";
 }
 
 function list_filter_tags(){

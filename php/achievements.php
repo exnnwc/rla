@@ -97,7 +97,7 @@ function change_rank($id, $new_rank) {
         return;        
     }
     if ($new_rank > $highest_rank) {
-        activate_achievement($achievement->id);
+        change_achievement_to_undeleted($achievement->id);
         fix_achievement_ranks("rank", $achievement->parent);
         return;
     }

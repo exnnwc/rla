@@ -12,6 +12,7 @@ $pref_date_format = "F j, Y g:i:s";
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 
 $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+//var_dump($_POST, $achievement);
 ?>
 
 <div id="navbar" style='text-align:center'>
