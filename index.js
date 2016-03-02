@@ -9,7 +9,6 @@ $(document.body).ready(function () {
         countAchievements();
         add_keypress_handlers_to_listings();
         add_button_handlers_to_listings();
-        console.log("ASDFA");
 
 
         add_handlers_to_index(0, false);
@@ -37,9 +36,6 @@ function add_behavior_handlers_to_profile(id) {
 
 }
 function add_behavior_handlers_to_listings() {
-    fetchRequiredFilterStatus(function (required_filter_status) {
-       $("#hide_required_filter").prop("checked", required_filter_status);
-    });
 }
 function add_button_handlers_to_listings() {
     $(document).on("click", ".activate_button", function (event) {

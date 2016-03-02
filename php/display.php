@@ -98,8 +98,17 @@ function list_filter_tags(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from tags where active=1 and achievement_id=0");
     while ($tag = $statement->fetchObject()){
-        echo "  <input id='filter_by_".$tag->name."_checkbox' name='filtered_tags' type='checkbox' class='filter_menu' value='$tag->id'/>
-                <span id='filter_by_".$tag->name."_text_button' class='hand text-button filter_text_button'>
+        echo "  <input id='filter_by_".$tag->name."_checkbox' name='filtered_tags' type='checkbox' 
+                    class='filter_menu' value='$tag->id'"; 
+        if (isset($_SESSION['filter']['filter_tags']) && in_array($tag->id, $_SESSION['filter']['filter_tags'])){
+            echo " checked";
+        }
+        echo "      />
+                <span id='filter_by_".$tag->name."_text_button' class='hand text-button filter_text_buttoni ";
+        if (isset($_SESSION['filter']['filter_tags']) && in_array($tag->id, $_SESSION['filter']['filter_tags'])){
+            echo " active-filter active-tag";
+        }
+        echo "      '>
                     $tag->name ($tag->tally)
                 </span>";
     }

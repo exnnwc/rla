@@ -57,8 +57,9 @@ check_tag_integrity();
                 <span id='hide_filter' class="hand text-button" style='display:none;'>[ Hide Filter ]</span>
             </div>
             <div id="filter_menu" style="display:none">
-                <div>
-                    Hide Achievements That Require Others Before Completing? <input id='hide_required_filter' type='checkbox' />                   
+                <div id="required_filter_caption">
+                    Hide Achievements That Require Others Before Completing? 
+                    <input id='hide_required_filter' type='checkbox' />                   
                 </div>
                 <div>
                     

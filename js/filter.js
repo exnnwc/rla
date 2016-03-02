@@ -18,8 +18,7 @@ function filterListings(){
     $("input[name='filtered_tags']:checked").each(function (){
        filter_tags.push(Number(this.value));
     });
-    required=$("#hide_required_filter").is(":checked");
-   
+    required=Boolean($("#hide_required_filter:checked").length);
     filter = {filter_tags:filter_tags, required:required};
     isFilterMenuClear(filter) 
         ? listAchievements("clear", "default") 

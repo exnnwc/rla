@@ -27,3 +27,11 @@
     border:1px dotted grey ;
 border-radius:4px 4px 4px 4px;
 }
+
+.active-filter{
+    text-decoration:underline;
+}
+
+.active-tag{
+    color:#555555;
+}
