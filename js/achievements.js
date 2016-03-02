@@ -1,16 +1,11 @@
 function activateAchievement(id, parent){
+    console.log("RUN");
     if (!testIfVariableIsNumber(id, "id")){
         return;
     }
+    data={function_to_be_called: "activate_achievement", id:id};
 
-    $.ajax({
-        method:"POST",
-        url:"/rla/php/ajax.php",
-        data:{function_to_be_called: "activate_achievement", id:id}
-    })
-        .done(function(result){
-            softGenericReload(parent);    
-        });
+    AJAXThenReload(data, parent, function(){});
 }
 function deactivateAchievement(id, parent) {
     if (!testIfVariableIsNumber(id, "id")){
@@ -162,7 +157,7 @@ function countAchievements() {
         data: {function_to_be_called: "count_achievements"}
     })
             .done(function (result) {
-                current_date=new Date();
+                count=JSON.parse(result);
                 $("#working_total").html(count.working);
                 $("#nonworking_total").html(count.not_working);
                 $("#achievement_total").html(count.total);

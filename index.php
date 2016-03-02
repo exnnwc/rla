@@ -13,6 +13,7 @@ check_tag_integrity();
         <script src="index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/actions.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/error.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/filter.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/listings.js"></script>
