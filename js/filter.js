@@ -15,14 +15,21 @@ function displayFilterMenu(){
 
 function filterListings(){    
     var filter_tags=[];
-    filtered=true;
     $("input[name='filtered_tags']:checked").each(function (){
        filter_tags.push(Number(this.value));
     });
     required=$("#hide_required_filter").is(":checked");
    
     filter = {filter_tags:filter_tags, required:required};
+    isFilterClear(filter) 
+        ? listAchievements("clear", "default") 
+        : listAchievements(filter, "default") ;
     
-    filtered ? listAchievements(filter, "default") : listAchievements("clear", "default");
-    
+}
+
+function isFilterClear(filter){
+    if (required || filter['filter_tags'].length!=0){
+        return false;
+    }
+    return true;
 }
