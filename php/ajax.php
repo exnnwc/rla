@@ -126,6 +126,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "is_it_active":
         is_it_active(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "is_filter_active":
+        is_filter_active();
+        break;
     case "list_children":
         list_children(filter_input(INPUT_POST, 'parent', FILTER_SANITIZE_NUMBER_INT));
         break;

@@ -37,11 +37,9 @@ function add_behavior_handlers_to_profile(id) {
 
 }
 function add_behavior_handlers_to_listings() {
-    var callback = function (required_filter_status) {
+    fetchRequiredFilterStatus(function (required_filter_status) {
        $("#hide_required_filter").prop("checked", required_filter_status);
-    };
-    fetchRequiredFilterStatus(callback);
-    
+    });
 }
 function add_button_handlers_to_listings() {
     $(document).on("click", ".activate_button", function (event) {

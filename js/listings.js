@@ -10,6 +10,17 @@ function listAchievements(filter, sort_by) {
     })
             .done(function (result) {
                 $("#list_of_achievements").html(result);
+                isFilterActive(function(filterIsActive){
+                    if (filterIsActive){
+                        $("#show_filter").hide();
+                        $("#hide_filter").show();
+                        $("#filter_menu").show();
+                    } else if (!filterIsActive){
+                        $("#show_filter").show();
+                        $("#hide_filter").hide();
+                        $("#filter_menu").hide();
+                    } 
+                }); 
             });
 }
 

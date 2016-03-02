@@ -13,8 +13,6 @@ if ($sort_by == "default") {
 }
 $_SESSION["sort_by"] = $sort_by;
 
-echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
-
 $filter = isset($_POST['filter']) ? $_POST['filter'] : "default";
 if ($filter != "default") {
     $query = process_filter_to_query($filter);
@@ -22,6 +20,10 @@ if ($filter != "default") {
 } else if ($filter == "default") {
     $query = isset($_SESSION['filter']) ? process_filter_to_query($_SESSION['filter']) : process_filter_to_query($filter);
 }
+
+
+echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
+
 
   $statement = $connection->query("select * from achievements " . $query . fetch_order_query($sort_by));
 
