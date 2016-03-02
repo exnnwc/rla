@@ -21,7 +21,6 @@ if ($filter != "default") {
     $query = isset($_SESSION['filter']) ? process_filter_to_query($_SESSION['filter']) : process_filter_to_query($filter);
 }
 
-var_dump($query);
 echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
 
 
@@ -74,10 +73,6 @@ function fetch_table_header($sort_by) {
     return $string;
 }
 
-function fetch_work_button($achievement) {
-
-    return $string;
-}
 
 function list_completed_achievements() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);

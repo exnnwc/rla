@@ -218,7 +218,6 @@ function list_requirements($id, $type) {
         $achievement_id = $result[0];
         $achievement_name = $result[1];
         $requirement_id = $result[2];
-        $requirement_required = $result[3];
         echo "  <div>
                     <input id='requirement$requirement_id' class='delete_requirement_button' type='button' value='X' />
 

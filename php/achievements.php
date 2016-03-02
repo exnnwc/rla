@@ -309,7 +309,6 @@ function uncomplete_achievement($id) {
 }
 
 function undelete_achievement($id){
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
     change_achievement_to_undeleted($id);
     update_rank($id, fetch_highest_rank($achievement->parent)+1);

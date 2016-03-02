@@ -26,7 +26,7 @@ function action_already_exists($achievement_id, $action){
         //WARN Action already exists.
         return true;
     } else if ($num_of_records>1){
-        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($achievement_id, $action_id): More than one action registered for this achievement.");
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($achievement_id, $action): More than one action registered for this achievement.");
         return true;
     }
 
@@ -66,7 +66,6 @@ function associate_action($achievement_id, $action_id){
 }
 function create_action($achievement_id, $action) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $achievement=fetch_achievement($achievement_id);    
     if (action_already_exists($achievement_id, $action)){
         return;
     }

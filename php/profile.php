@@ -254,7 +254,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 <div style='padding:20px;'>&nbsp;</div>
 
 <?php
-function display_documentation_menu($id, $status) {
+function display_documentation_menu($status) {
 
 $menu = $status
 ? "<input id = 'change_documentation' style = 'margin-left:8px;' type = 'button' value = 'Change to documented' />"
