@@ -14,6 +14,7 @@ check_tag_integrity();
         <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/actions.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/error.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/filter.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/listings.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/profile.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/requirements.js"></script>
@@ -47,6 +48,10 @@ check_tag_integrity();
             </div>
             <div id="filter_menu" style="display:none">
                 <div>
+                    Hide Achievements That Require Others Before Completing? <input id='hide_required_filter' type='checkbox' />                   
+                </div>
+                <div>
+                    
                     Tags
                     <span id="clear_tags_button" class="hand text-button">
                         [Clear]

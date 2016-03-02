@@ -15,28 +15,24 @@ $_SESSION["sort_by"] = $sort_by;
 
 echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
 
-$filter = isset($_POST['filter']) 
-    ? $_POST['filter'] 
-    : "default";
-if ($filter!="default") {
+$filter = isset($_POST['filter']) ? $_POST['filter'] : "default";
+if ($filter != "default") {
     $query = process_filter_to_query($filter);
     $_SESSION['filter'] = $_POST['filter'];
 } else if ($filter == "default") {
-    $query = isset($_SESSION['filter']) 
-        ? process_filter_to_query($_SESSION['filter']) 
-        : process_filter_to_query($filter);
+    $query = isset($_SESSION['filter']) ? process_filter_to_query($_SESSION['filter']) : process_filter_to_query($filter);
 }
-$statement = $connection->query($query . fetch_order_query($sort_by));
-while ($achievement = $statement->fetchObject()) {
-    echo fetch_listing_row($achievement);
-}
-echo "</table>";
-list_completed_achievements();
 
+  $statement = $connection->query("select * from achievements " . $query . fetch_order_query($sort_by));
+
+  while ($achievement = $statement->fetchObject()) {
+  echo fetch_listing_row($achievement);
+  }
+  echo "</table>";
+  list_completed_achievements();
 
 
 function fetch_order_query($sort_by) {
-    var_dump($sort_by);
     $order_by = ["default" => " order by quality asc, rank asc",
         "power" => " order by power_adj asc",
         "powerrev" => " order by power_adj desc, rank asc",
@@ -134,16 +130,23 @@ function display_tag_filters() {
 }
 
 function process_filter_to_query($filter) {
-    $generic_query = "select * from achievements where deleted=0 and parent=0 and completed=0 and quality=0";
+    $generic_query = "where deleted=0 and parent=0 and completed=0 ";
 
-    if ($filter == "clear" || $filter=="default" || empty($filter)) {
+    if ($filter == "clear" || $filter == "default" || empty($filter)) {
         return $generic_query;
     }
-    foreach ($filter["filter_tags"] as $tag) {
-        $tag = fetch_tag($tag);
-        $string = !isset($string) ? " name=\"$tag->name\"" : $string . " or name=\"$tag->name\"";
+    $query = $generic_query;
+    if (isset($filter["filter_tags"])) {
+        foreach ($filter["filter_tags"] as $tag) {
+            $tag = fetch_tag($tag);
+            $tag_filter = !isset($string) ? " name=\"$tag->name\"" : $tag_filter . " or name=\"$tag->name\"";
+        }
+        $tag_filter = $tag_filter . ")";
+        $query = $query . " and 
+                id in (select distinct achievement_id from tags where active=1 and $tag_filter";
     }
-    $string = $string . ")";
-    return "$generic_query and 
-                      id in (select distinct achievement_id from tags where active=1 and $string";
+    if ($filter["required"]) {        
+        $query = $query . "and id not in (select distinct required_for from requirements where active=1)";
+    }
+    return $query;
 }

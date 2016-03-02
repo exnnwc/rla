@@ -4,6 +4,7 @@ require_once ("achievements.php");
 require_once ("work.php");
 require_once ("actions.php");
 require_once ("display.php");
+require_once ("filter.php");
 require_once ("notes.php");
 require_once ("requirements.php");
 require_once ("relations.php");
@@ -119,7 +120,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "display_queue":
         display_queue();
         break;
-
+    case "fetch_required_filter_status":
+        fetch_required_filter_status();
+        break;
     case "is_it_active":
         is_it_active(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;

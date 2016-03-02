@@ -5,10 +5,15 @@ $(document.body).ready(function () {
         document.title = SITE_NAME + " - Achievements List";
         displayFilterMenu();
         listAchievements("default", "default");
+        add_behavior_handlers_to_listings();
         countAchievements();
         add_keypress_handlers_to_listings();
         add_button_handlers_to_listings();
+        console.log("ASDFA");
+
+
         add_handlers_to_index(0, false);
+
 
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
         var achievement_id = Number($(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19));
@@ -31,6 +36,13 @@ function add_behavior_handlers_to_profile(id) {
     });
 
 }
+function add_behavior_handlers_to_listings() {
+    var callback = function (required_filter_status) {
+       $("#hide_required_filter").prop("checked", required_filter_status);
+    };
+    fetchRequiredFilterStatus(callback);
+    
+}
 function add_button_handlers_to_listings() {
     $(document).on("click", ".activate_button", function (event) {
         id = event.target.attributes.id.nodeValue;
@@ -41,11 +53,11 @@ function add_button_handlers_to_listings() {
         id = event.target.attributes.id.nodeValue;
         achievement_id = JSON.parse(id.substr(8, id.length - 8));
         deactivateAchievement(achievement_id, 0);
-    });    
+    });
     $(document).on("change", ".change_rank_button", function (event) {
         id = event.target.attributes.id.nodeValue;
         achievement_id = id.substr(4, id.length - 4);
-        
+
         rank = $("#rank" + achievement_id).val();
         console.log(achievement_id, rank, 0);
         changeRank(achievement_id, rank, 0);
@@ -122,7 +134,7 @@ function add_button_handlers_to_profile(id) {
         html_id = event.target.attributes.id.nodeValue;
         achievement_id = JSON.parse(html_id.substr(8, html_id.length - 8));
         deactivateAchievement(achievement_id, id);
-    });     
+    });
     $(document).on("change", ".change_rank_button", function (event) {
         html_id = event.target.attributes.id.nodeValue;
         achievement_id = html_id.substr(4, html_id.length - 4);

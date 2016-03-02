@@ -21,10 +21,6 @@ function check_tag_integrity(){
             $statement->bindValue(1, $top_tag->name, PDO::PARAM_STR);
             $statement->execute();
             $num_of_associated_tags=(int)$statement->fetchColumn();
-            if (!isset($num_of_associated_tags)){
-
-            var_dump($statement, $top_tag->name);
-            }
             if ($num_of_associated_tags==0){
                 error_log("Line #".__LINE__ . " " . __FUNCTION__ . "(): No tags associated with top tag id #$top_tag->id");                
                 deactivate_tag($top_tag->id);
