@@ -1,6 +1,8 @@
 <?php
 
 require_once ("config.php");
+require_once ("filter.php");
+
 function achievement_name_exists($name, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from achievements where deleted=0 and name=? and parent=? limit 1");
@@ -115,23 +117,31 @@ function complete_achievement($id) {
 
 function count_achievements() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $default_query="select count(*) from achievements " . DEFAULT_LISTING;
+    $filter_is_active=return_if_filter_active();
+    $query = $filter_is_active
+        ? "select count(*) from achievements " . process_filter_to_query($_SESSION['filter'])
+        : $default_query;    
     $data = [];
-
-    $statement = $connection->query("select count(*) from achievements where deleted=0 and parent=0 and  active=1");
+    $statement = $connection->query($query . " and active=1");
     $num_of_working_achievements = (int) $statement->fetchColumn();
 
-    $statement = $connection->query("select count(*) from achievements where deleted=0 and quality=true");
-    $num_of_qualities = (int) $statement->fetchColumn();
 
-    $statement = $connection->query("select count(*) from achievements where deleted=0 and parent=0");
-    $num_of_achievements = (int) $statement->fetchColumn();
+    $statement = $connection->query($query);
+    $total = (int) $statement->fetchColumn();
 
-    $num_of_nonworking_achievements = $num_of_achievements - $num_of_working_achievements - $num_of_qualities;
-    $data = ["total" => $num_of_achievements,
+    $statement = $connection->query($query . " and active=0");
+    $num_of_nonworking_achievements = (int) $statement->fetchColumn();
+
+    $data = ["total" => $total,
         "working" => $num_of_working_achievements,
-        "not_working" => $num_of_nonworking_achievements,
-        "qualities" => $num_of_qualities];
-
+        "not_working" => $num_of_nonworking_achievements];
+    if ($filter_is_active){
+        $statement = $connection->query($default_query);
+        $num_of_unfiltered = (int) $statement->fetchColumn();
+        $num_of_filtered=$num_of_unfiltered-$total;
+        $data["filtered"]=$num_of_filtered;
+    }
     echo json_encode($data);
 }
 

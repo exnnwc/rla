@@ -162,10 +162,17 @@ function countAchievements() {
         data: {function_to_be_called: "count_achievements"}
     })
             .done(function (result) {
-                count = JSON.parse(result);
+                current_date=new Date();
                 $("#working_total").html(count.working);
                 $("#nonworking_total").html(count.not_working);
                 $("#achievement_total").html(count.total);
+                if(count.filtered){
+                    $("#filtered_total").html("("+count.filtered+" filtered)");
+                    $("#filtered_total").show();
+                } 
+                if (!count.filtered){
+                    $("#filtered_total").hide();
+                }
             });
 
 }

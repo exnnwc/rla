@@ -131,24 +131,3 @@ function display_tag_filters() {
     }
 }
 
-function process_filter_to_query($filter) {
-    $generic_query = "where deleted=0 and parent=0 and completed=0 ";
-
-    if ($filter == "clear" || $filter == "default" || empty($filter)) {
-        return $generic_query;
-    }
-    $query = $generic_query;
-    if (isset($filter["filter_tags"])) {
-        foreach ($filter["filter_tags"] as $tag) {
-            $tag = fetch_tag($tag);
-            $tag_filter = !isset($string) ? " name=\"$tag->name\"" : $tag_filter . " or name=\"$tag->name\"";
-        }
-        $tag_filter = $tag_filter . ")";
-        $query = $query . " and 
-                id in (select distinct achievement_id from tags where active=1 and $tag_filter";
-    }
-    if ($filter["required"]) {        
-        $query = $query . "and id not in (select distinct required_for from requirements where active=1)";
-    }
-    return $query;
-}

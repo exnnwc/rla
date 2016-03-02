@@ -10,6 +10,7 @@ function listAchievements(filter, sort_by) {
     })
             .done(function (result) {
                 $("#list_of_achievements").html(result);
+                countAchievements();
                 isFilterActive(function(filterIsActive){
                     if (filterIsActive){
                         $("#show_filter").hide();
