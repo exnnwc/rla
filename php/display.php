@@ -263,7 +263,10 @@ function list_todo($achievement_id){
         echo "  <div>
               <input id='delete_todo$todo->id' class='delete_todo' type='button' value='X' />
                     <Span id='todo_caption$todo->id' class='show_new_todo hand' title='Click to edit'
-                        style='padding-left:8px;background-color:lightgrey;";
+                        style='padding-left:8px;";
+        if ($todo->name==NULL){
+            echo "background-color:lightgrey;";
+        }
         if ($todo->completed!=0){    
             echo "text-decoration:line-through;";
         }

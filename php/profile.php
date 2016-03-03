@@ -89,7 +89,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     Parent: 
     <?php
     echo ($achievement->parent == 0)
-    ? "Top level"
+    ? "<a href='".  SITE_ROOT . "/'> Top level</a>"
     : "<a href='" . SITE_ROOT . "/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
     ?>
 </div>
@@ -125,11 +125,6 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     </span>
 </div>
 
-<h3>
-    To Do 
-    <span id="todo<?php echo $achievement->id; ?>" class="create_todo hand text-button h-normal" style="">[ New ]</span>
-</h3>
-<div id="todo_list"></div>
 <h3>
     Description
     <?php if ($achievement->locked==0): ?>
@@ -168,6 +163,11 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     </div>
 </div>
 
+<h3>
+    To Do 
+    <span id="todo<?php echo $achievement->id; ?>" class="create_todo hand text-button h-normal" style="">[ New ]</span>
+</h3>
+<div id="todo_list"></div>
 
 <h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
 
