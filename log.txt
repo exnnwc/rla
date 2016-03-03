@@ -1,0 +1,19 @@
+03/03/16
+Removed actions, because I'm trying to make the first public release as simple as possible.
+
+I came up with this idea that I feel is important. Remove ranks as this static ordering thing. Remove them all together. There are no "ranks", no arbitrary sorting. Merely a list. Instead of ranking and merge/creation as I've originally imagined it, have those aspects be an extension of a point system. When a user wishes to make a specific achievement more valuable, they add points to it from their point collection. The specifics of accruing points will be left for another day, but they idea is that if they want to make an achievement more important or less important they add points to it. This could be integrated with merging. For example, when a user creates an achievement, the default value would be 1 so that would take a point from their collection. That way it limits their ability to create new achievements by doing so at the expense of valuing their current achievements.
+
+Now that I think about it, ranking should probably stay, but it needs to be less static and more dynamic. (ALA Trello's card sorting mechanic) But the point system is pretty important, because it has implications into later social interactions between users. For example, when the user publishes an achievement for other people to complete, the system could require the user to spend ten points to create an achievement with 1 value. Or maybe even a 100. And if people wanted to vote it up or down, it would require more. Though, that inherently makes social interactions more expensive. (Penalizing) Which may be the wrong path. But the point system idea is solid, I think.
+
+I should probably be working more on the overall design of the progam, because I've been extending the program using the original spreadsheet as an example arbitrarily.  
+
+One important thing that I'm realizing is that if achievements are published with a point system, it would be important that only DOCUMENTED achievements give points from publishing. For example, if a user publishes an achievement with one point and another user completes the achievement to receive one point. If the achievement is undocumented, there's nothing preventing users from completing them over and over again to dupe points.
+
+This also leads to a concern about completion of achievements. If a user completes an achievement they've created themselves that they've valued at 5, do they receive 5 points? What's to prevent a user from duping points in a similar manner described previously? Oh, wait...Never mind, they wouldn't be duping anything, because once it's completed, they'd be receiving their own points back.
+
+
+12/20/15
+I've been thinking that maybe actions aren't really necessary. I feel like they 
+might be too micromanaging in the scheme of things. When I finish this refactor,
+I'll sit down and fully design everything that's in Trello.
+

@@ -1,0 +1,17 @@
+Real Life Achievements
+Your Resume Of Awesome
+
+This is mostly incomplete. I use Trello for most of the design process and 
+
+User System
+Achievements can be censored so that no one or only certain other users can view them. 
+
+FEATURES FOR CONSIDERATION
+Users receive points that can be used to vote achievements up or down. They receive one point a day. They can vote up or down on something and use a point. If they vote up, it transfers to the owner of the action.
+
+For example, one user can tag another user's achievement as something and another person can upvote that tagging action, letting the tagger receive a point. If they vote it down, the action receives a negative balance and the tagger will not receive any points from any upvotes until it becomes positive.
+
+After a user publishes an achievement, they get a say in determining the legitimacy of the documentation. Obviously, they don't have complete control, but they have a larger role than an average user. An idea is that the people who are working on the achievement or have completed it are all part of the community for that achievement and they determine the legitimacy. Though, how specifically that would work is yet to be determined.
+
+Remove "children" as a concept. They're requirement achievements. Not "children".
+
