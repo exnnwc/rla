@@ -27,11 +27,16 @@ function return_if_filter_active(){
 
 function process_filter_to_query($filter) {
     $generic_query = DEFAULT_LISTING;
-
     if ($filter == "clear" || $filter == "default" || empty($filter)) {
         return $generic_query;
     }
     $query = $generic_query;
+    if (isset($filter['show_only'])){
+        foreach ($filter['show_only'] as $show){
+            $query=$query . process_show_only_to_query($show);
+        }
+    }
+
     if (isset($filter["filter_tags"])) {
         foreach ($filter["filter_tags"] as $tag) {
             $tag = fetch_tag($tag);
@@ -45,4 +50,16 @@ function process_filter_to_query($filter) {
         $query = $query . " and id not in (select distinct required_for from requirements where active=1)";
     }
     return $query;
+
+}
+
+function process_show_only_to_query($show){
+   
+    $show_only=[
+        "locked"
+            =>" and locked!=0", 
+        "unlocked"
+            =>" and locked=0"
+        ];
+    return $show_only[$show];
 }

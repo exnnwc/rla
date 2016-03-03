@@ -57,6 +57,16 @@ check_tag_integrity();
                 <span id='hide_filter' class="hand text-button" style='display:none;'>[ Hide Filter ]</span>
             </div>
             <div id="filter_menu" style="display:none">
+                <div>
+                        <span id='show_only_locked'> 
+                            Locked
+                        </span>
+                        <input name='show_only_filter' value='locked' type='checkbox' />
+                        <span id='show_only_unlocked'>
+                            Unlocked 
+                        </span>
+                        <input name='show_only_filter' value='unlocked' type='checkbox'/>
+                </div>
                 <div id="required_filter_caption">
                     Hide Achievements That Require Others Before Completing? 
                     <input id='hide_required_filter' type='checkbox' />                   
@@ -74,18 +84,6 @@ check_tag_integrity();
                 
             </div>
 
-            <!--
-                        <span id="sorting_menu">
-                            <input id="sort_rank_button" class="sort_button" type="button" value="Rank &#8595;"/>
-                            <input id="sort_rankrev_button" class="sort_button"  type='button' value="Rank &#8593;"  style="display:none" />
-                            <input id="sort_power_button" class="sort_button"  type="button" value="Power &#8595;" />
-                            <input id="sort_powerrev_button" class="sort_button"  type="button" value="Power &#8593;" style="display:none"/>
-                            <input id="sort_name_button"  class="sort_button" type="button" value="Name &#8595;" />
-                            <input id="sort_namerev_button"  class="sort_button" type="button" value="Name &#8593;"  style="display:none"/>
-                            <input id="sort_created_button"  class="sort_button" type="button" value="Time &#8595;" />
-                            <input id="sort_createdrev_button"  class="sort_button" type="button" value="Time &#8593;"  style="display:none"/>
-                        </span>
-            -->
             <div id="list_of_achievements"></div>
         <?php elseif ($rla > 0): ?>
         <body id="achievement_number_<?php echo $rla; ?>" >

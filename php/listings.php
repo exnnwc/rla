@@ -20,7 +20,7 @@ if ($filter != "default") {
 } else if ($filter == "default") {
     $query = isset($_SESSION['filter']) ? process_filter_to_query($_SESSION['filter']) : process_filter_to_query($filter);
 }
-
+var_dump($filter, $query);
 echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
 
 
