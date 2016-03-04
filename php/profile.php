@@ -179,11 +179,6 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     </div>
 </div>
 
-<h3>
-    To Do 
-    <span id="todo<?php echo $achievement->id; ?>" class="create_todo hand text-button h-normal" style="">[ New ]</span>
-</h3>
-<div id="todo_list"></div>
 
 <h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
 
@@ -239,12 +234,22 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 
 <div>
     <h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
-        Notes    
+        Notes
         <span id="show_notes" class="h-normal hand text-button" style="float:left;display:none;">[ + ]</span>
         <span id="hide_notes" class="h-normal hand text-button" style="float:left;">[ - ]</span>
     </h2>
     <div id="all_notes">
-        <div id="show_new_notes" class="hand text-button">[ New ]</div>
+    <h3>
+        To Do 
+        <span id="todo<?php echo $achievement->id; ?>" class="create_todo hand text-button h-normal" style="">[ New ]</span>
+    </h3>
+    <div id="todo_list"></div>
+        <h3>
+            Notes        
+            <span id="show_new_notes" class="h-normal hand text-button">[ New ]</span>
+       
+        </h3>
+
         <div id="new_notes" style="display:none;">
             <textarea id="new_note_inputted" style='width:400px;height:100px;'></textarea>
             <div>
