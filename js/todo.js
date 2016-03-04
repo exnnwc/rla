@@ -5,7 +5,8 @@ function createToDo(achievement_id){
         data:{function_to_be_called:"create_todo", achievement_id:achievement_id}
     })
         .done(function(result){
-            console.log(result);
+            //ERROR if new achievement already exists.
+            listToDo(achievement_id);
         });
 }
 function cancelToDo(achievement_id, id){
