@@ -20,7 +20,6 @@ if ($filter != "default") {
 } else if ($filter == "default") {
     $query = isset($_SESSION['filter']) ? process_filter_to_query($_SESSION['filter']) : process_filter_to_query($filter);
 }
-var_dump($_SESSION['filter'] );
 echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
 
 
@@ -31,7 +30,15 @@ echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
   }
   echo "</table>";
   list_completed_achievements();
-
+  
+  echo "<h3 style='text-align:center;'>
+      <span id='show_abandoned' class='h-normal hand text-button' style='float:left;'>[ Show ] </span>
+            <span id='hide_abandoned' class='h-normal hand text-button' style='display:none;float:left;'>[ Hide ] </span>
+            Abandoned Achievements</h3>
+            
+            <div id='abandoned_achievements_list' style='display:none;'>";
+  list_abandoned_achievements();
+  echo "</div>";
 
 function fetch_order_query($sort_by) {
     $order_by = ["default" => " order by quality asc, rank asc",
@@ -72,6 +79,33 @@ function fetch_table_header($sort_by) {
     $string = $string . "</tr>";
     return $string;
 }
+function list_abandoned_achievements(){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    
+    $statement = $connection->query("select count(*) from achievements where abandoned=1 and deleted=0 and completed=0");
+    if ((int) $statement->fetchColumn() == 0) {
+        echo "<div>None.</div>";
+        return;
+    }
+    $statement = $connection->query("select * from achievements where abandoned=1 and deleted=0 and completed=0");
+    while ($achievement = $statement->fetchObject()) {
+        echo "  <div>
+                    <span id='delete$achievement->id' class='remove_achievement_button hand' style='color:darkred'>
+                        [x]
+                    </span>
+                    <span style='font-weight:bold'>
+                        <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;color:black;'>
+                        $achievement->name                             
+                        </a>
+                    </span>
+                    
+                    <span id='restore$achievement->id' class='restore_achievement_button hand text-button'>
+                        [ Undo ]
+                    </span>
+                </div>";
+    }
+}    
+    
 
 
 function list_completed_achievements() {

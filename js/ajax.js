@@ -9,3 +9,14 @@ function AJAXThenReload(data, parent, callback){
             softGenericReload(parent);
         });
 }
+function AJAXThenList(data, callback){
+    $.ajax({
+        method:"POST",
+        url:"/rla/php/ajax.php",
+        data:data
+    })
+        .done(function(result){
+            callback(result);
+            listAchievements("default", "default");
+        });
+}

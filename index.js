@@ -116,7 +116,25 @@ function add_button_handlers_to_listings() {
     $("#clear_tags_button").click(function () {
         $("input[name='filtered_tags']:checked").removeAttr('checked');
     });
-
+    $(document).on("click", "#show_abandoned", function (event) {
+        $("#show_abandoned").hide();
+        $("#hide_abandoned").show();
+        $("#abandoned_achievements_list").show();
+    });
+    $(document).on("click", "#hide_abandoned", function (event) {
+        $("#show_abandoned").show();
+        $("#hide_abandoned").hide();
+        $("#abandoned_achievements_list").hide();        
+    });
+    $(document).on("click", ".restore_achievement_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = Number(html_id.substr(7, html_id.length - 7));
+        console.log(achievement_id);
+        restoreAchievement(achievement_id, 0);
+    });
+    
+    $(document).on("click", "", function (event) {
+    });    
 }
 function add_button_handlers_to_profile(id) {
     $(document).on("click", ".activate_button", function (event) {
@@ -412,6 +430,11 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click", ".toggle_locked_status", function (event) {
         toggleLockedStatus(id);
     });
+    $(document).on("click", ".restore_achievement_button", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = Number(html_id.substr(7, html_id.length - 7));
+        restoreAchievement(achievement_id, achievement_id);
+    });    
     $(document).on("click", "", function (event) {
 
     });
@@ -438,7 +461,7 @@ function add_handlers_to_index(parent, from_profile) {
         achievement_id = Number(id.substr(8, id.length - 8));
         completeAchievement(achievement_id);
     });
-    $(document).on("click", ".delete_achievement_button", function (event) {
+    $(document).on("click", ".remove_achievement_button", function (event) {
         id = event.target.attributes.id.nodeValue;
         achievement_id = JSON.parse(id.substr(6, id.length - 6));
         deleteAchievement(achievement_id, parent, from_profile);

@@ -26,10 +26,19 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     </div>    
 </div>
 <div>
+    <?php if (!$achievement->deleted): ?>
     <input id='delete<?php echo $achievement->id; ?>' 
-           class='delete_achievement_button' type='button' value='X' 
-           title='Delete Achievement #<?php echo $achievement->id; ?>' 
-           style="width:25px;height:25px;text-align:center;"/>
+           class='remove_achievement_button' type='button' value='X' 
+           title='
+           <?php echo   $achievement->deleted 
+                            ? "Archived"
+                            : "Delete";
+            ?> Achievement #<?php echo $achievement->id; ?>' 
+           style="width:25px;height:25px;text-align:center;
+           <?php if ($achievement->abandoned){
+               echo "color:red;font-weight:bold;";
+           }?>"/>
+    <?php endif; ?>
     <?php if ($achievement->completed == 0 &&!$achievement->documented): ?>    
     <input id='complete<?php echo $achievement->id; ?>' value="&#10003;" class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
     <?php endif; ?>
@@ -58,9 +67,16 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 </h1>
 <div>
     <span id='achievement_active<?php echo $achievement->id; ?>' class='hand toggle_active_status'
-    <?php
-    echo $achievement->active ? "style='color:green;'>Active" : "style='color:darkred;'>Inactive";
+    <?php 
+    if (!$achievement->abandoned){
+        echo  $achievement->active ? "style='color:green;'>Active" : "style='color:darkred;'>Inactive";
+    }
     ?>
+    <?php if ($achievement->abandoned):?>
+        style='font-weight:bold;'>Abandoned <span id='restore<?php echo $achievement->id;?>' class='restore_achievement_button hand text-button'>
+                        [ Undo ]
+                    </span>
+    <?php endif; ?>
 </span>
 
 </div>

@@ -193,14 +193,15 @@ function deleteAchievement(id, parent, fromProfile) {
             || !testIfVariableIsBoolean(fromProfile, "fromProfile")) {
         
         return;
-    }
+    }    
     if (window.confirm("Are you sure you want to delete this achievement?")) {
         $.ajax({
             method: "POST",
             url: "/rla/php/ajax.php",
-            data: {function_to_be_called: "delete_achievement", id: id}
+            data: {function_to_be_called: "remove_achievement", id: id}
         })
                 .done(function (result) {
+                    console.log(result);
                     if (fromProfile) {
                         if (parent === 0) {
                             displayProfile(id);
@@ -212,6 +213,13 @@ function deleteAchievement(id, parent, fromProfile) {
                     }
                 });
     }
+}
+
+function restoreAchievement(id, parent){
+    data={function_to_be_called:"restore_achievement", id:id};
+    AJAXThenReload(data, parent, function(result){
+       console.log(result); 
+    });
 }
 function toggleDocumentationStatus(id) {
  

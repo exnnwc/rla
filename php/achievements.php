@@ -3,6 +3,13 @@
 require_once ("config.php");
 require_once ("filter.php");
 
+
+function abandon_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set abandoned=1 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();    
+}
 function achievement_name_exists($name, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from achievements where deleted=0 and name=? and parent=? limit 1");
@@ -27,15 +34,9 @@ function are_ranks_duplicated($parent) {
     }
     return false;
 }
-function change_achievement_to_deleted($id){
+function delete_achievement($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set deleted=1 where id=?");
-    $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();
-}
-function change_achievement_to_undeleted($id){
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set deleted=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
@@ -88,7 +89,7 @@ function change_rank($id, $new_rank) {
         return;
     } 
     update_rank($id, $new_rank);
-    change_achievement_to_deleted($achievement->id);
+    delete_achievement($achievement->id);
     if ($new_rank <= 0) {
         error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Shouldn't be able to change rank to 0 or negative");
         return;
@@ -99,12 +100,12 @@ function change_rank($id, $new_rank) {
         return;        
     }
     if ($new_rank > $highest_rank) {
-        change_achievement_to_undeleted($achievement->id);
+        undelete_achievement($achievement->id);
         fix_achievement_ranks("rank", $achievement->parent);
         return;
     }
     rank_achievements($achievement, $new_rank);
-    change_achievement_to_undeleted($achievement->id);
+    undelete_achievement($achievement->id);
 }
 
 
@@ -171,10 +172,19 @@ function deactivate_achievement($id) {
     $statement->execute();
 }
 
-function delete_achievement($id) {
+function remove_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
-    change_achievement_to_deleted($id);
+    if ($achievement->deleted){        
+        error_log("Line #".__LINE__ . ":" . __FUNCTION__ . "($id) Achievement already deleted.");
+        return;
+    }
+    $achievement->abandoned
+        ? delete_achievement($id)
+        : abandon_achievement($id);
+    if (!$achievement->locked){
+        toggle_locked_status($id);        
+    }
     $connection->exec("update achievements set rank=rank-1 where deleted=0 and parent=$achievement->parent and rank>=$achievement->rank");
     //This is a quick fix. May require a deleted tag so that tags can still stay active when an achievement is deleted.
     $connection->exec("update tags set active=0 where achievement_id=$id");
@@ -307,9 +317,31 @@ function uncomplete_achievement($id) {
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
+function unabandon_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set abandoned=0 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
 
 function undelete_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set deleted=0 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
+
+function restore_achievement($id){
     $achievement = fetch_achievement($id);
-    change_achievement_to_undeleted($id);
+    if (!$achievement->abandoned && !$achievement->deleted){        
+        error_log("Line #".__LINE__ . ":" . __FUNCTION__ . "($id) Achievement doesn't need to be undeleted.");
+        return;
+    }
+    if ($achievement->deleted){
+        undelete_achievement($id);
+    }
+    if ($achievement->abandoned){
+        unabandon_achievement($id);        
+    }    
     update_rank($id, fetch_highest_rank($achievement->parent)+1);
 }
