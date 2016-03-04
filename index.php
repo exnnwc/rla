@@ -61,11 +61,19 @@ check_tag_integrity();
                         <span id='show_only_locked'> 
                             Locked
                         </span>
-                        <input name='show_only_filter' value='locked' type='checkbox' />
+                        <input name='show_only_filter' value='locked' type='checkbox' 
+                        <?php if (isset($_SESSION['filter']['show_only']) && in_array("locked", $_SESSION['filter']['show_only'])):?>
+                               checked
+                        <?php endif; ?>
+                               />
                         <span id='show_only_unlocked'>
                             Unlocked 
                         </span>
-                        <input name='show_only_filter' value='unlocked' type='checkbox'/>
+                        <input name='show_only_filter' value='unlocked' type='checkbox' 
+                        <?php if (isset($_SESSION['filter']['show_only']) && in_array("unlocked", $_SESSION['filter']['show_only'])):?>
+                               checked
+                        <?php endif; ?>
+                               />
                 </div>
                 <div id="required_filter_caption">
                     Hide Achievements That Require Others Before Completing? 
