@@ -42,11 +42,9 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     <?php if ($achievement->completed == 0 &&!$achievement->documented): ?>    
     <input id='complete<?php echo $achievement->id; ?>' value="&#10003;" class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
     <?php endif; ?>
-    <span class='toggle_locked_status hand text-button'> 
-        <?php
-        echo $achievement->locked == 0 ? "[ Lock ]" : "[ Unlock ]";
-        ?>
-    </span>
+    <?php if ($achievement->locked==0):?>
+    <span class='toggle_locked_status hand text-button'>[ Lock ] </span>
+    <?php endif; ?> 
 </div>
 <h1 id="achievement_name" style='text-align:center;'> 
     <div 
@@ -85,7 +83,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     if ($achievement->locked != 0) {
     echo "<span style='font-weight:bold;' title='Achievement's information cannot be changed.'>Locked </span>("
     . date("m/d/y", strtotime($achievement->locked))
-    .")";
+        .") <span class='toggle_locked_status hand text-button'>[ Unlock ] </span>";
     }
     ?>
 
