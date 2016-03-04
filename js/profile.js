@@ -12,6 +12,12 @@ function displayChildren(parent) {
             });
 
 }
+function displayHistory(id){
+    data={function_to_be_called:"display_history", id:id};
+    AJAXOnly(data, function (result){
+        $("#achievement_history").html(result);
+    });
+}
 function displayProfile(id) {
     if (!testIfVariableIsNumber(id, "id")) {
         return;
@@ -36,6 +42,7 @@ function displayProfile(id) {
                     })
                             .done(function (result) {
                                 $("#achievement_profile").html(result);
+                                displayHistory(id);
                                 listActions(id);
                                 listNewActions(id);
                                 listNewRelations(id);

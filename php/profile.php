@@ -46,6 +46,21 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     <span class='toggle_locked_status hand text-button'>[ Lock ] </span>
     <?php endif; ?> 
 </div>
+
+
+<div id="history_section" >
+    <span id='show_history' class='hand text-button'>[ Show History ]</span>
+    <div id='history' style='display:none;background-color:lightgrey;padding:8px;padding-bottom:0px;'>
+        <h1 style='text-align:center;'>
+            History        
+            <span id='hide_history' class='hand text-button h-normal' style='float:left;'>[ Hide ] </span>
+        </h1>
+            <div id='achievement_history' style=''> </div> 
+    </div>
+
+</div>
+
+
 <h1 id="achievement_name" style='text-align:center;'> 
     <div 
     <?php if ($achievement->locked==0):?>

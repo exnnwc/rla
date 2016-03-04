@@ -6,6 +6,9 @@ This is mostly incomplete. I use Trello for most of the design process and
 User System
 Achievements can be censored so that no one or only certain other users can view them. 
 
+
+
+
 FEATURES FOR CONSIDERATION
 Users receive points that can be used to vote achievements up or down. They receive one point a day. They can vote up or down on something and use a point. If they vote up, it transfers to the owner of the action.
 

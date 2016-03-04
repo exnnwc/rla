@@ -435,8 +435,16 @@ function add_button_handlers_to_profile(id) {
         achievement_id = Number(html_id.substr(7, html_id.length - 7));
         restoreAchievement(achievement_id, achievement_id);
     });    
+    $(document).on("click", "#hide_history", function (event) {
+        $("#show_history").show();
+        $("#history").hide(); 
+    });
+    $(document).on("click", "#show_history", function (event) {
+        $("#show_history").hide();
+        $("#history").show(); 
+    });
     $(document).on("click", "", function (event) {
-
+        
     });
     $(document).on("click", "", function (event) {
 

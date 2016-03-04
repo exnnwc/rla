@@ -1,8 +1,6 @@
 <?php
 
 require_once ("achievements.php");
-require_once ("work.php");
-require_once ("actions.php");
 require_once ("display.php");
 require_once ("filter.php");
 require_once ("notes.php");
@@ -115,7 +113,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         delete_top_action(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "display_history";
-        display_history();
+        display_history(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "display_queue":
         display_queue();

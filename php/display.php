@@ -1,5 +1,24 @@
 <?php
 require_once("work.php");
+function display_history($id){
+    $date=0;
+    $time=0;
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare ("select * from history where achievement_id=? order by created desc");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($history=$statement->fetchObject()){
+        if ($date!=date("m/d/y", strtotime($history->created))){
+            $date=date("m/d/y", strtotime($history->created));
+            echo "<h3 style='text-align:center;margin-bottom:0'>$date</h3>";
+        }
+        if ($time!=date("m/d/y g:i", strtotime($history->created))){
+            $time=date("m/d/y g:i", strtotime($history->created)); 
+            echo "<div>". date("g:i" , strtotime($history->created)) . "</div>";
+        }
+        echo "<div> - $history->message</div>";
+    }
+}
 function display_todo_completion($todo){
     echo $todo->completed!=0
       ?"cancel_todo"

@@ -20,3 +20,14 @@ function AJAXThenList(data, callback){
             listAchievements("default", "default");
         });
 }
+
+function AJAXOnly(data, callback){
+    $.ajax({
+        method:"POST",
+        url:"/rla/php/ajax.php",
+        data:data
+    })
+        .done(function(result){
+            callback(result);
+        });
+}

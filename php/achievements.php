@@ -1,5 +1,5 @@
 <?php
-
+require_once("changelog.php");
 require_once ("config.php");
 require_once ("filter.php");
 
@@ -58,10 +58,13 @@ function change_documentation_status($id, $status) {
 
 function change_name($id, $name) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement=fetch_achievement($id);
     $statement = $connection->prepare("update achievements set name=? where id=?");
     $statement->bindValue(1, $name, PDO::PARAM_STR);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
+    $message = "Achievement name changed from \"$achievement->name\" to \"$name\".";
+    create_history($id, $message);
 }
 
 function change_power($id, $power) {
@@ -271,6 +274,11 @@ function toggle_documentation_status($id) {
     $statement->bindValue(1, !$achievement->documented, PDO::PARAM_BOOL);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
+    $message = 
+      $achievement->documented
+        ? "Achievement is now undocumented."
+        : "Achievement is now documented.";
+    create_history($id, $message);
 }
 
 function toggle_quality($id){
@@ -301,6 +309,10 @@ function toggle_locked_status($id){
     $statement = $connection->prepare("update achievements set locked=$status where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
+    $message =  $achievement->locked
+                  ? "Achievement is now unlocked."
+                  : "Achievement is now locked.";
+    create_history($id, $message);
 }
     
 function update_rank($id, $new_rank) {
