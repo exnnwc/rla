@@ -28,7 +28,7 @@ function filterListings(){
     $("input[name='filtered_tags']:checked").each(function (){
        filter_tags.push(Number(this.value));
     });
-    required=Boolean($("#hide_required_filter:checked").length);
+    required=Boolean($("#required_filter_checkbox:checked").length);
     filter = {filter_tags:filter_tags, required:required , show_only:show_only};
     isFilterMenuClear(filter) 
         ? listAchievements("clear", "default") 
@@ -40,7 +40,7 @@ function isFilterActive(cb){
     $.ajax({
         method:"POST",
         url:"/rla/php/ajax.php",
-        data:{function_to_be_called:"is_filter_active"}
+        data:{function_to_be_called:"echo_if_filter_active"}
     })
         .done (function (result){
             cb(JSON.parse(result));

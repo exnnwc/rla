@@ -23,10 +23,10 @@ function listAchievements(filter, sort_by) {
                 $("#list_of_achievements").html(result);
                 fetchRequiredFilterStatus(function (required_filter_status) {
                     if (required_filter_status === "true") {
-                        $("#hide_required_filter").prop("checked", true);
+                        $("#required_filter_checkbox").prop("checked", true);
                         $("#required_filter_caption").addClass("active-filter");
                     } else if (required_filter_status === "false") {
-                        $("#hide_required_filter").prop("checked", false);
+                        $("#required_filter_checkbox").prop("checked", false);
                         $("#required_filter_caption").removeClass("active-filter");
                     }
                 });

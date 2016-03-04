@@ -76,7 +76,7 @@ check_tag_integrity();
                 </div>
                 <div id="required_filter_caption">
                     Hide Achievements That Require Others Before Completing? 
-                    <input id='hide_required_filter' type='checkbox' />                   
+                    <input id='required_filter_checkbox' type='checkbox' />                   
                 </div>
                 <div>
                     

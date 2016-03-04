@@ -8,7 +8,7 @@ function fetch_required_filter_status(){
         : json_encode(false);
     
 }
-function is_filter_active(){
+function echo_if_filter_active(){
     if (!isset($_SESSION['filter'])
       || (isset($_SESSION['filter']) && ($_SESSION['filter']=="clear" || $_SESSION['filter']=="default"))){
         echo json_encode(false);
