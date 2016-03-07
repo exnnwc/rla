@@ -28,7 +28,7 @@ function activate_achievement($id) {
 
 function are_ranks_duplicated($parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->query("SELECT COUNT(*) as count FROM achievements where parent=$parent and deleted=0 GROUP BY rank HAVING COUNT(*) > 1");
+    $statement = $connection->query("SELECT COUNT(*) as count FROM achievements " . DEFAULT_LISTING ." GROUP BY rank HAVING COUNT(*) > 1");
     if ((int) $statement->fetchColumn() > 0) {
         return true;
     }
@@ -87,12 +87,14 @@ function change_rank($id, $new_rank) {
     $achievement = fetch_achievement($id);
     $highest_rank=fetch_highest_rank($achievement->parent);
     if (fetch_num_of_achievements($achievement) != $highest_rank){        
-        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Holes in rank");
+        error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Holes in rank (".
+            fetch_num_of_achievements($achievement) ." != $highest_rank");
         fix_achievement_ranks("updated", $achievement->parent);
         return;
     } 
     update_rank($id, $new_rank);
     delete_achievement($achievement->id);
+    abandon_achievement($achievement->id);
     if ($new_rank <= 0) {
         error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($id, $new_rank): Shouldn't be able to change rank to 0 or negative");
         return;
@@ -109,6 +111,7 @@ function change_rank($id, $new_rank) {
     }
     rank_achievements($achievement, $new_rank);
     undelete_achievement($achievement->id);
+    unabandon_achievement($achievement->id);
 }
 
 
@@ -220,7 +223,7 @@ function fetch_achievement_by_rank_and_parent($rank, $parent) {
 
 function fetch_highest_rank($parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("select rank from achievements where deleted=0 and parent=? order by rank desc limit 1");
+    $statement = $connection->prepare("select rank from achievements " . DEFAULT_LISTING . " order by rank desc limit 1");
     $statement->bindValue(1, $parent, PDO::PARAM_INT);
     $statement->execute();
     return (int)$statement->fetchColumn();
@@ -229,7 +232,7 @@ function fetch_highest_rank($parent) {
 function fetch_num_of_achievements($achievement){
 
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection -> query ("select count(*) from achievements where deleted=0 and parent=$achievement->parent");
+    $statement = $connection -> query ("select count(*) from achievements ". DEFAULT_LISTING);
     return (int)$statement->fetchColumn();
 }
 
@@ -242,7 +245,7 @@ function fetch_random_achievement_id() {
 function fix_achievement_ranks($field, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $connection->exec("set @rank=0");
-    $connection->exec("update achievements set rank=@rank:=@rank+1 where deleted=0 and parent=$parent order by $field ");
+    $connection->exec("update achievements set rank=@rank:=@rank+1 ". DEFAULT_LISTING . " order by $field ");
 }
 
 function is_it_active($id) {
@@ -257,10 +260,12 @@ function rank_achievements($achievement, $new_rank) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $connection->exec("set @rank=$new_rank");
     if ($new_rank - $achievement->rank > 0) {
-        $connection->exec("update achievements set rank=@rank:=@rank-1 where deleted=0 and parent=$achievement->parent and rank<=$new_rank order by rank desc");
+        $connection->exec("update achievements set rank=@rank:=@rank-1 ". DEFAULT_LISTING . " and rank<=$new_rank 
+                             order by rank desc");
+
     } else if ($new_rank - $achievement->rank < 0) {
         
-        $connection->exec("update achievements set rank=@rank:=@rank+1 where deleted=0 and parent=$achievement->parent and rank>=$new_rank order by rank");
+        $connection->exec("update achievements set rank=@rank:=@rank+1 " . DEFAULT_LISTING . " and rank>=$new_rank order by rank");
     } else if ($new_rank - $achievement->rank == 0) {
         error_log("Line #".__LINE__ . " " . __FUNCTION__ . "($achievement->id, $new_rank): New rank should not be the same as the old.");
     }
