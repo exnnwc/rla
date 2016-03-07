@@ -58,7 +58,7 @@ function fetch_order_query($sort_by) {
 }
 
 function fetch_table_header($sort_by) {
-    $headers = ["Rank", "Power", "Active", "Name"];
+    $headers = ["Rank", "Power",  "Name"];
     $string = "<tr>";
     foreach ($headers as $header) {
 

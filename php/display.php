@@ -1,5 +1,44 @@
 <?php
 require_once("work.php");
+function display_due_date(){
+   $months=["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    $month_select = "<select id='new_due_date_month'><option></option>";
+    foreach($months as $month_num=>$month){
+        $month < 10 
+            ? $month_val = "0" . (string)($month_num+1)
+            : $month_val = (string)($month_num+1);
+        $month_select = $month_select . "<option value='$month_val'>$month</option>";
+    }
+    $month_select = $month_select . "</select>";
+
+    $days=range(1,31);
+    $day_select = "<select id='new_due_date_day'><option></option>";
+    foreach ($days as $day){
+        $day<10 
+            ? $day_val=(string)"0".$day
+            : $day_val = (string)$day;
+        $day_select= $day_select . "<option value='$day_val'>$day</option>";
+    }
+    $day_select = $day_select . "</select>";
+
+    $current_year = date("Y");
+    $years=range($current_year, $current_year+100);
+    $year_select="<select id='new_due_date_year'>";
+    foreach ($years as $year){
+        $year_select=$year_select . "<option value='$year'>$year</option>";
+    }
+    $year_select = $year_select . "</select>";
+    $hours=range(0,23);
+    $time_select = "<select id='new_due_date_time'>";
+    foreach ($hours as $hour){
+        $hour<10 
+        ? $hour = "0".$hour.":00"
+        : $hour = $hour.":00";
+        $time_select = $time_select . "<option value='$hour'>$hour</option>";
+    }
+    $time_select = $time_select . "</select>";
+    echo ($month_select . $day_select . $year_select . $time_select );
+}
 function display_history($id){
     $date=0;
     $time=0;
@@ -55,14 +94,12 @@ function fetch_listing_row($achievement) {
     if ($achievement->parent==0){
         $string = $string . " <td title='$achievement->power'>$achievement->power_adj </td>";
     }
-    $string = $string . "<td> 
+    $string = $string . "<td style='text-align:left'> 
                     <input type='button'  id='activity$achievement->id' ";
-    $string = !$achievement->active 
+    $string = $achievement->active 
         ? $string . "  class='activate_button' style='background-color:green;' />" 
         : $string . "  class='deactivate_button' style='background-color:red;' />";
-    $string = $string 
-        . "     </td><td style='text-align:left'>
-                    <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
+    $string = $string . "<a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
     if ($achievement->active) {
         $string = $string . "color:green;";
     } else if (!$achievement->active) {
@@ -70,8 +107,18 @@ function fetch_listing_row($achievement) {
     }
     $string = $string . "'>
                     $achievement->name 
-                    </a>
-                </td></tr>";
+                    </a>";
+    $num_of_days_til_due= how_many_days_until_due($achievement->id);
+    if ($num_of_days_til_due!=false){
+        $string=$string . "<span style='color:";
+        $string = $num_of_days_til_due < 0
+                    ? $string . "red;font-weight:bold;"
+                    : $string . "grey;"; 
+
+        $string = $string . "'> " . fetch_due_message($num_of_days_til_due);
+        $string= $string . "</span>";
+    }
+    $string = $string . "</td></tr>";
     return $string;
 }
 function list_actions($achievement_id) {

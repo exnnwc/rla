@@ -35,6 +35,7 @@ function displayProfile(id) {
                     document.write(result);
                 } 
                 if (active) {
+
                     $.ajax({
                         method: "POST",
                         url: "/rla/php/profile.php",

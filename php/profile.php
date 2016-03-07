@@ -126,6 +126,34 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     Created: <?php echo date($pref_date_format, strtotime($achievement->created)); ?>
 </div>
 <div>
+    Due:    <?php if ($achievement->due==0):?>
+                No due date set. 
+            <?php elseif ($achievement->due!=0):?>
+                <?php 
+                    echo date("m/d/y", strtotime($achievement->due)) . " "; 
+                    if(date("G", strtotime($achievement->due))!="0"){
+                        echo date("gA", strtotime($achievement->due)) . " " ;
+                    }
+                    $num_of_days_til_due=how_many_days_until_due($achievement->id);
+                    echo "<span style='color:red;";
+                    if ($num_of_days_til_due<0){
+                        echo "font-weight:bold;";
+                    }
+                    echo "' >".fetch_due_message($num_of_days_til_due) . "</span>";
+                ?>
+            <?php endif; ?>
+                <span id='show_new_due_date' class='hand text-button'>[ + ] </span>
+                <span id='hide_new_due_date' class='hand text-button' style='display:none;'>[ - ] </span>
+                <div id='new_due_date' style='display:none;'>
+                    <div>
+                        <?php display_due_date(); ?>
+                    </div>
+                    <input id='create_new_due_date' type='button' value='Set Due Date' />
+                    <input id='clear_due_date' type='button' value='Clear Due Date' />
+                </div>
+
+</div>
+<div>
     <?php
     ($achievement->completed != 0)
     and print ("Completed:

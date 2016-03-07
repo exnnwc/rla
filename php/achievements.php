@@ -56,6 +56,15 @@ function change_documentation_status($id, $status) {
     $statement->execute();
 }
 
+function change_due_date($id, $date){
+    var_dump ($id, $date);
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare ("update achievements set due=? where id=?");
+    $statement->bindValue(1, $date, PDO::PARAM_STR);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
+
+}
 function change_name($id, $name) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement=fetch_achievement($id);
@@ -114,7 +123,12 @@ function change_rank($id, $new_rank) {
     unabandon_achievement($achievement->id);
 }
 
-
+function clear_due_date($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set due=0 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
 function complete_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set deleted=1, completed=now() where id=?");
@@ -221,6 +235,19 @@ function fetch_achievement_by_rank_and_parent($rank, $parent) {
     return $statement->fetchObject();
 }
 
+function fetch_due_message($num_of_days_til_due){
+    if ($num_of_days_til_due==-1){
+        return "(due yesterday)";
+    } else if ($num_of_days_til_due<0){
+        return " (due ". abs($num_of_days_til_due) . " days ago)";
+    } else if ($num_of_days_til_due==0){
+        return "(due today)";
+    } else if ($num_of_days_til_due==1){
+        return "(due tomorrow)";
+    }else if ($num_of_days_til_due>0){
+        return "(due $num_of_days_til_due days from now)";
+    }
+}
 function fetch_highest_rank($parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select rank from achievements " . DEFAULT_LISTING . " order by rank desc limit 1");
@@ -247,7 +274,16 @@ function fix_achievement_ranks($field, $parent) {
     $connection->exec("set @rank=0");
     $connection->exec("update achievements set rank=@rank:=@rank+1 ". DEFAULT_LISTING . " order by $field ");
 }
-
+function how_many_days_until_due($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement= $connection->prepare ("select datediff(due, curdate()) from achievements where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    $val=$statement->fetchColumn();
+    return $val==NULL
+        ? false
+        : $val;
+}
 function is_it_active($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select deleted from achievements where id=?");

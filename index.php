@@ -3,7 +3,7 @@ require_once ("php/config.php");
 require_once("php/tags.php");
 check_tag_integrity();
 ?>
-
+<!DOCTYPE html>
 <html>
     <head>
         <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/rla.css">

@@ -51,6 +51,16 @@ function changeDocumentationStatus(id, status) {
                 displayProfile(id);
             });
 }
+function changeDueDate(id, month, day, year, time){
+    if (!month || !day){
+        console.log("ERROR");
+        return;
+    }
+    timestamp=year+"-"+month+"-"+day+" "+time+":00";
+    data={function_to_be_called:"change_due_date", id:id, due:timestamp};
+    AJAXThenReload(data, id, function(result){
+    });
+}
 
 function changeName(id, new_name) {
     if (!testIfVariableIsNumber(id, "id")
@@ -136,6 +146,11 @@ function changeWorkStatus(id, status, parent) {
             });
 }
 
+function clearDueDate(id){
+    data = {function_to_be_called:"clear_due_date", id:id};
+    AJAXThenReload(data, id, function(results){
+    });
+}
 function completeAchievement(id) {
     if (!testIfVariableIsNumber(id, "id")){
         return;        

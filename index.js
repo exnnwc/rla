@@ -136,6 +136,10 @@ function add_button_handlers_to_listings() {
     $(document).on("click", "", function (event) {
     });    
 }
+
+
+
+
 function add_button_handlers_to_profile(id) {
     $(document).on("click", ".activate_button", function (event) {
         html_id = event.target.attributes.id.nodeValue;
@@ -443,6 +447,23 @@ function add_button_handlers_to_profile(id) {
         $("#show_history").hide();
         $("#history").show(); 
     });
+    $(document).on("click", "#create_new_due_date", function(event){
+        changeDueDate(id, $("#new_due_date_month").val(), $("#new_due_date_day").val(), $("#new_due_date_year").val(), $("#new_due_date_time").val());
+    });
+    $(document).on("click", "#show_new_due_date" , function(event){
+        $("#show_new_due_date").hide();
+        $("#hide_new_due_date").show();
+        $("#new_due_date").show(); 
+    });
+    $(document).on("click", "#hide_new_due_date" , function(event){
+
+        $("#show_new_due_date").show();
+        $("#hide_new_due_date").hide();
+        $("#new_due_date").hide(); 
+    });
+    $(document).on("click","#clear_due_date" , function(event){
+        clearDueDate(id);
+    });
     $(document).on("click", "", function (event) {
         
     });
@@ -474,7 +495,6 @@ function add_handlers_to_index(parent, from_profile) {
         achievement_id = JSON.parse(id.substr(6, id.length - 6));
         deleteAchievement(achievement_id, parent, from_profile);
     });
-
 }
 
 function add_keypress_handlers_to_listings() {
