@@ -96,9 +96,9 @@ function fetch_listing_row($achievement) {
     }
     $string = $string . "<td style='text-align:left'> 
                     <input type='button'  id='activity$achievement->id' ";
-    $string = $achievement->active 
-        ? $string . "  class='activate_button' style='background-color:green;' />" 
-        : $string . "  class='deactivate_button' style='background-color:red;' />";
+    $string = !$achievement->active 
+        ? $string . "  class='activate_button' style='background-color:red;' />" 
+        : $string . "  class='deactivate_button' style='background-color:green;' />";
     $string = $string . "<a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
     if ($achievement->active) {
         $string = $string . "color:green;";
