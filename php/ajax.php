@@ -8,6 +8,7 @@ require_once ("requirements.php");
 require_once ("relations.php");
 require_once("tags.php");
 require_once("todo.php");
+require_once("user.php");
 error_log("DEBUG:".$_POST['function_to_be_called']);
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
     case "activate_achievement":
@@ -96,6 +97,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "deactivate_achievement":
         deactivate_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "does_username_already_exist":
+        echo json_encode(does_username_already_exist(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING)));
+        break;
     case "remove_achievement":
         remove_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -170,6 +174,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "list_todo":
         list_todo(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
+        break;
+    case "register_user":
+        register_user(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING));
         break;
     case "restore_achievement":
         restore_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
