@@ -13,7 +13,6 @@ $(document.body).ready(function () {
           || ($("#new_email").val() && is_it_an_email($("#new_email").val()))){
                     
             doesUsernameAlreadyExist($("#new_username").val(), function (result){
-                console.log(result);
                 if (!JSON.parse(result)){
                     registerUser($("#new_username").val(), $("#password1").val(), $("#new_email").val());
                 } else if (JSON.parse(result)){
@@ -59,30 +58,3 @@ function is_it_an_email(email){
     return !(email.match(".+\@.+\.+.")===null && typeof email.match(".+\@.+\.+.") === "object");
 }
 
-function doesUsernameAlreadyExist(username, callback){
-    $.ajax({
-        method:"POST",
-        url:"/rla/php/ajax.php",
-        data:{function_to_be_called:"does_username_already_exist", username:username}
-    })
-        .done (function (result){
-            callback(result);
-        });
-}
-
-function registerUser(username, password, email){
-    $.ajax({
-        method:"POST",
-        url:"/rla/php/ajax.php",
-        data:{function_to_be_called:"register_user", username:username, password:password, email:email}
-    })
-        .done(function(result){
-            
-            data=(JSON.parse(result));
-            successfulRegistration = data[0];
-            successfulRegistration
-              ? $("#error_div").css("color", "green")
-              : $("#error_div").css("color", "red");
-            $("#error_div").html(data[1]);
-        });
-}

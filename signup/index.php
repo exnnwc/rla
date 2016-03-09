@@ -15,6 +15,7 @@
     </style>
     <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
     <script src="register.js"></script>
+    <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
 </head>
 <body>
     <div class='container_div'>

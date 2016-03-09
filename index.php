@@ -15,12 +15,14 @@ check_tag_integrity();
         <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/error.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/filter.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/global.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/listings.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/profile.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/requirements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/notes.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/tags.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/todo.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/work.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>
         <!--<script src="rla.js"></script>-->
@@ -34,6 +36,17 @@ check_tag_integrity();
         ?>
         <body id="AchievementsList">
             <div id="error"></div>
+                <div style='float:right;font-size:12px;'>
+                    <?php if (!isset($_SESSION['user'])): ?>
+                    Not logged in.
+                    <a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
+                    <a href='login/' class='text-button' style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</a>
+                    
+                    <?php elseif (isset($_SESSION['user'])): ?>
+                        Logged in as <?php echo $_SESSION['username']; ?>. 
+                        <span id='logout' class='hand text-button'> [ Logout ] </span>
+                    <?php endif; ?>
+                </div>
             <div>
                 <input id="new_achievement_text_input" type='text' maxlength="255" />          
                 <input id="new_achievement_button" type="button" value="Quick Create" />
