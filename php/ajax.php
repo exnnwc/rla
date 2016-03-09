@@ -65,7 +65,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
 
     case "count_achievements":
-        count_achievements();
+        echo json_encode(count_achievements());
         break;
     case "create_achievement":
         create_achievement(filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'parent', FILTER_SANITIZE_NUMBER_INT));

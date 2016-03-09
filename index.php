@@ -47,10 +47,12 @@ check_tag_integrity();
                         <span id='logout' class='hand text-button'> [ Logout ] </span>
                     <?php endif; ?>
                 </div>
+            <?php if (isset($_SESSION['user'])):?>
             <div>
                 <input id="new_achievement_text_input" type='text' maxlength="255" />          
                 <input id="new_achievement_button" type="button" value="Quick Create" />
             </div>
+            <?php endif;?>
             <div>
                 <input id="hide_achievements_button" type='button' value='Hide'  />
                 <input id="show_achievements_button" type='button' value='Show' style="display:none" />

@@ -3,8 +3,21 @@ require_once("changelog.php");
 require_once ("config.php");
 require_once ("filter.php");
 
-
+function user_owns_achievement($id){
+    if (!isset($_SESSION['user']->id)){
+        return false;
+    }
+    $achievement = fetch_achievement($id);
+    if ($achievement->owner == $_SESSION['user']->id){
+        return true;
+    }
+    return false;
+}
 function abandon_achievement($id){
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set abandoned=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -20,6 +33,10 @@ function achievement_name_exists($name, $parent) {
 }
 
 function activate_achievement($id) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set active=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -35,12 +52,20 @@ function are_ranks_duplicated($parent) {
     return false;
 }
 function delete_achievement($id){
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set deleted=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
 function change_description($id, $description) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set description=? where id=?");
     $statement->bindValue(1, $description, PDO::PARAM_STR);
@@ -49,6 +74,10 @@ function change_description($id, $description) {
 }
 
 function change_documentation_status($id, $status) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set documented=? where id=?");
     $statement->bindValue(1, $status, PDO::PARAM_BOOL);
@@ -57,7 +86,10 @@ function change_documentation_status($id, $status) {
 }
 
 function change_due_date($id, $date){
-    var_dump ($id, $date);
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare ("update achievements set due=? where id=?");
     $statement->bindValue(1, $date, PDO::PARAM_STR);
@@ -66,6 +98,10 @@ function change_due_date($id, $date){
 
 }
 function change_name($id, $name) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement=fetch_achievement($id);
     $statement = $connection->prepare("update achievements set name=? where id=?");
@@ -77,6 +113,10 @@ function change_name($id, $name) {
 }
 
 function change_power($id, $power) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set power=? where id=?");
     $statement->bindValue(1, $power, PDO::PARAM_INT);
@@ -85,6 +125,10 @@ function change_power($id, $power) {
 }
 
 function change_quality($id, $quality) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set quality=? where id=?");
     $statement->bindValue(1, $quality, PDO::PARAM_BOOL);
@@ -93,6 +137,10 @@ function change_quality($id, $quality) {
 }
 
 function change_rank($id, $new_rank) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $achievement = fetch_achievement($id);
     $highest_rank=fetch_highest_rank($achievement->parent);
     if (fetch_num_of_achievements($achievement) != $highest_rank){        
@@ -124,12 +172,20 @@ function change_rank($id, $new_rank) {
 }
 
 function clear_due_date($id){
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set due=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
 function complete_achievement($id) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set deleted=1, completed=now() where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -137,6 +193,8 @@ function complete_achievement($id) {
 }
 
 function count_achievements() {
+    //WORK Need to adjust this to have only public achievements counted.
+
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $default_query="select count(*) from achievements " . DEFAULT_LISTING;
     $filter_is_active=return_if_filter_active();
@@ -163,10 +221,14 @@ function count_achievements() {
         $num_of_filtered=$num_of_unfiltered-$total;
         $data["filtered"]=$num_of_filtered;
     }
-    echo json_encode($data);
+    return $data;
 }
 
 function create_achievement($name, $parent) {
+    if (!$_SESSION("user")){
+        //BAD Need to be logged in.
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($parent);
     if (achievement_name_exists($name, $parent)) {        
@@ -186,6 +248,10 @@ function create_achievement($name, $parent) {
 }
 
 function deactivate_achievement($id) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set active=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -193,6 +259,10 @@ function deactivate_achievement($id) {
 }
 
 function remove_achievement($id) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
     if ($achievement->deleted){        
@@ -285,6 +355,11 @@ function how_many_days_until_due($id){
         : $val;
 }
 function is_it_active($id) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
+    
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select deleted from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -309,6 +384,10 @@ function rank_achievements($achievement, $new_rank) {
 
 
 function toggle_documentation_status($id) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
     $statement = $connection->prepare("update achievements set documented=? where id=?");
@@ -323,6 +402,10 @@ function toggle_documentation_status($id) {
 }
 
 function toggle_quality($id){
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
     $statement = $connection->prepare("update achievements set quality=? where id=?");
@@ -332,6 +415,10 @@ function toggle_quality($id){
 }
 
 function toggle_active_status($id){
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement=fetch_achievement($id);
     $statement = $connection->prepare("update achievements set active=? where id=?");
@@ -341,7 +428,10 @@ function toggle_active_status($id){
 }
 
 function toggle_locked_status($id){
-    echo "$id";
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement=fetch_achievement($id);
     $status = $achievement->locked==0
@@ -357,6 +447,10 @@ function toggle_locked_status($id){
 }
     
 function update_rank($id, $new_rank) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set rank=? where id=?");
     $statement->bindValue(1, $new_rank, PDO::PARAM_INT);
@@ -365,12 +459,20 @@ function update_rank($id, $new_rank) {
 }
 
 function uncomplete_achievement($id) {
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set completed=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
 function unabandon_achievement($id){
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set abandoned=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -378,6 +480,10 @@ function unabandon_achievement($id){
 }
 
 function undelete_achievement($id){
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set deleted=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -385,6 +491,10 @@ function undelete_achievement($id){
 }
 
 function restore_achievement($id){
+    if (!user_owns_achievement($id)){
+        //BAD
+        return;
+    }
     $achievement = fetch_achievement($id);
     if (!$achievement->abandoned && !$achievement->deleted){        
         error_log("Line #".__LINE__ . ":" . __FUNCTION__ . "($id) Achievement doesn't need to be undeleted.");
