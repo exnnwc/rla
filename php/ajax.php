@@ -176,7 +176,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         list_todo(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "register_user":
-        register_user(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING));
+        echo json_encode(register_user(filter_input(INPUT_POST, 'username', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'email', FILTER_SANITIZE_STRING)));
         break;
     case "restore_achievement":
         restore_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));

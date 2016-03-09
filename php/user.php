@@ -6,23 +6,28 @@ function register_user($username, $password, $email){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     if (does_username_already_exist($username)){
         //BAD username already exists
-        return;
+        return [false, "Username already exists!"];
     }
-    if (does_email_already_exist($email)){
+    if ($email!=NULL && does_email_already_exist($email)){
         //BAD email already exists;
-        return;
+        return [false, "E-mail already exists!"];
     } 
+    $seconds_since_last_registration = seconds_since_last_registration();
+    if ($seconds_since_last_registration<60){
+        //BAD registering too soon after last registration
+        return [false, "Too soon since last registration. Wait " . (SECS_BTWN_REGISTRATIONS - $seconds_since_last_registration) . " seconds then try again."];
+    }
     $password_hash = password_hash($password, PASSWORD_DEFAULT);
     if ($password_hash==false){
         //BAD password hash failed
-        return;
+        return [false, "Unable to create username. Please try again!"];
     }
     $statement = $connection ->prepare ("insert into users(username, password, email) values (?, ?, ?)");
     $statement->bindValue(1, $username, PDO::PARAM_STR);
     $statement->bindValue(2, $password_hash, PDO::PARAM_STR);
     $statement->bindValue(3, $email, PDO::PARAM_STR);
     $statement->execute();
-   
+    return [true, "Username created!"]; 
 }
 
 function does_username_already_exist($username){
@@ -76,4 +81,11 @@ function login_with_username($username, $password){
     $statement->execute();
     return $statement->fetchObject();
 }
+
+function seconds_since_last_registration(){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->query("select (to_seconds(now())- to_seconds(created)) from users order by created desc limit 1");
+    return (int) $statement->fetchColumn();
+}
+
 

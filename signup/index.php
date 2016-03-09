@@ -3,12 +3,12 @@
 <head>
     <style>
         .signup_caption{
-            width:90px;
+            width:150px;
             float:left;
             text-align:right;
         }
         .container_div{
-            width:330px;
+            width:388px;
         }
        div{
         }    
@@ -22,6 +22,8 @@
             Username:
         </div>
         <input id='new_username' type='text' />
+    </div><div id='username_error' class='container_div' style='text-align:center;color:red;'>
+
     </div><div class='container_div'>
         <div class='signup_caption'>
             Password:
@@ -36,12 +38,12 @@
 
     </div><div class='container_div'>
         <div class='signup_caption'>
-            Email:
+            E-mail (optional):        
         </div>
         <input id='new_email' type='text' />
     </div><div class='container_div'>
         <input id='register_user' type='button' style='float:right;' value='Submit' />
-    </div><div id='error_div' style='color:red;'>
+    </div><div id='error_div' style='text-align:center;'>
 
     </div><div>
     </div>
