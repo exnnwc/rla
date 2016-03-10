@@ -2,6 +2,21 @@
 require_once("config.php");
 //Security concern check best practice of sending password in post. HTTPS?
 
+function add_points_if_necessary($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    if (have_points_already_been_added($id)){
+        return false;
+    }
+    $statement = $connection->prepare("update users set points=points+1 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+
+    $points=fetch_user_points($id);
+    $statement=$connection->prepare("insert into point_log (user_id, total) values (?, $points)");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute(); 
+
+}
 
 function does_username_already_exist($username){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
@@ -38,12 +53,36 @@ function fetch_username($id){
 }
 
 function fetch_current_user_id(){
-    var_dump($_SESSION['user']);
     if (!isset($_SESSION['user'])){
         return false;
     } else if (isset($_SESSION['user'])){
-        return $_SESSION['user']->id;
+        return $_SESSION['user']['id'];
     }
+}
+function fetch_user_points($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare ("select points from users where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    return (int)$statement->fetchColumn();
+}
+function have_points_already_been_added($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement=$connection->prepare ("select count(*) from point_log where user_id=? order by created desc limit 1");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    if ((int)$statement->fetchColumn() == 0){
+        return false;
+    }
+    $query = "select datediff(now(), created) from point_log where user_id=? order by created desc limit 1";
+    $statement=$connection->prepare ($query);
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    $days_since_last_login=$statement->fetchColumn();
+    if ($days_since_last_login==0){
+        return true;
+    } 
+    return false;
 }
 function login ($login, $password){
     $is_login_email = preg_match("/.+\@.+/", $login);
@@ -124,12 +163,8 @@ function register_user($username, $password, $email){
 }
 
 function user_logged_in($id){
-    class User{
-        public $id;
-        public $name;
-    }
-    $user = new User();
-    $user->id=$id;
-    $user->name=fetch_username($id);    
+    $user['id']=$id;
+    $user['name']=fetch_username($id);    
     $_SESSION['user']=$user;
+    add_points_if_necessary($id);//Move this to a chron when this is hosted on a server.
 }
