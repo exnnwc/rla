@@ -4,16 +4,6 @@ require_once("changelog.php");
 require_once ("config.php");
 require_once ("filter.php");
 require_once ("user.php");
-function user_owns_achievement($id) {
-    if (!isset($_SESSION['user']->id)) {
-        return false;
-    }
-    $achievement = fetch_achievement($id);
-    if ($achievement->owner == $_SESSION['user']->id) {
-        return true;
-    }
-    return false;
-}
 
 function abandon_achievement($id) {
     if (!user_owns_achievement($id)) {
@@ -385,7 +375,7 @@ function fix_achievement_ranks($field, $achievement) {
 }
 
 function how_many_days_until_due($id) {
-    if (!user_owns_achievement($achievement->id)) {
+    if (!user_owns_achievement($id)) {
         //BAD
         return;
     }
@@ -567,4 +557,14 @@ function undelete_achievement($id) {
     $statement = $connection->prepare("update achievements set deleted=0 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
+}
+function user_owns_achievement($id) {
+    if (!isset($_SESSION['user']->id)) {
+        return false;
+    }
+    $achievement = fetch_achievement($id);
+    if ($achievement->owner == $_SESSION['user']->id) {
+        return true;
+    }
+    return false;
 }

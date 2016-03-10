@@ -42,10 +42,10 @@ echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
 
 function fetch_order_query($sort_by) {
     $order_by = ["default" => " order by quality asc, rank asc",
-        "power" => " order by power_adj asc",
-        "powerrev" => " order by power_adj desc, rank asc",
-        "power_adj" => " order by power_adj asc",
-        "power_adjrev" => " order by power_adj desc, rank asc",
+        "power" => " order by power asc",
+        "powerrev" => " order by power desc, rank asc",
+        "adjusted" => " order by power_adj asc",
+        "adjusted_rev" => " order by power_adj desc, rank asc",
         "rank" => " order by rank asc",
         "rankrev" => " order by rank desc",
         "created" => " order by created asc",
@@ -58,10 +58,9 @@ function fetch_order_query($sort_by) {
 }
 
 function fetch_table_header($sort_by) {
-    $headers = ["Rank", "Power",  "Name"];
+    $headers = ["Rank", "Power", "Adjusted",  "Name"];
     $string = "<tr>";
     foreach ($headers as $header) {
-
         $string = $string . "<td id='sort_";
         $string = $sort_by == strtolower($header) ? $string . strtolower($header) . "rev" : $string . strtolower($header);
 

@@ -89,10 +89,18 @@ function fetch_listing_row($achievement) {
     //this could be written so much better.
     $string = " <tr><td>
                     <input id='rank$achievement->id' type='number' 
-                        class='change_rank_button' value='$achievement->rank' style='width:50px;text-align:center;' />
+                        class='change_rank_button' value='$achievement->rank' style='width:40px;text-align:center;' />
                 </td>";
     if ($achievement->parent==0){
-        $string = $string . " <td title='$achievement->power'>$achievement->power_adj </td>";
+        $string = $string . "   <td>
+                                    <span id='power_caption$achievement->id' class='hand power_caption'>
+                                        $achievement->power
+                                    </span>
+                                    <input type='number' id='power_input$achievement->id' class='power_input'
+                                        value='$achievement->power' style='width:40px;text-align:center;display:none;'/> 
+                                </td><td>
+                                    $achievement->power_adj
+                                </td>";
     }
     $string = $string . "<td style='text-align:left'> 
                     <input type='button'  id='activity$achievement->id' ";

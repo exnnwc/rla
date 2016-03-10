@@ -1,4 +1,7 @@
-<?php require_once("../php/config.php"); ?>
+<?php require_once("../php/config.php"); 
+
+require_once("../php/user.php");
+?>
 <html>
 <head>
     <style>
@@ -13,10 +16,11 @@
 </head>
 <body>
     <?php
-    if (!isset($_SESSION['user'])){
+    $user_id=fetch_current_user_id();
+    if ($user_id==false){
         require_once("login.htm"); 
-    } else if (isset($_SESSION['user'])){
-        echo "Logged in as " . $_SESSION['username'] . ".";
+    } else if ($user_id!=false){
+        echo "Logged in as " . fetch_username(fetch_current_user_id()) . ".";
     }
     ?>
 </body></html>
