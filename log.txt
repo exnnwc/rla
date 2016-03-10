@@ -1,3 +1,8 @@
+03/10/16
+So I've abandoned the idea of using a pre-made authentication system or an existing framework. I've started work on the user system and I'm really regretting not doing it sooner, because it is a major pain in the ass to integrate this into the current system. 
+
+But now I've been dreading seems to be coming to pass. It seems like I'm going to have to create a REST API, because it's getting too unwieldy to do things the way that I've currently been doing it. So I'll be working on the design for that.
+
 03/03/16
 Removed actions, because I'm trying to make the first public release as simple as possible.
 

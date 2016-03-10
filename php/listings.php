@@ -5,9 +5,15 @@
 require_once ("config.php");
 require_once("tags.php");
 require_once("work.php");
-
+$achievement_was_set=false;
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 $sort_by = filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING);
+$user_id=fetch_current_user_id();
+if ($user_id==false){
+    echo "You must be logged into view this page.";
+    return;
+}
+
 if ($sort_by == "default") {
     $sort_by = isset($_SESSION["sort_by"]) ? $_SESSION["sort_by"] : "rank";
 }
@@ -26,7 +32,7 @@ echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
   $statement = $connection->query("select * from achievements " . $query . fetch_order_query($sort_by));
 
   while ($achievement = $statement->fetchObject()) {
-  echo fetch_listing_row($achievement);
+    echo fetch_listing_row($achievement);
   }
   echo "</table>";
   list_completed_achievements();
@@ -110,7 +116,12 @@ function list_abandoned_achievements(){
 function list_completed_achievements() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     echo "<h3 style='text-align:center;'>Completed Achievements</h3>";
-    $statement = $connection->query("select count(*) from achievements where active=0 and completed!=0");
+    $query="select count(*) from achievements where active=0 and completed!=0";
+    $user_id=fetch_current_user_id();
+    $query = $user_id==false
+        ? $query . " and public=1"
+        : $query . " and owner=$user_id";
+    $statement = $connection->query($query);
     if ((int) $statement->fetchColumn() == 0) {
         echo "<div>None.</div>";
         return;
