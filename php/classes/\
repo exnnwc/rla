@@ -1,0 +1,26 @@
+<?php
+$var=[];
+$function=[];
+$app= new App();
+$request = $_SERVER['REQUEST_URI'];
+$request_arr=explode ("/" , $request);
+for($i=0;$i<=2;$i++){
+    unset($request_arr[$i]);
+}
+
+foreach($request_arr as $key=>$val){
+    if (($key-1) % 2==0  && !empty($val)){
+        $function[]=$val;
+    } else if (($key-1) % 2!=0  && !empty($val)){
+        $var[]=$val;
+
+    }
+}
+
+if ($function[0]=="achievement" && !isset($function[1])){
+    if (isset($var[0])){
+        include_once("../php/profile.php");
+        
+    }
+
+}
