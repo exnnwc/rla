@@ -36,6 +36,15 @@ function fetch_username($id){
     $statement->execute();
     return (string)$statement->fetchColumn();
 }
+
+function fetch_current_user_id(){
+    var_dump($_SESSION['user']);
+    if (!isset($_SESSION['user'])){
+        return false;
+    } else if (isset($_SESSION['user'])){
+        return $_SESSION['user']->id;
+    }
+}
 function login ($login, $password){
     $is_login_email = preg_match("/.+\@.+/", $login);
     if ($is_login_email==false){

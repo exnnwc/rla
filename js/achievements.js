@@ -1,26 +1,14 @@
-function activateAchievement(id, parent){
+function activateAchievement(id, parent) {
     console.log("RUN");
-    if (!testIfVariableIsNumber(id, "id")){
+    if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
-    data={function_to_be_called: "activate_achievement", id:id};
+    data = {function_to_be_called: "activate_achievement", id: id};
 
-    AJAXThenReload(data, parent, function(){});
+    AJAXThenReload(data, parent, function () {
+    });
 }
-function deactivateAchievement(id, parent) {
-    if (!testIfVariableIsNumber(id, "id")){
-        return;
-    }
 
-    $.ajax({
-        method: "POST",
-        url: "/rla/php/ajax.php",
-        data: {function_to_be_called: "deactivate_achievement", id: id}
-    })
-            .done(function (result) {
-                softGenericReload(parent);
-            });
-}
 function changeDescription(id, description) {
     if (!testIfVariableIsNumber(id, "id")
             || !testStringForMaxLength(description, 20000, "description")) {
@@ -51,14 +39,14 @@ function changeDocumentationStatus(id, status) {
                 displayProfile(id);
             });
 }
-function changeDueDate(id, month, day, year, time){
-    if (!month || !day){
+function changeDueDate(id, month, day, year, time) {
+    if (!month || !day) {
         console.log("ERROR");
         return;
     }
-    timestamp=year+"-"+month+"-"+day+" "+time+":00";
-    data={function_to_be_called:"change_due_date", id:id, due:timestamp};
-    AJAXThenReload(data, id, function(result){
+    timestamp = year + "-" + month + "-" + day + " " + time + ":00";
+    data = {function_to_be_called: "change_due_date", id: id, due: timestamp};
+    AJAXThenReload(data, id, function (result) {
     });
 }
 
@@ -146,14 +134,14 @@ function changeWorkStatus(id, status, parent) {
             });
 }
 
-function clearDueDate(id){
-    data = {function_to_be_called:"clear_due_date", id:id};
-    AJAXThenReload(data, id, function(results){
+function clearDueDate(id) {
+    data = {function_to_be_called: "clear_due_date", id: id};
+    AJAXThenReload(data, id, function (results) {
     });
 }
 function completeAchievement(id) {
-    if (!testIfVariableIsNumber(id, "id")){
-        return;        
+    if (!testIfVariableIsNumber(id, "id")) {
+        return;
     }
     $.ajax({
         method: "POST",
@@ -172,16 +160,38 @@ function countAchievements() {
         data: {function_to_be_called: "count_achievements"}
     })
             .done(function (result) {
-                count=JSON.parse(result);
-                $("#working_total").html(count.working);
-                $("#nonworking_total").html(count.not_working);
-                $("#achievement_total").html(count.total);
-                if(count.filtered){
-                    $("#filtered_total").html("("+count.filtered+" filtered)");
-                    $("#filtered_total").show();
-                } 
-                if (!count.filtered){
-                    $("#filtered_total").hide();
+                count = JSON.parse(result);
+                if (!count.working) { //public
+                    $("#private_achievement_total").html("");
+                    $("#working_total").html("");
+                    $("#nonworking_total").html("");
+                    $("#private_filtered_total").html("");
+                    $("#private_achievement_count").hide();
+                    $("#public_achievement_count").show();
+                    $("#public_achievement_total").html(count.total);
+                    if (count.filtered) {
+                        $("#public_filtered_total").html("(" + count.filtered + " filtered)");
+                        $("#public_filtered_total").show();
+                    }
+                    if (!count.filtered) {
+                        $("#public_filtered_total").hide();
+                    }
+
+                } else if (count.working) { //private
+                    $("#private_achievement_count").show();
+                    $("#public_achievement_count").hide();
+                    $("#private_achievement_total").html(count.total);
+
+                    $("#working_total").html(count.working);
+                    $("#nonworking_total").html(count.not_working);
+
+                    if (count.filtered) {
+                        $("#private_filtered_total").html("(" + count.filtered + " filtered)");
+                        $("#private_filtered_total").show();
+                    }
+                    if (!count.filtered) {
+                        $("#private_filtered_total").hide();
+                    }
                 }
             });
 
@@ -201,14 +211,27 @@ function createAchievement(parent, name) {
                 softGenericReload(parent);
             });
 }
+function deactivateAchievement(id, parent) {
+    if (!testIfVariableIsNumber(id, "id")) {
+        return;
+    }
 
+    $.ajax({
+        method: "POST",
+        url: "/rla/php/ajax.php",
+        data: {function_to_be_called: "deactivate_achievement", id: id}
+    })
+            .done(function (result) {
+                softGenericReload(parent);
+            });
+}
 function deleteAchievement(id, parent, fromProfile) {
     if (!testIfVariableIsNumber(id, "id")
             || !testIfVariableIsNumber(parent, "parent")
             || !testIfVariableIsBoolean(fromProfile, "fromProfile")) {
-        
+
         return;
-    }    
+    }
     if (window.confirm("Are you sure you want to delete this achievement?")) {
         $.ajax({
             method: "POST",
@@ -230,15 +253,15 @@ function deleteAchievement(id, parent, fromProfile) {
     }
 }
 
-function restoreAchievement(id, parent){
-    data={function_to_be_called:"restore_achievement", id:id};
-    AJAXThenReload(data, parent, function(result){
-       console.log(result); 
+function restoreAchievement(id, parent) {
+    data = {function_to_be_called: "restore_achievement", id: id};
+    AJAXThenReload(data, parent, function (result) {
+        console.log(result);
     });
 }
 function toggleDocumentationStatus(id) {
- 
-    if (!testIfVariableIsNumber(id, "id")){            
+
+    if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
     $.ajax({
@@ -251,8 +274,8 @@ function toggleDocumentationStatus(id) {
             });
 }
 
-function toggleQuality(id){
-    if (!testIfVariableIsNumber(id, "id")){            
+function toggleQuality(id) {
+    if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
     $.ajax({
@@ -265,37 +288,36 @@ function toggleQuality(id){
             });
 }
 
-function toggleActiveStatus(id) { 
+function toggleActiveStatus(id) {
     if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
     $.ajax({
-    
         method: "POST",
-        url:"/rla/php/ajax.php",
-        data: {function_to_be_called: "toggle_active_status", id:id}
+        url: "/rla/php/ajax.php",
+        data: {function_to_be_called: "toggle_active_status", id: id}
     })
-        .done(function(result){
-            softGenericReload(id);
-        });
+            .done(function (result) {
+                softGenericReload(id);
+            });
 }
-function toggleLockedStatus(id){
+function toggleLockedStatus(id) {
     if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
     $.ajax({
         method: "POST",
-        url:"/rla/php/ajax.php",
-        data: {function_to_be_called: "toggle_locked_status", id:id}
+        url: "/rla/php/ajax.php",
+        data: {function_to_be_called: "toggle_locked_status", id: id}
     })
-        .done(function(result){
-            console.log(result);
-            softGenericReload(id);
-        });
+            .done(function (result) {
+                console.log(result);
+                softGenericReload(id);
+            });
 }
 function uncompleteAchievement(id) {
-    if (!testIfVariableIsNumber(id, "id")){
-        return;        
+    if (!testIfVariableIsNumber(id, "id")) {
+        return;
     }
     $.ajax({
         method: "POST",

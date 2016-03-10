@@ -1,7 +1,6 @@
 <?php 
 require_once ("php/config.php"); 
 require_once("php/tags.php");
-check_tag_integrity();
 ?>
 <!DOCTYPE html>
 <html>
@@ -57,14 +56,18 @@ check_tag_integrity();
                 <input id="hide_achievements_button" type='button' value='Hide'  />
                 <input id="show_achievements_button" type='button' value='Show' style="display:none" />
                 <span>Total: 
-                    <span id="achievement_count">
-                        <span id="achievement_total"></span>
+                    <span id="private_achievement_count">
+                        <span id="private_achievement_total"></span>
                         (   
                         <span id="working_total" style='color:green'></span> 
                         /   
                         <span id="nonworking_total" style='color:red'></span> 
                         )
-                        <span id='filtered_total' style='color:#a9a9a9;'> </span>
+                        <span id='private_filtered_total' style='color:#a9a9a9;'> </span>
+                    </span>
+                    <span id="public_achievement_count">
+                        <span id="public_achievement_total"></span>
+                        <span id='public_filtered_total' style='color:#a9a9a9;'></span>                          
                     </span>
                 </span>
                 <span id='show_filter' class="hand text-button">[ Filter ]</span>
