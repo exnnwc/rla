@@ -9,11 +9,14 @@ $achievement_was_set=false;
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 $sort_by = filter_input(INPUT_POST, 'sort_by', FILTER_SANITIZE_STRING);
 $user_id=fetch_current_user_id();
+
+
+/*
 if ($user_id==false){
     echo "You must be logged into view this page.";
     return;
 }
-
+*/
 if ($sort_by == "default") {
     $sort_by = isset($_SESSION["sort_by"]) ? $_SESSION["sort_by"] : "rank";
 }
@@ -36,16 +39,16 @@ echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
   }
   echo "</table>";
   list_completed_achievements();
-  
-  echo "<h3 style='text-align:center;'>
-      <span id='show_abandoned' class='h-normal hand text-button' style='float:left;'>[ Show ] </span>
-            <span id='hide_abandoned' class='h-normal hand text-button' style='display:none;float:left;'>[ Hide ] </span>
-            Abandoned Achievements</h3>
-            
-            <div id='abandoned_achievements_list' style='display:none;'>";
-  list_abandoned_achievements();
-  echo "</div>";
-
+if ($user_id!=false){  
+    echo "<h3 style='text-align:center;'>
+        <span id='show_abandoned' class='h-normal hand text-button' style='float:left;'>[ Show ] </span>
+              <span id='hide_abandoned' class='h-normal hand text-button' style='display:none;float:left;'>[ Hide ] </span>
+              Abandoned Achievements</h3>
+              
+              <div id='abandoned_achievements_list' style='display:none;'>";
+    list_abandoned_achievements();
+    echo "</div>";
+}
 function fetch_order_query($sort_by) {
     $order_by = ["default" => " order by quality asc, rank asc",
         "power" => " order by power asc",

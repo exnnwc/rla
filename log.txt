@@ -1,3 +1,14 @@
+03/11/16
+I'm at a crossroads now. Working on making this RESTful means that I basically have to rewrite the entire program. So as of right now, I can either choose to go back to the drawing board and restart all over again. Or continue to push through with what I have now. It took me roughly three months to get where I'm at now. I'm assuming it would take me two months to get back to this point. To be clear, the main reasons why I think I should switch over to REST is: 
+-It will make mobile development easier and third party development possible.
+-It will make the overall structure of the site clearer.
+
+For now, I'm going to stick with finishing this, but I still have to change the format of the code.
+
+
+
+
+
 03/10/16
 So I've abandoned the idea of using a pre-made authentication system or an existing framework. I've started work on the user system and I'm really regretting not doing it sooner, because it is a major pain in the ass to integrate this into the current system. 
 

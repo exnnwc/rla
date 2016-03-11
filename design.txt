@@ -7,17 +7,16 @@ User System
 Achievements can be censored so that no one or only certain other users can view them. 
 
 
-REST API
-/userid/$userid/
-/username/$username/
+Pages
+/
+Achievement Listings
+
+/id=
+Achievement Profile
+
+/userid=
+/user=
 User Profile Page
-
-/achievement/$achievement/
-/user/$user/achievement/$achievement/
-Achievement profile page.
-
-/user/$user/achievement/
-Achievement listings page
 
 
 

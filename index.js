@@ -5,11 +5,10 @@ $(document.body).ready(function () {
         document.title = SITE_NAME + " - Achievements List";
         displayFilterMenu();
         listAchievements("default", "default");
-        add_behavior_handlers_to_listings();
         countAchievements();
         add_keypress_handlers_to_listings();
         add_button_handlers_to_listings();
-
+        add_behavior_handlers_to_listings();
 
         add_handlers_to_index(0, false);
 
@@ -36,6 +35,12 @@ function add_behavior_handlers_to_profile(id) {
 
 }
 function add_behavior_handlers_to_listings() {
+    $(document).on("focusout", ".power_input", function (event) {
+        html_id = event.target.id;
+        achievement_id = Number(html_id.substr(11, html_id.length - 11));
+        $("#power_input" + achievement_id).hide();
+        $("#power_caption" + achievement_id).show();
+    });
 }
 function add_button_handlers_to_listings() {
     $(document).on("click", ".activate_button", function (event) {
@@ -133,7 +138,13 @@ function add_button_handlers_to_listings() {
         restoreAchievement(achievement_id, 0);
     });
     
-    $(document).on("click", "", function (event) {
+    $(document).on("click", ".power_caption", function (event) {
+        html_id = event.target.attributes.id.nodeValue;
+        achievement_id = Number(html_id.substr(13, html_id.length - 13));
+        $(".power_input").hide();
+        $(".power_caption").show();
+        $("#power_caption"+achievement_id).hide();
+        $("#power_input"+achievement_id).show();
     });    
 }
 

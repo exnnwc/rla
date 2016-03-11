@@ -41,8 +41,8 @@ require_once("php/tags.php");
                     <a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
                     <a href='login/' class='text-button' style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</a>
                     
-                    <?php elseif (isset($_SESSION['user'])): ?>
-                        Logged in as <?php echo $_SESSION['username']; ?>. 
+                    <?php elseif (fetch_current_user_id()!=false): ?>
+                        Logged in as <?php echo fetch_username(fetch_current_user_id()) . ". (" . fetch_user_points(fetch_current_user_id()) . ")"; ?> 
                         <span id='logout' class='hand text-button'> [ Logout ] </span>
                     <?php endif; ?>
                 </div>
