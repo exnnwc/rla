@@ -9,19 +9,31 @@ Achievements can be censored so that no one or only certain other users can view
 
 Pages
 /
+Home Page - unsure what home page will be
+
+Achievements as a directory is ...weird. inventory or something else would be better. Looking up synonyms for inventory got me "summary". It'll do for now.
+
+
+/summary/
 Achievement Listings
 
-/id=
+/summary/id=
 Achievement Profile
 
-/userid=
-/user=
+/user/?name=
+/user/?id=
 User Profile Page
+
+
+Friend Activity Page - Based off of Steam's Activity page
 
 
 
 
 FEATURES FOR CONSIDERATION
+Should users be able to see what other users are currently working on?
+Yes. Possibly, they could give someone points because they like that they're working on an achievement.
+
 Users receive points that can be used to vote achievements up or down. They receive one point a day. They can vote up or down on something and use a point. If they vote up, it transfers to the owner of the action(eventually/possibly).
 
 For example, one user can tag another user's achievement as something and another person can upvote that tagging action, letting the tagger receive a point. If they vote it down, the action receives a negative balance and the tagger will not receive any points from any upvotes until it becomes positive.

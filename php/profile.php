@@ -7,7 +7,7 @@ $pref_date_format = "F j, Y g:i:s";
 
 //There could be an issue where users spoof this to see other people's achievements.
 //Be sure to check user's session data and page reference before commencing.
-
+error_log("ASDFASFAS");
 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 

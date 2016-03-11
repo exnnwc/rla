@@ -24,7 +24,7 @@ function login(login, password){
             data=JSON.parse(result);
             loginSuccessful=data[0];
             loginSuccessful
-              ? window.location.replace("http://localhost/rla/")
+              ? window.location.reload()
               : $("#login_status").css("color", "red");
             $("#login_status").html(data[1]);
         });

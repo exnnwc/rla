@@ -202,6 +202,8 @@ function count_achievements() {
     $filter_is_active = return_if_filter_active();
     $user_id = fetch_current_user_id();
     if ($user_id == false) {
+        return ["total"=>0];
+        /*
         $default_query = "select count(*) from achievements " . DEFAULT_LISTING . " and public=1";
         $query = $filter_is_active ? "select count(*) from achievements " . process_filter_to_query($_SESSION['filter']) : $default_query;
         $statement = $connection->query($query);
@@ -212,6 +214,7 @@ function count_achievements() {
             $num_of_filtered = $num_of_unfiltered - $total;
             $data["filtered"] = $num_of_filtered;
         }
+*/
     } else if (!$user_id == false) {
         $default_query = "select count(*) from achievements " . DEFAULT_LISTING . " and owner=$user_id";
         $query = $filter_is_active ? "select count(*) from achievements " . process_filter_to_query($_SESSION['filter']) : $default_query;
@@ -290,10 +293,10 @@ function fetch_achievement($id) {
 }
 
 function fetch_achievement_name($id) {
-    if (!user_owns_achievement($id)) {
+/*    if (!user_owns_achievement($id)) {
         //BAD
         return;
-    }
+    }*/
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select name from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);

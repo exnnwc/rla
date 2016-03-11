@@ -37,3 +37,13 @@ border-radius:4px 4px 4px 4px;
 .active-tag{
     color:#555555;
 }
+
+.login-input{
+    width:125px;
+
+}
+.login-caption{
+    width:90px;
+    float:left;
+    text-align:right;
+}

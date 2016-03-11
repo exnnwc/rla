@@ -57,6 +57,7 @@ function display_history($id){
         }
         echo "<div> - $history->message</div>";
     }
+        
 }
 function display_todo_completion($todo){
     echo $todo->completed!=0
@@ -107,7 +108,7 @@ function fetch_listing_row($achievement) {
     $string = !$achievement->active 
         ? $string . "  class='activate_button' style='background-color:red;' />" 
         : $string . "  class='deactivate_button' style='background-color:green;' />";
-    $string = $string . "<a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;";
+    $string = $string . "<a href='" . SITE_ROOT . "/summary/?id=$achievement->id' style='text-decoration:none;";
     if ($achievement->active) {
         $string = $string . "color:green;";
     } else if (!$achievement->active) {
@@ -170,7 +171,11 @@ function list_children($id) {
 
 function list_filter_tags(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->query("select * from tags where active=1 and achievement_id=0");
+    $user_id = fetch_current_user_id();
+    if ($user_id==false){
+        $user_id=0;
+    }
+    $statement = $connection->query("select * from tags where active=1 and achievement_id=0 and user_id=$user_id");
     while ($tag = $statement->fetchObject()){
         echo "  <input id='filter_by_".$tag->name."_checkbox' name='filtered_tags' type='checkbox' 
                     class='filter_menu' value='$tag->id'"; 

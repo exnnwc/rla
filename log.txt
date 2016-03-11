@@ -7,8 +7,6 @@ For now, I'm going to stick with finishing this, but I still have to change the 
 
 
 
-
-
 03/10/16
 So I've abandoned the idea of using a pre-made authentication system or an existing framework. I've started work on the user system and I'm really regretting not doing it sooner, because it is a major pain in the ass to integrate this into the current system. 
 
