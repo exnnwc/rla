@@ -23,15 +23,16 @@ require_once("../php/tags.php");
         <script src="<?php echo SITE_ROOT; ?>/js/todo.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/work.js"></script>
-        <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>        
         <title><?PHP echo SITE_NAME ?></title>
     </head>
 
     <?php
-    $id = isset($_GET['id']) ? filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) : 0;
-     var_dump($id);
+    $id = isset($_GET['id']) 
+        ? filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) 
+        : 0;
     if ($id == 0):
-        ?>
+    ?>
         <body id="AchievementsList">
             <div id="error"></div>
                 <div style='float:right;font-size:12px;text-align:right;'>

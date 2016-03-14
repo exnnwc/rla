@@ -1,10 +1,15 @@
+iWHAT THE FUCK
 <?php 
-require_once ("php/config.php"); 
-require_once("php/tags.php");
+/*
+require_once ("../php/config.php"); 
+require_once("../php/tags.php");
+*/
 ?>
 <!DOCTYPE html>
 <html>
     <head>
+<?php /*
+<!--
         <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/rla.css">
         <!--Replace this with a web link when the site goes live.-->
         <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
@@ -23,24 +28,30 @@ require_once("php/tags.php");
         <script src="<?php echo SITE_ROOT; ?>/js/todo.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/work.js"></script>
-        <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>
-        <!--<script src="rla.js"></script>-->
+        <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>        
         <title><?PHP echo SITE_NAME ?></title>
+-->
+*/
+?>
     </head>
 
     <?php
-    $rla = isset($_GET['rla']) ? filter_input(INPUT_GET, 'rla', FILTER_SANITIZE_NUMBER_INT) : 0;
-
-    if ($rla == 0):
+    $id = isset($_GET['id']) ? filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) : 0;
+    /*
+     var_dump($id);
+    if ($id == 0):
         ?>
         <body id="AchievementsList">
             <div id="error"></div>
-                <div style='float:right;font-size:12px;'>
+                <div style='float:right;font-size:12px;text-align:right;'>
                     <?php if (!isset($_SESSION['user'])): ?>
                     Not logged in.
                     <a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
-                    <a href='login/' class='text-button' style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</a>
-                    
+                    <span id='show_login' class='hand text-button' 
+                        style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</span>
+                    <div id="login_form" style='margin-top:16px;display:none;'>
+                        <?php require (DOC_ROOT . "/login/login.htm"); ?> 
+                    </div>
                     <?php elseif (fetch_current_user_id()!=false): ?>
                         Logged in as <?php echo fetch_username(fetch_current_user_id()) . ". (" . fetch_user_points(fetch_current_user_id()) . ")"; ?> 
                         <span id='logout' class='hand text-button'> [ Logout ] </span>
@@ -110,11 +121,10 @@ require_once("php/tags.php");
             </div>
 
             <div id="list_of_achievements"></div>
-        <?php elseif ($rla > 0): ?>
-        <body id="achievement_number_<?php echo $rla; ?>" >
+        <?php elseif ($id > 0):*/ ?>
+        <body id="achievement_number_<?php echo $id; ?>" >
             <div id="error"></div>
             <div id="achievement_profile"></div>
-        <?php endif; ?>
-
+        <?php //endif; ?>
     </body>
 </html>

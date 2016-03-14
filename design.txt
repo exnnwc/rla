@@ -11,8 +11,7 @@ Pages
 /
 Home Page - unsure what home page will be
 
-Achievements as a directory is ...weird. inventory or something else would be better. Looking up synonyms for inventory got me "summary". It'll do for now.
-
+(Achievements as a directory name is ...weird. inventory or something else would be better. Looking up synonyms for inventory got me "summary". It'll do for now.)
 
 /summary/
 Achievement Listings
@@ -28,7 +27,25 @@ User Profile Page
 Friend Activity Page - Based off of Steam's Activity page
 
 
+Documentation Process
+Once a user has posted their link to documentation and marked it as completed:
 
+    If it is the first of its kind:
+        Any user can vote on it.
+        -People can vote it up or down in the published achievements section.
+        
+    If it is a previously published achievement:
+        The original publisher and other users who have completed it can vote on it. (The original publisher receives 2 votes instead of 1.) 
+  
+Once all eligible voters have voted, the vote ends.
+
+Each swing vote extends the vote until the next day if there are voters remaining. 
+
+If no one votes and time runs out, it succeeds. 
+
+Voters must anonymously explain why they voted against the achievement so that the user can make a correction. All those who voted against have 24 hours to submit an explanation on why they voted negatively. If no one submits an explanation, the vote succeeds.
+
+If the user makes the stated correction and voters are  unwilling to change their vote during the next submission, mods will get involved.
 
 FEATURES FOR CONSIDERATION
 Should users be able to see what other users are currently working on?

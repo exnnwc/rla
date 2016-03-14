@@ -50,16 +50,6 @@ function are_ranks_duplicated($achievement) {
     return false;
 }
 
-function delete_achievement($id) {
-    if (!user_owns_achievement($id)) {
-        //BAD
-        return;
-    }
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set deleted=1 where id=?");
-    $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();
-}
 
 function change_description($id, $description) {
     if (!user_owns_achievement($id)) {
@@ -188,7 +178,7 @@ function complete_achievement($id) {
         return;
     }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set deleted=1, completed=now() where id=?");
+    $statement = $connection->prepare("update achievements set completed=now() where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
@@ -273,7 +263,18 @@ function deactivate_achievement($id) {
     $statement->execute();
 }
 
+function delete_achievement($id) {
+    if (!user_owns_achievement($id)) {
+        //BAD
+        return;
+    }
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set deleted=1 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
 function fetch_achievement($id) {
+/*
     if (!user_owns_achievement($id)) {
         //BAD
         $error_msg = "Line #" . __LINE__ . " - " . __FUNCTION__ . "($id) - User ";
@@ -285,6 +286,7 @@ function fetch_achievement($id) {
         error_log($error_msg);
         return;
     }
+*/
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select * from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -359,7 +361,7 @@ function fetch_random_achievement_id($user_id) {
     }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare($query);
-    if ($user_id == 0) {
+    if ($user_id != 0) {
         $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     }
     $statement->execute();
@@ -391,11 +393,11 @@ function how_many_days_until_due($id) {
 }
 
 function is_it_active($id) {
+    //This should be is is_it_deleted
     if (!user_owns_achievement($id)) {
         //BAD
         return;
     }
-
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select deleted from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -562,11 +564,12 @@ function undelete_achievement($id) {
     $statement->execute();
 }
 function user_owns_achievement($id) {
-    if (!isset($_SESSION['user']->id)) {
+    $user_id = fetch_current_user_id();
+    if ($user_id==false) {
         return false;
     }
     $achievement = fetch_achievement($id);
-    if ($achievement->owner == $_SESSION['user']->id) {
+    if ($achievement->owner == $user_id) {
         return true;
     }
     return false;

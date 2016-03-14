@@ -16,10 +16,10 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
 
 <div id="navbar" style='text-align:center'>
     <div style="margin:5px;">
-        <a href="<?= SITE_ROOT ?>">Achievements List</a>
+        <a href="<?= SITE_ROOT."/summary/" ?>">Achievements List</a>
     </div><div style="margin-bottom:10px;">
 
-        <a href="<?= SITE_ROOT ?>/?rla=<?php echo fetch_random_achievement_id() ?>">Random</a>
+        <a href="<?= SITE_ROOT ?>/summary/?id=<?php echo fetch_random_achievement_id($achievement->owner) ?>">Random</a>
     </div>
     <div>
         <?php echo fetch_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
@@ -119,7 +119,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     <?php
     echo ($achievement->parent == 0)
     ? "<a href='".  SITE_ROOT . "/'> Top level</a>"
-    : "<a href='" . SITE_ROOT . "/?rla=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
+    : "<a href='" . SITE_ROOT . "/summary/?id=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
     ?>
 </div>
 <div>
@@ -313,32 +313,30 @@ return $menu;
 }
 
 function fetch_nav_menu($id, $rank, $parent) {
-$prev_achievement = fetch_achievement_by_rank_and_parent($rank - 1, $parent);
-$next_achievement = fetch_achievement_by_rank_and_parent($rank + 1, $parent);
-$string = ($rank > 1) ? " <div title = '$prev_achievement->name' style = 'float:left'>
-<a href = '" . SITE_ROOT . "/?rla=$prev_achievement->id'>Previous</a>
-</div>" : " <div style = 'float:left;'>Previous</div>";
-$string = $string . generate_select_achievement_menu($parent, $id);
-$string = ($rank < fetch_highest_rank($parent)) ? $string . " <div title = '$next_achievement->name' style = 'float:right'>
-<a href = '" . SITE_ROOT . "/?rla=$next_achievement->id'>Next</a>
-</div>" : $string . " <div style = 'float:right;margin-right:8px;'>Next</div>";
-return $string;
+    $prev_achievement = fetch_achievement_by_rank_and_parent($rank - 1, $parent);
+    $next_achievement = fetch_achievement_by_rank_and_parent($rank + 1, $parent);
+    $string = ($rank > 1) ? " <div title = '$prev_achievement->name' style = 'float:left'>
+        <a href = '" . SITE_ROOT . "/summary/?id=$prev_achievement->id'>Previous</a>
+        </div>" : " <div style = 'float:left;'>Previous</div>";
+    $string = $string . generate_select_achievement_menu($parent, $id);
+    $string = ($rank < fetch_highest_rank($parent)) ? $string . " <div title = '$next_achievement->name' style = 'float:right'>
+        <a href = '" . SITE_ROOT . "/summary/?id=$next_achievement->id'>Next</a>
+        </div>" : $string . " <div style = 'float:right;margin-right:8px;'>Next</div>";
+    return $string;
 }
-
+    
 function generate_select_achievement_menu($parent, $id) {
-$connection = new PDO("mysql:host = " . DB_HOST . ";
-dbname = " . DB_NAME, DB_USER, DB_PWD);
-$string = " <select id = 'achievement_navigation_menu' style = 'text-align:center;'
-onchange = \"window.location.assign('" . SITE_ROOT . "?rla='+$('#achievement_id').val())\">
-                    <option>Go to another achievement here</option>";
-
-$statement = $connection->prepare("select * from achievements where deleted=0 and parent=? and id!=? order by name asc");
-$statement->bindValue(1, $parent, PDO::PARAM_INT);
-$statement->bindValue(2, $id, PDO::PARAM_INT);
-$statement->execute();
-while ($achievement = $statement->fetchObject()) {
-$string = $string . "<option value='$achievement->id' > $achievement->name</option>";
-}
-$string = $string . "  </select>";
-return $string;
+$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $string = " <select id = 'achievement_navigation_menu' style = 'text-align:center;'
+    onchange = \"window.location.assign('" . SITE_ROOT . "/summary/?id='+$('#achievement_id').val())\">
+                        <option>Go to another achievement here</option>";
+    $statement = $connection->prepare("select * from achievements where deleted=0 and parent=? and id!=? order by name asc");
+    $statement->bindValue(1, $parent, PDO::PARAM_INT);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($achievement = $statement->fetchObject()) {
+        $string = $string . "<option value='$achievement->id' > $achievement->name;</option>";
+    }
+    $string = $string . "  </select>";
+    return $string;
 }
