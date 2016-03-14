@@ -211,6 +211,13 @@ function createAchievement(parent, name) {
                 softGenericReload(parent);
             });
 }
+
+function createDocumentation(id, documentation){
+    data={function_to_be_called:"create_documentation", id:id, documentation:documentation};
+    AJAXThenReload(data, id, function (result){
+        console.log(result);
+    });     
+}
 function deactivateAchievement(id, parent) {
     if (!testIfVariableIsNumber(id, "id")) {
         return;

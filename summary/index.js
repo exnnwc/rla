@@ -32,7 +32,17 @@ function add_behavior_handlers_to_profile(id) {
         $("#todo_input" + todo_id).hide();
         $("#todo_caption" + todo_id).show();
     });
-
+    
+    $(document).on("focusin", "#documentation_input", function (event) {
+        $("#documentation_input").val("");
+        $("#documentation_input").css("color", "black");
+    });
+    $(document).on("focusout", "#documentation_input", function (event) {
+        if ($("#documentation_input").val().trim()==""){
+            $("#documentation_input").val("Paste URL here");
+            $("#documentation_input").css("color", "grey");
+        }
+    });
 }
 function add_behavior_handlers_to_listings() {
     $(document).on("focusout", ".power_input", function (event) {
@@ -475,8 +485,16 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click","#clear_due_date" , function(event){
         clearDueDate(id);
     });
-    $(document).on("click", "", function (event) {
-        
+    $(document).on("click", "#create_documentation", function (event) {
+        createDocumentation(id, $("#documentation_input").val());
+    });
+    $(document).on("click", "#show_new_documentation", function (event) {
+        $("#show_new_documentation").hide();
+        $("#new_documentation").show();       
+    });
+    $(document).on("click", "#hide_new_documentation", function (event) {
+        $("#show_new_documentation").show();
+        $("#new_documentation").hide();       
     });
     $(document).on("click", "", function (event) {
 

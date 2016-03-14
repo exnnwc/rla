@@ -103,18 +103,32 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     ?>
 
 </div>
-<div>
+<div style='clear:both;'>
     <div>
-        <?php
-        echo $achievement->documented
-        ? "Documented (Requires proof of completion) 
-           <span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>"
-        : "Undocumented (No proof of completion required)
-           <span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>";
-        ?>
+            <?php if ($achievement->documented) :?>
+                <div>
+                Documented (Requires proof of completion): 
+                <?php
+                    echo $achievement->documentation==NULL
+                            ? "None."
+                            : "<a href='$achievement->documentation'>$achievement->documentation</a>";
+                ?>
+                <span id='show_new_documentation' class='hand text-button'> [ + ] </span>
+                <span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
+                </div>
+                <div id='new_documentation' 
+                  style='margin-bottom:8px;margin-top:4px;clear:both;float:left;display:none;'>
+                    <span id='hide_new_documentation' class='hand text-button'> [ - ] </span>
+                    <input id='documentation_input' type='text' value='Paste URL here.' style='color:grey;'/> 
+                    <input id='create_documentation' type='button' value='Complete'/>
+                </div>
+            <?php elseif (!$achievement->documented) : ?>
+                Undocumented (No proof of completion required)
+                <span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
+            <?php endif; ?>
     </div>
 </div>
-<div>
+<div style='clear:both;'>
     Parent: 
     <?php
     echo ($achievement->parent == 0)

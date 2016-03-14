@@ -230,7 +230,8 @@ function count_achievements() {
 }
 
 function create_achievement($name, $parent) {
-    if (!isset($_SESSION["user"])) {
+    $user_id = fetch_current_user_id();
+    if ($user_id==false) {
         //BAD Need to be logged in.
         return;
     }
@@ -241,17 +242,30 @@ function create_achievement($name, $parent) {
         return;
     }
     if ($parent == 0) {
-        $query = "insert into achievements(name, parent, rank) values (?, ?, ?)";
+        $query = "insert into achievements(owner, name, parent, rank) values (?, ?, ?, ?)";
     } else if ($parent > 0) {
-        $query = "insert into achievements(name, parent, rank, documented) values (?, ?, ?, $achievement->documented)";
+        $query = "insert into achievements(owner, name, parent, rank, documented) values (?, ?, ?, ?, $achievement->documented)";
     }
     $statement = $connection->prepare($query);
-    $statement->bindValue(1, $name, PDO::PARAM_STR);
-    $statement->bindValue(2, $parent, PDO::PARAM_INT);
-    $statement->bindValue(3, fetch_highest_rank($parent) + 1, PDO::PARAM_INT);
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->bindValue(2, $name, PDO::PARAM_STR);
+    $statement->bindValue(3, $parent, PDO::PARAM_INT);
+    $statement->bindValue(4, fetch_highest_rank($parent) + 1, PDO::PARAM_INT);
     $statement->execute();
 }
 
+function create_documentation($id, $documentation){
+    if (!user_owns_achievement($id)) {
+        //BAD
+        return;
+    }
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection -> prepare ("update achievements set documentation=? where id=?");
+    $statement->bindValue(1, $documentation, PDO::PARAM_STR);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
+
+}
 function deactivate_achievement($id) {
     if (!user_owns_achievement($id)) {
         //BAD
