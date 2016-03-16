@@ -371,6 +371,22 @@ function list_todo($achievement_id){
     }
 
 }
+
+function list_undocumented_requirements($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $start=false;
+    $achievement_ids = fetch_all_requirements($id);
+    foreach ($achievement_ids as $achievement_id){
+        if ($start){
+            echo "/";
+        }
+        $achievement = fetch_achievement($achievement_id);
+        echo "<a href='".SITE_ROOT."/summary/?id=$achievement_id'>$achievement->name</a></div>";
+        $start=true;
+    }
+}
+
+
 function there_are_no_requirements($id, $type) {
     if (count_requirements_with($id, $type) == 0) {
         echo "<div style=' font-style:italic;'>";

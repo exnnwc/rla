@@ -38,17 +38,28 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
                echo "color:red;font-weight:bold;";
            }?>"/>
     <?php endif; ?>
-    <?php if ($achievement->completed == 0 &&!$achievement->documented ): ?>    
+    LINE 43
+    <?php if (is_everything_else_completed($achievement->id)): ?>
+        NOT COMLETE
+    <?php elseif ($achievement->completed == 0 &&!$achievement->documented ): ?>    
     <input id='complete<?php echo $achievement->id; ?>' value="&#10003;" 
 	  class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
-	<?php elseif ($achievement->completed == 0 && $achievement->documented && $achievement->documentation!=NULL && !$achievement->authorizing && are_all_requirements_documented($achievement->id) ): ?>    
-		<input id='authorize' value="&#10003;" title="Submit For Completion"
-		  class='authorize_button' type='button' style="width:25px;height:25px;text-align:center;"/>
+	<?php elseif ($achievement->completed == 0 && $achievement->documented && $achievement->documentation!=NULL && !$achievement->authorizing): ?>    
+        <?php if (are_all_requirements_documented($achievement->id)): ?>
+    		<input id='authorize' value="&#10003;" title="Submit For Completion"
+    		  class='authorize_button' type='button' style="width:25px;height:25px;text-align:center;"/>
+        <?php elseif(!are_all_requirements_documented($achievement->id)):?>
+            <div>
+                The following requirement(s) need to be documented before you can submit this for approval:
+                <?php list_undocumented_requirements($achievement->id); ?> 
+            </div>
+        <?php endif; ?>
 	<?php elseif ($achievement->completed == 0 && $achievement->authorizing): ?>    
 		<span id="cancel_authorization" class="hand text-button">[ Cancel Authorization ]</span>
     <?php endif; ?>
     <?php if ($achievement->locked==0  && !$achievement->authorizing):?>
     <span class='toggle_locked_status hand text-button'>[ Lock ] </span>
+    
     <?php endif; ?> 
 </div>
 

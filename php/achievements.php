@@ -452,6 +452,24 @@ function how_many_days_until_due($id) {
     return $val == NULL ? false : $val;
 }
 
+function is_everything_else_completed($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare ("select count(*) from achievements where completed=0 and deleted=0 and abandoned=0 and parent=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    if ((int)$statement->fetchColumn()>0){
+        return false;   
+    } 
+    $required_ids = fetch_all_requirements($id);
+    foreach($required_ids as $required_id){
+        $achievement = fetch_achievement($required_id);
+        if ($achievement->completed==0){
+            return false;
+        }
+    }
+    return true;
+}
+
 function is_it_active($id) {
     //This should be is is_it_deleted
     if (!user_owns_achievement($id)) {
