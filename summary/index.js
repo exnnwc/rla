@@ -496,9 +496,15 @@ function add_button_handlers_to_profile(id) {
         $("#show_new_documentation").show();
         $("#new_documentation").hide();       
     });
+    $(document).on("click", "#authorize", function (event) {
+		changeAuthorizingStatus(id, true);
+    });
+    $(document).on("click", "#cancel_authorization", function (event) {
+		changeAuthorizingStatus(id, false);
+    });	
     $(document).on("click", "", function (event) {
 
-    });
+    });	
 }
 
 function add_handlers_to_index(parent, from_profile) {

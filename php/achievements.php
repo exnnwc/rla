@@ -50,6 +50,15 @@ function are_ranks_duplicated($achievement) {
     return false;
 }
 
+function change_authorizing_status($id, $status){
+
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+	$statement = $connection -> prepare ("update achievements set authorizing=? where id=?");
+	$statement->bindValue(1, $status, PDO::PARAM_BOOL);
+	$statement->bindValue(2, $id, PDO::PARAM_INT);
+	$statement->execute();
+	
+}
 
 function change_description($id, $description) {
     if (!user_owns_achievement($id)) {
@@ -86,7 +95,13 @@ function change_due_date($id, $date) {
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
-
+function change_locked_status($id, $status){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+	$statement = $connection -> prepare ("update achievements set locked=? where id=?");
+	$statement->bindValue(1, $status, PDO::PARAM_BOOL);
+	$statement->bindValue(2, $id, PDO::PARAM_INT);
+	$statement->execute();
+}
 function change_name($id, $name) {
     if (!user_owns_achievement($id)) {
         //BAD

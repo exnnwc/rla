@@ -9,6 +9,12 @@ function activateAchievement(id, parent) {
     });
 }
 
+function changeAuthorizingStatus(id, status){
+	data={function_to_be_called:"change_authorizing_status", id:id, status:status};
+	AJAXThenReload(data, id, function (result){
+		console.log(result);
+	});
+}
 function changeDescription(id, description) {
     if (!testIfVariableIsNumber(id, "id")
             || !testStringForMaxLength(description, 20000, "description")) {

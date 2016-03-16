@@ -17,6 +17,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "associate_action":
         associate_action(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
+	case "change_authorizing_status":
+		change_authorizing_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'status', FILTER_VALIDATE_BOOLEAN));
+		break;
     case "cancel_todo":
         cancel_todo(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;

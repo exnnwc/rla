@@ -35,20 +35,20 @@ require_once("../php/tags.php");
     ?>
         <body id="AchievementsList">
             <div id="error"></div>
-                <div style='float:right;font-size:12px;text-align:right;'>
-                    <?php if (!isset($_SESSION['user'])): ?>
-                    Not logged in.
-                    <a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
-                    <span id='show_login' class='hand text-button' 
-                        style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</span>
-                    <div id="login_form" style='margin-top:16px;display:none;'>
-                        <?php require (DOC_ROOT . "/login/login.htm"); ?> 
-                    </div>
-                    <?php elseif (fetch_current_user_id()!=false): ?>
-                        Logged in as <?php echo fetch_username(fetch_current_user_id()) . ". (" . fetch_user_points(fetch_current_user_id()) . ")"; ?> 
-                        <span id='logout' class='hand text-button'> [ Logout ] </span>
-                    <?php endif; ?>
-                </div>
+			<div style='float:right;font-size:12px;text-align:right;'>
+				<?php if (!isset($_SESSION['user'])): ?>
+				Not logged in.
+				<a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
+				<span id='show_login' class='hand text-button' 
+					style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</span>
+				<div id="login_form" style='margin-top:16px;display:none;'>
+					<?php require ("../login/login.htm"); ?> 
+				</div>
+				<?php elseif (fetch_current_user_id()!=false): ?>
+					Logged in as <?php echo fetch_username(fetch_current_user_id()) . ". (" . fetch_user_points(fetch_current_user_id()) . ")"; ?> 
+					<span id='logout' class='hand text-button'> [ Logout ] </span>
+				<?php endif; ?>
+			</div>
             <?php if (isset($_SESSION['user'])):?>
             <div>
                 <input id="new_achievement_text_input" type='text' maxlength="255" />          
