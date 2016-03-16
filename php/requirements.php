@@ -40,5 +40,7 @@ function fetch_all_requirements($achievement_id){
     while ($requirement_id = $statement->fetchColumn()){
         $requirement_ids[]=$requirement_id;
     }
-    return $requirement_ids;
+    return isset($requirement_ids)
+      ? $requirement_ids
+      : false;
 }

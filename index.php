@@ -69,6 +69,7 @@
         Pending Approval
     </h3>
     <div id="achievements_pending_approval">
+        <?php list_all_achievements_pending_authorization(); ?>
     </div>
     <h3>
         Owned Achievements
@@ -132,4 +133,18 @@ function display_achievements_requiring_authorization($type){
     echo $string;
 }
 
-?>
+function list_all_achievements_pending_authorization(){
+	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievements_set=false;
+	$user_id = fetch_current_user_id();
+	if ($user_id==false){
+		return;
+	} 
+    $statement = $connection->prepare("select * from achievements where authorizing!=0 and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($achievement = $statement->fetchObject()){
+        echo "<div><a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a></div>";
+    }
+
+}

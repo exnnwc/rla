@@ -40,6 +40,9 @@ function activate_achievement($id) {
 function are_all_requirements_documented($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement_ids = fetch_all_requirements($id);
+    if (!$achievement_ids){
+        return true;
+    }
     foreach ($achievement_ids as $achievement_id){
         $achievement = fetch_achievement($achievement_id); 
         if (!$achievement->documented){
@@ -106,7 +109,7 @@ function change_documentation_status($id, $status) {
         ? "Achievement is now undocumented." 
         : "Achievement is now documented.";
     create_history($id, $message);
-    $statement = $connection->prepare("select id from achievements where parent=?");
+    $statement = $connection->prepare("select id from achievements where completed=0 and parent=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     while ($child_id = $statement->fetchColumn()){
@@ -461,6 +464,9 @@ function is_everything_else_completed($id){
         return false;   
     } 
     $required_ids = fetch_all_requirements($id);
+    if (!$required_ids){
+        return true;
+    }
     foreach($required_ids as $required_id){
         $achievement = fetch_achievement($required_id);
         if ($achievement->completed==0){
@@ -640,6 +646,7 @@ function user_owns_achievement($id) {
     if ($user_id==false) {
         return false;
     }
+    error_log(__FUNCTION__ . "($id)");
     $achievement = fetch_achievement($id);
     if ($achievement->owner == $user_id) {
         return true;

@@ -11,6 +11,8 @@ $pref_date_format = "F j, Y g:i:s";
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 
 $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+$everything_else_is_complete = is_everything_else_completed($achievement->id);
+$all_requirements_documented = are_all_requirements_documented($achievement->id);
 ?>
 
 <div id="navbar" style='text-align:center'>
@@ -38,17 +40,19 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
                echo "color:red;font-weight:bold;";
            }?>"/>
     <?php endif; ?>
-    LINE 43
-    <?php if (is_everything_else_completed($achievement->id)): ?>
-        NOT COMLETE
-    <?php elseif ($achievement->completed == 0 &&!$achievement->documented ): ?>    
+    <?php if (!$everything_else_is_complete): ?>
+        <div style='font-weight:bold;'>
+            All child and required achievements of this achievement must be completed before this can be completed.
+        </div>
+    <?php elseif ($everything_else_is_complete && $achievement->completed == 0 &&!$achievement->documented ): ?>    
     <input id='complete<?php echo $achievement->id; ?>' value="&#10003;" 
 	  class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
-	<?php elseif ($achievement->completed == 0 && $achievement->documented && $achievement->documentation!=NULL && !$achievement->authorizing): ?>    
-        <?php if (are_all_requirements_documented($achievement->id)): ?>
+	<?php elseif ($everything_else_is_complete && $achievement->completed == 0 
+      && $achievement->documented && $achievement->documentation!=NULL && !$achievement->authorizing): ?>    
+        <?php if ($all_requirements_documented): ?>
     		<input id='authorize' value="&#10003;" title="Submit For Completion"
     		  class='authorize_button' type='button' style="width:25px;height:25px;text-align:center;"/>
-        <?php elseif(!are_all_requirements_documented($achievement->id)):?>
+        <?php elseif(!$all_requirements_documented):?>
             <div>
                 The following requirement(s) need to be documented before you can submit this for approval:
                 <?php list_undocumented_requirements($achievement->id); ?> 

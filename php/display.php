@@ -109,7 +109,9 @@ function fetch_listing_row($achievement) {
         ? $string . "  class='activate_button' style='background-color:red;' />" 
         : $string . "  class='deactivate_button' style='background-color:green;' />";
     $string = $string . "<a href='" . SITE_ROOT . "/summary/?id=$achievement->id' style='text-decoration:none;";
-    if ($achievement->active) {
+    if ($achievement->completed!=0){
+        $string = $string . "text-decoration:line-through;";
+    } else if ($achievement->active) {
         $string = $string . "color:green;";
     } else if (!$achievement->active) {
         $string = $string . "color:red;";
@@ -288,7 +290,7 @@ function list_requirements($id, $type) {
     if (there_are_no_requirements($id, $type)) {
         return;
     }
-    $statement = $connection->prepare("select achievements.id, achievements.name, requirements.id, requirements.required_$type from achievements 
+    $statement = $connection->prepare("select achievements.id, achievements.name, requirements.id, achievements.completed, requirements.required_$type from achievements 
                                          inner join requirements on achievements.id=requirements.required_$other_type 
                                          where requirements.active=1 and required_$type=? order by achievements.name");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -297,10 +299,15 @@ function list_requirements($id, $type) {
         $achievement_id = $result[0];
         $achievement_name = $result[1];
         $requirement_id = $result[2];
+        $achievement_completed = $result[3];
         echo "  <div>
                     <input id='requirement$requirement_id' class='delete_requirement_button' type='button' value='X' />
+                    <a ";
+        if ($achievement_completed!=0){
+           echo " style='text-decoration:line-through;' "; 
 
-                    <a href='" . SITE_ROOT . "/summary/?id=$achievement_id'>$achievement_name</a>
+        }
+        echo "          href='" . SITE_ROOT . "/summary/?id=$achievement_id'>$achievement_name</a>
                 </div>";
     }
 }
