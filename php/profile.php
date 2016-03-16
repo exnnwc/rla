@@ -7,7 +7,6 @@ $pref_date_format = "F j, Y g:i:s";
 
 //There could be an issue where users spoof this to see other people's achievements.
 //Be sure to check user's session data and page reference before commencing.
-error_log("ASDFASFAS");
 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
 
@@ -42,7 +41,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     <?php if ($achievement->completed == 0 &&!$achievement->documented ): ?>    
     <input id='complete<?php echo $achievement->id; ?>' value="&#10003;" 
 	  class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
-	<?php elseif ($achievement->completed == 0 && $achievement->documented && $achievement->documentation!=NULL && !$achievement->authorizing): ?>    
+	<?php elseif ($achievement->completed == 0 && $achievement->documented && $achievement->documentation!=NULL && !$achievement->authorizing && are_all_requirements_documented($achievement->id) ): ?>    
 		<input id='authorize' value="&#10003;" title="Submit For Completion"
 		  class='authorize_button' type='button' style="width:25px;height:25px;text-align:center;"/>
 	<?php elseif ($achievement->completed == 0 && $achievement->authorizing): ?>    

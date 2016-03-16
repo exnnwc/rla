@@ -31,3 +31,14 @@ function count_requirements_with($id, $type){
     $statement->execute();
     return $statement->fetchColumn();
 }
+
+function fetch_all_requirements($achievement_id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);    
+    $statement = $connection->prepare("select required_by from requirements where active=1 and required_for=?");
+    $statement->bindValue(1, $achievement_id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($requirement_id = $statement->fetchColumn()){
+        $requirement_ids[]=$requirement_id;
+    }
+    return $requirement_ids;
+}

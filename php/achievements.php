@@ -3,6 +3,7 @@
 require_once("changelog.php");
 require_once ("config.php");
 require_once ("filter.php");
+require_once ("requirements.php");
 require_once ("user.php");
 
 function abandon_achievement($id) {
@@ -36,6 +37,17 @@ function activate_achievement($id) {
     $statement->execute();
 }
 
+function are_all_requirements_documented($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement_ids = fetch_all_requirements($id);
+    foreach ($achievement_ids as $achievement_id){
+        $achievement = fetch_achievement($achievement_id); 
+        if (!$achievement->documented){
+            return false;
+        }
+    }
+    return true;
+}
 function are_ranks_duplicated($achievement) {
     if (!user_owns_achievement($id)) {
         //BAD
@@ -73,8 +85,16 @@ function change_description($id, $description) {
 }
 
 function change_documentation_status($id, $status) {
+    if ($id==0){
+        error_log(__FUNCTION__ . " ($id, $status) - id should not be 0");
+        return;
+    }
     if (!user_owns_achievement($id)) {
         //BAD
+        return;
+    }
+    $achievement = fetch_achievement($id);
+    if ($achievement->documented == $status){
         return;
     }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
@@ -82,6 +102,16 @@ function change_documentation_status($id, $status) {
     $statement->bindValue(1, $status, PDO::PARAM_BOOL);
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
+    $message = !$status 
+        ? "Achievement is now undocumented." 
+        : "Achievement is now documented.";
+    create_history($id, $message);
+    $statement = $connection->prepare("select id from achievements where parent=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($child_id = $statement->fetchColumn()){
+        change_documentation_status($child_id, $status);
+    }
 }
 
 function change_due_date($id, $date) {
@@ -498,14 +528,8 @@ function toggle_documentation_status($id) {
         //BAD
         return;
     }
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
-    $statement = $connection->prepare("update achievements set documented=? where id=?");
-    $statement->bindValue(1, !$achievement->documented, PDO::PARAM_BOOL);
-    $statement->bindValue(2, $id, PDO::PARAM_INT);
-    $statement->execute();
-    $message = $achievement->documented ? "Achievement is now undocumented." : "Achievement is now documented.";
-    create_history($id, $message);
+    change_documentation_status($id, !$achievement->documented);
 }
 
 function toggle_quality($id) {

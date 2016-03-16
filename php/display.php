@@ -300,7 +300,7 @@ function list_requirements($id, $type) {
         echo "  <div>
                     <input id='requirement$requirement_id' class='delete_requirement_button' type='button' value='X' />
 
-                    <a href='" . SITE_ROOT . "?rla=$achievement_id'>$achievement_name</a>
+                    <a href='" . SITE_ROOT . "/summary/?id=$achievement_id'>$achievement_name</a>
                 </div>";
     }
 }
