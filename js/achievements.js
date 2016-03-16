@@ -218,8 +218,8 @@ function createAchievement(parent, name) {
             });
 }
 
-function createDocumentation(id, documentation){
-    data={function_to_be_called:"create_documentation", id:id, documentation:documentation};
+function createDocumentation(id, documentation, explanation){
+    data={function_to_be_called:"create_documentation", id:id, documentation:documentation, explanation:explanation};
     AJAXThenReload(data, id, function (result){
         console.log(result);
     });     

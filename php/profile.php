@@ -84,7 +84,53 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
         </div>
     </div>
 </h1>
-<div>
+
+<div style='clear:both;'>
+    <div>
+            <?php if ($achievement->documented) :?>
+                <div>
+                Documented (Requires proof of completion)
+				
+				<?php if (!$achievement->authorizing): ?>
+					<span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
+				<?php endif; ?>
+				<div style='margin-left:24px;margin-top:4px;'>
+					
+					<?php if (!$achievement->authorizing): ?>
+					<span id='show_new_documentation' class='hand text-button'> [ + ] </span>
+					<?php endif; ?>
+					<?php
+						echo $achievement->documentation==NULL
+								? "None."
+								: "<a href='$achievement->documentation'>$achievement->documentation</a> - $achievement->documentation_explanation";
+					?>
+				</div>
+                
+                
+                </div>
+                <div id='new_documentation' 
+                  style='margin-left:24px;margin-bottom:8px;margin-top:4px;clear:both;float:left;display:none;'>
+                    
+                        <div>
+                            <span id='hide_new_documentation' class='hand text-button'> [ - ] </span>
+                            <input id='documentation_input' type='text' value='Paste URL here.' style='color:grey;'/> 
+                            <input id='create_documentation' type='button' value='Document' />
+                        </div>
+                        <div>
+                            <textarea id='documentation_explanation_input' style='width:360px;height:80px;color:grey;'>Explain here. (optional)</textarea>
+                        </div>
+
+                </div>
+            <?php elseif (!$achievement->documented) : ?>
+                Undocumented (No proof of completion required)
+                <span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
+            <?php endif; ?>
+    </div>
+</div>
+
+
+
+<div style='clear:both;margin-top:4px;'>
     <span id='achievement_active<?php echo $achievement->id; ?>' 
 	<?php if (!$achievement->authorizing): ?>
 		class='hand toggle_active_status'
@@ -99,7 +145,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
                         [ Undo ]
                     </span>
     <?php endif; ?>
-</span>
+    </span>
 
 </div>
 <div>
@@ -112,47 +158,7 @@ $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_
     ?>
 
 </div>
-<div style='clear:both;'>
-    <div>
-            <?php if ($achievement->documented) :?>
-                <div>
-                Documented (Requires proof of completion)
-				
-				<?php if (!$achievement->authorizing): ?>
-					<span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
-				<?php endif; ?>
-				<div>
-					
-					<?php
-						echo $achievement->documentation==NULL
-								? "None."
-								: "<a href='$achievement->documentation'>$achievement->documentation</a>";
-					?>
-					<?php if (!$achievement->authorizing): ?>
-					<span id='show_new_documentation' class='hand text-button'> [ + ] </span>
-					<?php endif; ?>
-				</div>
-                
-                
-                </div>
-                <div id='new_documentation' 
-                  style='margin-bottom:8px;margin-top:4px;clear:both;float:left;display:none;'>
-                    <span id='hide_new_documentation' class='hand text-button'> [ - ] </span>
-                    <input id='documentation_input' type='text' value='Paste URL here.' style='color:grey;'/> 
-                    <input id='create_documentation' type='button' value='<?php
-					echo ($achievement->documentation==NULL)
-					  ? "Add Documentation"
-					  : "Change Documentation";
-					
-					?>'/>
-                </div>
-            <?php elseif (!$achievement->documented) : ?>
-                Undocumented (No proof of completion required)
-                <span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
-            <?php endif; ?>
-    </div>
-</div>
-<div style='clear:both;'>
+<div>
     Parent: 
     <?php
     echo ($achievement->parent == 0)

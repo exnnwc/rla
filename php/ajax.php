@@ -77,7 +77,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         create_action(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING));
         break;
     case "create_documentation":
-        create_documentation(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'documentation', FILTER_SANITIZE_STRING));
+        create_documentation(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'documentation', FILTER_SANITIZE_STRING), filter_input(INPUT_POST, 'explanation', FILTER_SANITIZE_STRING));
         break;
     case "create_new_action":
         create_new_action(filter_input(INPUT_POST, 'action', FILTER_SANITIZE_STRING));

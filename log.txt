@@ -1,4 +1,9 @@
+03/16/16
+While working on the code to complete documented achievements, I realized I've made a bit of a blunder. I've written the code to complete an undocumented achievement, but I forgot to include the code to confirm whether the children and requirement achievements have also been completed.
+
 03/11/16
+
+
 I'm at a crossroads now. Working on making this RESTful means that I basically have to rewrite the entire program. So as of right now, I can either choose to go back to the drawing board and restart all over again. Or continue to push through with what I have now. It took me roughly three months to get where I'm at now. I'm assuming it would take me two months to get back to this point. To be clear, the main reasons why I think I should switch over to REST is: 
 -It will make mobile development easier and third party development possible.
 -It will make the overall structure of the site clearer.

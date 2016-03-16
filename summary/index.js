@@ -43,6 +43,16 @@ function add_behavior_handlers_to_profile(id) {
             $("#documentation_input").css("color", "grey");
         }
     });
+    $(document).on("focusin", "#documentation_explanation_input", function (event) {
+        $("#documentation_explanation_input").val("");
+        $("#documentation_explanation_input").css("color", "black");
+    });
+    $(document).on("focusout", "#documentation_explanation_input", function (event) {
+        if ($("#documentation_explanation_input").val().trim()==""){
+            $("#documentation_explanation_input").val("Explain here. (optional)");
+            $("#documentation_explanation_input").css("color", "grey");
+        }
+    });
 }
 function add_behavior_handlers_to_listings() {
     $(document).on("focusout", ".power_input", function (event) {
@@ -486,7 +496,7 @@ function add_button_handlers_to_profile(id) {
         clearDueDate(id);
     });
     $(document).on("click", "#create_documentation", function (event) {
-        createDocumentation(id, $("#documentation_input").val());
+        createDocumentation(id, $("#documentation_input").val(), $("#documentation_explanation_input").val());
     });
     $(document).on("click", "#show_new_documentation", function (event) {
         $("#show_new_documentation").hide();

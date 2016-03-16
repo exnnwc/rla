@@ -269,15 +269,16 @@ function create_achievement($name, $parent) {
     $statement->execute();
 }
 
-function create_documentation($id, $documentation){
+function create_documentation($id, $documentation, $explanation){
     if (!user_owns_achievement($id)) {
         //BAD
         return;
     }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection -> prepare ("update achievements set documentation=? where id=?");
+    $statement = $connection -> prepare ("update achievements set documentation=?, documentation_explanation=? where id=?");
     $statement->bindValue(1, $documentation, PDO::PARAM_STR);
-    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->bindValue(2, $explanation, PDO::PARAM_STR);
+    $statement->bindValue(3, $id, PDO::PARAM_INT);
     $statement->execute();
 
 }
