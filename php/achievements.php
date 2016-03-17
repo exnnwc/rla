@@ -307,6 +307,9 @@ function create_documentation($id, $documentation, $explanation){
         //BAD
         return;
     }
+    if ($explanation == "Explain here. (optional)"){
+        $explanation="";
+    }  
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection -> prepare ("update achievements set documentation=?, documentation_explanation=? where id=?");
     $statement->bindValue(1, $documentation, PDO::PARAM_STR);

@@ -123,7 +123,12 @@ function display_achievements_requiring_authorization($type){
         . "         [ Yay ] [ Nay ] <input type='text' value='Please explain why if nay.' style='color:grey;'/>
                 </div>
                 <div style='padding-top:4px;padding-left:16px;'>
-                        <a href='$achievement->documentation'>[ Documentation ] </a> - 
+                        Documentation: <a href='$achievement->documentation'>$achievement->documentation </a>";
+        if ($achievement->documentation_explanation){
+            $string = $string . " - $achievement->documentation_explanation";
+        }
+
+        $string = $string . "
                 </div>
             </div>";
 	}

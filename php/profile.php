@@ -116,7 +116,11 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 					<?php
 						echo $achievement->documentation==NULL
 								? "None."
-								: "<a href='$achievement->documentation'>$achievement->documentation</a> - $achievement->documentation_explanation";
+								: "<a href='$achievement->documentation'>$achievement->documentation</a>";                        
+                        echo empty($achievement->documentation_explanation)
+                          ? ""
+                          : " - $achievement->documentation_explanation";
+
 					?>
 				</div>
                 
