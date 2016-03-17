@@ -1,5 +1,4 @@
 var SITE_NAME = "Real Life Achievements";
-
 $(document.body).ready(function () {
     if ($(document.body).attr('id') === "AchievementsList") {
         document.title = SITE_NAME + " - Achievements List";
@@ -26,7 +25,16 @@ $(document.body).ready(function () {
 });
 
 function add_behavior_handlers_to_profile(id) {
-    $(document).on("focusout", ".new_todo_input", function (event) {
+        
+   getNumOfSecondsUntilAuthorize(id,function(original_num_of_seconds){
+        setInterval(function(){
+            original_num_of_seconds--;
+            voteTime = formatVoteTime(original_num_of_seconds);
+            $("#vote_timer"+id).html(voteTime);
+        }, 1000);
+    }); 
+
+    $(document).on("ready", ".new_todo_input", function (event) {
         html_id = event.target.id;
         todo_id = Number(html_id.substr(14, html_id.length - 14));
         $("#todo_input" + todo_id).hide();
@@ -581,8 +589,6 @@ function add_keypress_handlers_to_profile(id) {
         }
     });
 }
-
-
 function softGenericReload(id) {
     if ($(document.body).attr('id') === "AchievementsList") {
         listAchievements("default", "default");
@@ -591,3 +597,4 @@ function softGenericReload(id) {
         displayProfile(id);
     }
 }
+

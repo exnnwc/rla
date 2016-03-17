@@ -66,11 +66,12 @@ function are_ranks_duplicated($achievement) {
 }
 
 function change_authorizing_status($id, $status){
-
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-	$statement = $connection -> prepare ("update achievements set authorizing=? where id=?");
-	$statement->bindValue(1, $status, PDO::PARAM_BOOL);
-	$statement->bindValue(2, $id, PDO::PARAM_INT);
+    $authorizing = $status
+        ? "now()"
+        : "0";
+	$statement = $connection -> prepare ("update achievements set authorizing=$authorizing where id=?");
+	$statement->bindValue(1, $id, PDO::PARAM_INT);
 	$statement->execute();
 	
 }
@@ -444,6 +445,17 @@ function fix_achievement_ranks($field, $achievement) {
     $connection->exec("update achievements set rank=@rank:=@rank+1 "
         . DEFAULT_WHERE . " and parent=$achievement->parent and owner=$achievement->owner order by $field ");
 }
+
+function get_num_of_seconds_until_authorized($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection -> prepare ("select time_to_sec(timediff(now(), authorizing)) from achievements where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    $num_of_seconds=$statement->fetchColumn();
+    $num_of_seconds=86400-$num_of_seconds;
+    return $num_of_seconds;
+}
+
 
 function how_many_days_until_due($id) {
     if (!user_owns_achievement($id)) {

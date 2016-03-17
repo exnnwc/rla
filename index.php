@@ -1,5 +1,6 @@
 <?php
 	require_once("php/config.php");
+	require_once("php/display.php");
 	require_once("php/user.php");
 ?>
 
@@ -12,8 +13,12 @@
 </style>
         <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/rla.css">
         <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/global.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/display.js"></script>
 
 </head>
 
@@ -115,12 +120,22 @@ function display_achievements_requiring_authorization($type){
 	while ($achievement = $statement->fetchObject()){
         $achievements_set=true;    
 		$string ="
-            <div>
+            <script>startTimer($achievement->id);</script>
+            <div >                
                 <div>
-                        $achievement->name
+                    <div style=''>"                
+          . display_vote_timer($achievement->id) 
+          . "      </div>
+                     $achievement->name
                      - "
         . fetch_username($achievement->owner)
-        . "         [ Yay ] [ Nay ] <input type='text' value='Please explain why if nay.' style='color:grey;'/>
+        . "         <span class='hand text-button'>
+                        [ Yay ] 
+                    </span>
+                     <span class='hand text-button'>
+                    [ Nay ] 
+                    </span>
+                    <input type='text' value='Please explain why if nay.' style='color:grey;'/>
                 </div>
                 <div style='padding-top:4px;padding-left:16px;'>
                         Documentation: <a href='$achievement->documentation'>$achievement->documentation </a>";
@@ -149,7 +164,11 @@ function list_all_achievements_pending_authorization(){
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
+        $achievements_set=true;
         echo "<div><a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a></div>";
+    }
+    if (!$achievements_set){
+        echo "None.";
     }
 
 }

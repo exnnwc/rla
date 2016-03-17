@@ -64,6 +64,26 @@ function display_todo_completion($todo){
       ?"cancel_todo"
       : "complete_todo";
 }
+function display_vote_timer($id){
+    $num_of_seconds_passed = get_num_of_seconds_until_authorized($id);
+    if ($num_of_seconds_passed>3599){
+        $hours = floor ($num_of_seconds_passed/3600);
+        $num_of_seconds_passed = $num_of_seconds_passed-($hours*3600);
+        $minutes = floor($num_of_seconds_passed/60);
+        $num_of_seconds_passed = $num_of_seconds_passed - ($minutes*60);
+        $seconds = $num_of_seconds_passed;
+    }else if ($num_of_seconds_passed>59){
+        $hours = 0;
+        $minutes = floor($num_of_seconds_passed/60);
+        $seconds = $num_of_seconds_passed - ($minutes*60);
+    } else if ($num_of_seconds_passed<60){
+        $hours =0;
+        $minutes = 0;
+        $seconds = $num_of_seconds_passed;
+    }
+    return  " <span id='vote_timer$id' title='adfa'>".$hours . "h " . $minutes . "m " . $seconds . "s</span>";
+
+}
 function fetch_action_listing($action) {
     $string = "<span style='margin-left:20px;cursor:pointer;";
     $string = has_action_been_worked_on($action->id) ? $string . "color:grey;text-decoration:line-through;' 

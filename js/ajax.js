@@ -31,3 +31,4 @@ function AJAXOnly(data, callback){
             callback(result);
         });
 }
+

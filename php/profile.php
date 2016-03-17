@@ -27,7 +27,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
     </div>    
 </div>
 <div>
-    <?php if (!$achievement->deleted && !$achievement->authorizing): ?>
+    <?php if (!$achievement->deleted && $achievement->authorizing==0): ?>
     <input id='delete<?php echo $achievement->id; ?>' 
            class='remove_achievement_button' type='button' value='X' 
            title='
@@ -48,7 +48,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
     <input id='complete<?php echo $achievement->id; ?>' value="&#10003;" 
 	  class='complete_button' type='button' style="width:25px;height:25px;text-align:center;"/>
 	<?php elseif ($everything_else_is_complete && $achievement->completed == 0 
-      && $achievement->documented && $achievement->documentation!=NULL && !$achievement->authorizing): ?>    
+      && $achievement->documented && $achievement->documentation!=NULL && $achievement->authorizing==0): ?>    
         <?php if ($all_requirements_documented): ?>
     		<input id='authorize' value="&#10003;" title="Submit For Completion"
     		  class='authorize_button' type='button' style="width:25px;height:25px;text-align:center;"/>
@@ -60,8 +60,10 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
         <?php endif; ?>
 	<?php elseif ($achievement->completed == 0 && $achievement->authorizing): ?>    
 		<span id="cancel_authorization" class="hand text-button">[ Cancel Authorization ]</span>
+        <?php echo display_vote_timer($achievement->id); ?>
+        
     <?php endif; ?>
-    <?php if ($achievement->locked==0  && !$achievement->authorizing):?>
+    <?php if ($achievement->locked==0  && $achievement->authorizing==0):?>
     <span class='toggle_locked_status hand text-button'>[ Lock ] </span>
     
     <?php endif; ?> 
@@ -83,7 +85,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 
 <h1 id="achievement_name" style='text-align:center;'> 
     <div 
-    <?php if ($achievement->locked==0 && !$achievement->authorizing):?>
+    <?php if ($achievement->locked==0 && $achievement->authorizing==0):?>
         id="show_new_achievement_name" class="hand"
     <?php endif; ?> 
             ><?= $achievement->name ?> </div>
@@ -105,12 +107,12 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
                 <div>
                 Documented (Requires proof of completion)
 				
-				<?php if (!$achievement->authorizing): ?>
+				<?php if ($achievement->authorizing==0): ?>
 					<span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
 				<?php endif; ?>
 				<div style='margin-left:24px;margin-top:4px;'>
 					
-					<?php if (!$achievement->authorizing): ?>
+					<?php if ($achievement->authorizing==0): ?>
 					<span id='show_new_documentation' class='hand text-button'> [ + ] </span>
 					<?php endif; ?>
 					<?php
@@ -150,7 +152,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 
 <div style='clear:both;margin-top:4px;'>
     <span id='achievement_active<?php echo $achievement->id; ?>' 
-	<?php if (!$achievement->authorizing): ?>
+	<?php if ($achievement->authorizing==0): ?>
 		class='hand toggle_active_status'
 	<?php endif; ?>
     <?php 
@@ -204,7 +206,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
                     echo "' >".fetch_due_message($num_of_days_til_due) . "</span>";
                 ?>
             <?php endif; ?>
-				<?php if (!$achievement->authorizing): ?>
+				<?php if ($achievement->authorizing==0): ?>
 					<span id='show_new_due_date' class='hand text-button'>[ + ] </span>
 				<?php endif; ?>
                 <span id='hide_new_due_date' class='hand text-button' style='display:none;'>[ - ] </span>
@@ -237,7 +239,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 </div>
 <div >
     Tags: <span id='list_of_tags<?php echo $achievement->id; ?>' style='margin-right:8px;'></span>
-	<?php if (!$achievement->authorizing): ?>
+	<?php if ($achievement->authorizing==0): ?>
     <span id="show_new_tags" class="hand text-button h-normal" style=''> [ + ] </span>
 	<?php endif; ?>
     <span id='new_tags' style='display:none;'>
@@ -251,7 +253,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 <h3>
     Description
 	
-    <?php if ($achievement->locked==0 && !$achievement->authorizing): ?>
+    <?php if ($achievement->locked==0 && $achievement->authorizing==0): ?>
     <span class="h-normal">
         <span id="show_new_description" class="hand text-button show_new_description">[ Edit ]</span>
     </span>
@@ -273,7 +275,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 <div>
     <h3>
         Children
-        <?php if ($achievement->locked==0 && !$achievement->authorizing): ?>
+        <?php if ($achievement->locked==0 && $achievement->authorizing==0): ?>
         <input id="hide_new_children" type="button" value="-" style="display:none"/>
         <input id="show_new_children" type="button" value="+" style=""/>
         <?php endif; ?>
@@ -298,7 +300,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 <div id="other_achievements<?php echo $achievement->id ?>" style="">
     <h3>
         Required For Completion
-		<?php if ( !$achievement->authorizing): ?>
+		<?php if ( $achievement->authorizing==0): ?>
         <span id="show_new_required_for" class="h-normal hand text-button" style="margin-left:5px;">[ + ]</span>
 		<?php endif; ?>
         <span id="hide_new_required_for" class="h-normal hand text-button" style="margin-left:5px;display:none;">[ - ]</span>
@@ -395,7 +397,7 @@ function fetch_nav_menu($id, $rank, $parent) {
 }
     
 function generate_select_achievement_menu($parent, $id) {
-$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $string = " <select id = 'achievement_navigation_menu' style = 'text-align:center;'
     onchange = \"window.location.assign('" . SITE_ROOT . "/summary/?id='+$('#achievement_id').val())\">
                         <option>Go to another achievement here</option>";
@@ -409,3 +411,4 @@ $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, D
     $string = $string . "  </select>";
     return $string;
 }
+

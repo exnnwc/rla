@@ -139,6 +139,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "fetch_required_filter_status":
         fetch_required_filter_status();
         break;
+    case "get_num_of_seconds_until_authorized":
+        echo json_encode((int)get_num_of_seconds_until_authorized(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT)));
+        break;
     case "is_it_active":
         is_it_active(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
