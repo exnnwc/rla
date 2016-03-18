@@ -47,6 +47,16 @@ Voters must anonymously explain why they voted against the achievement so that t
 
 If the user makes the stated correction and voters are  unwilling to change their vote during the next submission, mods will get involved.
 
+create table votes(
+id int unsigned primary key auto_increment,
+created timestamp default current_timestamp,
+updated default 0 on update current_timestamp,
+user_id int unsigned,
+achievement_id int unsigned,
+vote boolean,
+explanation text);
+
+
 FEATURES FOR CONSIDERATION
 Should users be able to see what other users are currently working on?
 Yes. Possibly, they could give someone points because they like that they're working on an achievement.
