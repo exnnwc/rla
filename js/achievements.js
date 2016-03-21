@@ -269,6 +269,7 @@ function deleteAchievement(id, parent, fromProfile) {
 function getNumOfSecondsUntilAuthorize(id,callback){
     data={function_to_be_called:"get_num_of_seconds_until_authorized", id:id};
     AJAXOnly(data, function (result){
+        console.log(result);
         callback(JSON.parse(result));
     });
 }

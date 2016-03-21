@@ -2,6 +2,7 @@
 	require_once("php/config.php");
 	require_once("php/display.php");
 	require_once("php/user.php");
+    require_once("php/votes.php");
 ?>
 
 <html>
@@ -15,11 +16,11 @@
         <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/display.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/global.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
-        <script src="<?php echo SITE_ROOT; ?>/js/display.js"></script>
-
+        <script src="<?php echo SITE_ROOT; ?>/js/votes.js"></script>
 </head>
 
 <body>
@@ -119,23 +120,56 @@ function display_achievements_requiring_authorization($type){
 	$statement->execute();
 	while ($achievement = $statement->fetchObject()){
         $achievements_set=true;    
+        $vote = how_did_user_vote($user_id, $achievement->id);
 		$string ="
             <script>startTimer($achievement->id);</script>
             <div >                
                 <div>
                     <div style=''>"                
-          . display_vote_timer($achievement->id) 
-          . "      </div>
+          . display_vote_timer($achievement->id);
+           $vote_summary = summarize_vote($achievement->id);
+            $string = $string . "<span style='font-style:italic;' class='";
+            if ($vote_summary["status"]=="tie"){
+                $string = $string . "tie'> Tie";
+            } else if ($vote_summary["status"]=="for"){
+                $string = $string . "win'> Leading by ". ($vote_summary["yays"] - $vote_summary["nays"]);
+            } else if ($vote_summary["status"]=="against"){
+                $string = $string . "lose'> Losing by " . ($vote_summary["nays"] - $vote_summary["yays"]);
+            }
+            $string = $string . "</span>";
+            $string = $string . 
+           "      </div>
                      $achievement->name
                      - "
         . fetch_username($achievement->owner)
-        . "         <span id='yay$achievement->id' class='vote_button hand text-button'>
-                        [ Yay ] 
-                    </span>
-                    <span id='nay$achievement->id' class='vote_button hand text-button'>
-                        [ Nay ] 
-                    </span>
-                    <input type='text' value='Please explain why if nay.' style='color:grey;'/>
+        . "         <span id='yay$achievement->id' class='";
+                        if ($vote==false){
+                            $string = $string . "vote_button hand text-button'>[ Yay ]";
+                        } else if ($vote=="nay"){
+                            $string = $string . "inactive-vote'>Yay";
+                        } else if (substr($vote, 0, 3)=="yay"){
+                            $string = $string . "active-vote'>Yay";
+                        }
+                    $string = $string . "</span>
+                    <span id='nay$achievement->id' class='";
+                        if ($vote==false){
+                            $string = $string . "vote_button hand text-button'>[ Nay ]";
+                        } else if ($vote=="nay"){
+                            $string = $string . "active-vote'>Nay";
+                        } else if (substr($vote, 0, 3)=="yay"){
+                            $string = $string . "inactive-vote'>Nay";
+                        }
+                    $string = $string . "
+                    </span>";
+                    if ($vote==false){
+                        $string = $string 
+                          . "<input type='text' id='explanation_input$achievement->id' 
+                            value='Please explain why if nay.' style='color:grey;'/>";
+                    } else if ($vote!=false && strlen(substr($vote, 3))>0){
+                        $string = $string . " - " . substr($vote, 3);
+                    }
+                    
+                    $string = $string . "                        
                 </div>
                 <div style='padding-top:4px;padding-left:16px;'>
                         Documentation: <a href='$achievement->documentation'>$achievement->documentation </a>";

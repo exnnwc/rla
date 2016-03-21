@@ -1,3 +1,6 @@
+.active-vote{
+    font-weight:bold;
+}
 .hand{
     cursor:pointer;
 }
@@ -14,6 +17,12 @@
     font-size:16px;
     font-weight:normal;
 
+}
+.inactive-vote{
+    text-decoration:line-through;
+}
+.loss{
+    color:red;
 }
 .tag{
     background-color:lightgrey;
@@ -46,6 +55,12 @@ border-radius:4px 4px 4px 4px;
     width:90px;
     float:left;
     text-align:right;
+}
+.tie {
+    color:grey;
+}
+.win {
+    color:green;
 }
 
 #documentation_input{

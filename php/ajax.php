@@ -9,6 +9,7 @@ require_once ("relations.php");
 require_once("tags.php");
 require_once("todo.php");
 require_once("user.php");
+require_once("votes.php");
 error_log("DEBUG:".$_POST['function_to_be_called']);
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
     case "activate_achievement":
@@ -98,8 +99,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         create_todo(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "create_vote":
-        create_vote(filter_input(INPUT_POST, 'user_id', FILTER_SANITIZE_NUMBER_INT),
-          filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), 
+        create_vote(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), 
           filter_input(INPUT_POST, 'vote', FILTER_VALIDATE_BOOLEAN),
           filter_input(INPUT_POST, 'explanation', FILTER_SANITIZE_STRING));
         break;
