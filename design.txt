@@ -26,6 +26,13 @@ User Profile Page
 
 Friend Activity Page - Based off of Steam's Activity page
 
+Publication 
+An issue that I've realized about this whole voting up achievements is that there's nothing to prevent users from continually voting up an achievement. To go into more detail, if I do a linear progression with the upvote/downvote system (each vote up adds one point), then over time, there could be really achievements with hundreds of points that people do to gain points easily. This is problematic. 
+
+So, ideally, the cost of the vote needs to be twice of whatever it currently is. So if an achievement is 1, it costs 2 points to vote it up. If the achievement is worth 4 points, it should cost 8 points to vote it up and so on. It costs the same amount of points to vote it down. Though, that may change depending how that works.
+
+
+
 
 Documentation Process
 Once a user has posted their link to documentation and marked it as completed:

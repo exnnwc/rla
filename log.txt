@@ -1,3 +1,8 @@
+03/21/16
+I'm having an issue now about how to pursue publishing achievements. Should it be an entirely new achievement or should I merely update the achievement?
+
+A separate one. That way if the user wants to uncomplete their achievement and work on a new aspect of it, they can do that without messing up their published achievement.
+
 03/16/16
 While working on the code to complete documented achievements, I realized I've made a bit of a blunder. I've written the code to complete an undocumented achievement, but I forgot to include the code to confirm whether the children and requirement achievements have also been completed.
 
