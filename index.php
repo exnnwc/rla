@@ -93,7 +93,7 @@
         Completed Achievements
     </h3>
     <div id='completed_achievements_requiring_athuroziation'>
-        None.
+        <?php list_all_completed_authorized_achievements(); ?>
     </div>
 </body>
 </html>
@@ -124,25 +124,13 @@ function display_achievements_requiring_authorization($type){
 		$string ="
             <script>startTimer($achievement->id);</script>
             <div >                
-                <div>
-                    <div style=''>"                
-          . display_vote_timer($achievement->id);
-           $vote_summary = summarize_vote($achievement->id);
-            $string = $string . "<span style='font-style:italic;' class='";
-            if ($vote_summary["status"]=="tie"){
-                $string = $string . "tie'> Tie";
-            } else if ($vote_summary["status"]=="for"){
-                $string = $string . "win'> Leading by ". ($vote_summary["yays"] - $vote_summary["nays"]);
-            } else if ($vote_summary["status"]=="against"){
-                $string = $string . "lose'> Losing by " . ($vote_summary["nays"] - $vote_summary["yays"]);
-            }
-            $string = $string . "</span>";
-            $string = $string . 
-           "      </div>
-                     $achievement->name
-                     - "
+                <div style=''>"
+            . display_vote_summary($achievement)
+            . "</div>" 
+            . $achievement->name
+                     . " - "
         . fetch_username($achievement->owner)
-        . "         <span id='yay$achievement->id' class='";
+        . "         - <span id='yay$achievement->id' class='";
                         if ($vote==false){
                             $string = $string . "vote_button hand text-button'>[ Yay ]";
                         } else if ($vote=="nay"){
@@ -151,6 +139,7 @@ function display_achievements_requiring_authorization($type){
                             $string = $string . "active-vote'>Yay";
                         }
                     $string = $string . "</span>
+                    /
                     <span id='nay$achievement->id' class='";
                         if ($vote==false){
                             $string = $string . "vote_button hand text-button'>[ Nay ]";
@@ -187,6 +176,47 @@ function display_achievements_requiring_authorization($type){
     echo $string;
 }
 
+function display_vote_summary($achievement){
+
+           $vote_summary = summarize_vote($achievement->id);
+            $string = display_vote_timer($achievement->id)  
+              . "<span style='font-style:italic;' class='";
+            if ($vote_summary["status"]=="tie"){
+                $string = $string . "tie'> Tie";
+            } else if ($vote_summary["status"]=="for"){
+                $string = $string . "win'> Leading by ". ($vote_summary["yays"] - $vote_summary["nays"]);
+            } else if ($vote_summary["status"]=="against"){
+                $string = $string . "lose'> Losing by " . ($vote_summary["nays"] - $vote_summary["yays"]);
+            }
+            $string = $string . "</span>";
+    return $string;
+}
+
+function list_all_completed_authorized_achievements(){
+	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievements_set=false;
+	$user_id = fetch_current_user_id();
+	if ($user_id==false){
+		return;
+	} 
+    $statement = $connection->prepare("select * from achievements where completed!=0 and authorizing!=0 and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($achievement = $statement->fetchObject()){
+        $achievements_set=true;
+        echo "<div><a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> 
+                    <div style='padding-left:20px;'>
+                        Completed: 
+                        <span style='font-style:italic;'>"  
+                    . date("m/d/y", strtotime($achievement->completed)) 
+                    . " </span>
+                    </div>
+                </div>";
+    }
+    if (!$achievements_set){
+        echo "None.";
+    }
+}
 function list_all_achievements_pending_authorization(){
 	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievements_set=false;
@@ -199,7 +229,9 @@ function list_all_achievements_pending_authorization(){
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
         $achievements_set=true;
-        echo "<div><a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a></div>";
+        echo "<div><a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> - "
+          . display_vote_summary($achievement) 
+          . "</div>";
     }
     if (!$achievements_set){
         echo "None.";

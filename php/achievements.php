@@ -215,8 +215,15 @@ function check_achievement_authorization_status(){
     $statement = $connection->query("select * from achievements where authorizing!=0 and completed=0 and deleted=0 and abandoned=0");
     while ($achievement=$statement->fetchObject()){
         $num_of_seconds=get_num_of_seconds_until_authorized($achievement->id);        
+        $vote_summary=summarize_vote($achievement->id);
         if ($num_of_seconds<=0){
-            $connection->exec("update achievements set completed=now() where id=$achievement->id");
+            if ($vote_summary["total"]==0 || ($vote_summary["total"]>0 &&  $vote_summary["status"]=="for")){
+                $connection->exec("update achievements set completed=now() where id=$achievement->id");
+            } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="tie"){
+                extend_vote($achievement->id, 24); 
+            } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="against"){
+               
+            }
         } 
     }
 }
@@ -348,6 +355,14 @@ function delete_achievement($id) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set deleted=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
+
+function extend_vote($id, $hours){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("update achievements set hours_added=hours_added+? where id=?");
+    $statement->bindValue(1, $hours, PDO::PARAM_INT);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
 function fetch_achievement($id) {
