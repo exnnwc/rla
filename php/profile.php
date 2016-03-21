@@ -58,7 +58,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
                 <?php list_undocumented_requirements($achievement->id); ?> 
             </div>
         <?php endif; ?>
-	<?php elseif ($achievement->completed == 0 && $achievement->authorizing): ?>    
+	<?php elseif ($achievement->completed == 0 && $achievement->authorizing!=0): ?>    
 		<span id="cancel_authorization" class="hand text-button">[ Cancel Authorization ]</span>
         <?php echo display_vote_timer($achievement->id); ?>
         

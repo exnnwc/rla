@@ -111,7 +111,7 @@ function display_achievements_requiring_authorization($type){
 		return;
 	} 
     if ($type==0){
-        $query="select * from achievements where authorizing!=0 and original=0 and owner!=?";
+        $query="select * from achievements where completed=0 and authorizing!=0 and original=0 and owner!=?";
     } else if ($type==1){
     } 
 	$statement = $connection->prepare($query);
@@ -129,11 +129,11 @@ function display_achievements_requiring_authorization($type){
                      $achievement->name
                      - "
         . fetch_username($achievement->owner)
-        . "         <span class='hand text-button'>
+        . "         <span id='yay$achievement->id' class='vote_button hand text-button'>
                         [ Yay ] 
                     </span>
-                     <span class='hand text-button'>
-                    [ Nay ] 
+                    <span id='nay$achievement->id' class='vote_button hand text-button'>
+                        [ Nay ] 
                     </span>
                     <input type='text' value='Please explain why if nay.' style='color:grey;'/>
                 </div>
@@ -160,7 +160,7 @@ function list_all_achievements_pending_authorization(){
 	if ($user_id==false){
 		return;
 	} 
-    $statement = $connection->prepare("select * from achievements where authorizing!=0 and owner=?");
+    $statement = $connection->prepare("select * from achievements where completed=0 and authorizing!=0 and owner=?");
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){

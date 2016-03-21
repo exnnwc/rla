@@ -213,11 +213,10 @@ function change_rank($id, $new_rank) {
 function check_achievement_authorization_status(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from achievements where authorizing!=0 and completed=0 and deleted=0 and abandoned=0");
-    $statement->execute();
     while ($achievement=$statement->fetchObject()){
         $num_of_seconds=get_num_of_seconds_until_authorized($achievement->id);        
         if ($num_of_seconds<=0){
-            complete_achievement($achievement->id);
+            $connection->exec("update achievements set completed=now() where id=$achievement->id");
         } 
     }
 }

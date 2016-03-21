@@ -1,5 +1,11 @@
 
 $(document.body).ready(function () {
+    $(document).on("click", ".vote_button", function (event) {
+        html_id = event.target.id; 
+        vote = html_id.substr(0,3);
+        achievement_id = html_id.substr(3, html_id.length-3);
+        createVote(achievement_id, vote);
+    });
    $(".vote_div").ready(function(event){
 
     });
