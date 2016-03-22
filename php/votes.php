@@ -42,12 +42,18 @@ function summarize_vote ($achievement_id){
     }
     if ($num_of_nays > $num_of_yays){
         $status = "against";
+        $caption= "Failed";
+        $difference=$num_of_nays-$num_of_yays;
     } else if ($num_of_yays > $num_of_nays){
         $status = "for";
+        $caption = "Passed";
+        $difference=$num_of_yays-$num_of_nays;
     } else if ($num_of_yays == $num_of_nays){
         $status = "tie";
+        $caption="Stalemate";
+        $difference=0;
     }
-    return ["status"=>$status, "total"=>$num_of_votes, "nays"=>$num_of_nays, "yays"=>$num_of_yays];
+    return ["status"=>$status, "total"=>$num_of_votes, "nays"=>$num_of_nays, "yays"=>$num_of_yays, "caption"=>$caption, "difference"=>$difference];
 }
 
 function how_did_user_vote($user_id, $achievement_id){

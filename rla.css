@@ -58,6 +58,12 @@ border-radius:4px 4px 4px 4px;
 .tie {
     color:grey;
 }
+.underline-hover{
+    text-decoration:none;
+}
+.underline-hover:hover{
+   text-decoration:underline; 
+}
 .win {
     color:green;
 }
