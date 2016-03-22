@@ -106,13 +106,14 @@ function display_achievements_requiring_authorization($type){
     
     
 	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $string = "";
     $achievements_set=false;
 	$user_id = fetch_current_user_id();
 	if ($user_id==false){
 		return;
 	} 
     if ($type==0){
-        $query="select * from achievements where completed=0 and authorizing!=0 and original=0 and owner!=?";
+        $query="select * from achievements where completed=0 and authorizing!=0 and owner!=?";
     } else if ($type==1){
     } 
 	$statement = $connection->prepare($query);
@@ -121,7 +122,7 @@ function display_achievements_requiring_authorization($type){
 	while ($achievement = $statement->fetchObject()){
         $achievements_set=true;    
         $vote = how_did_user_vote($user_id, $achievement->id);
-		$string ="
+		$string = $string . "
             <script>startTimer($achievement->id);</script>
             <div >                
                 <div style=''>"
@@ -152,7 +153,7 @@ function display_achievements_requiring_authorization($type){
                     </span>";
                     if ($vote==false){
                         $string = $string 
-                          . "<input type='text' id='explanation_input$achievement->id' 
+                          . "<input type='text' id='explanation_input$achievement->id' class='explanation_input' 
                             value='Please explain why if nay.' style='color:grey;'/>";
                     } else if ($vote!=false && strlen(substr($vote, 3))>0){
                         $string = $string . " - " . substr($vote, 3);
@@ -182,7 +183,11 @@ function display_vote_summary($achievement){
             $string = display_vote_timer($achievement->id)  
               . "<span style='font-style:italic;' class='";
             if ($vote_summary["status"]=="tie"){
-                $string = $string . "tie'> Tie";
+                if ($vote_summary["total"]!=0){
+                    $string = $string . "tie'> Tie";
+                } else if ($vote_summary["total"]==0){
+                    $string = $string . "tie'> Approved if no one votes against.";
+                }
             } else if ($vote_summary["status"]=="for"){
                 $string = $string . "win'> Leading by ". ($vote_summary["yays"] - $vote_summary["nays"]);
             } else if ($vote_summary["status"]=="against"){

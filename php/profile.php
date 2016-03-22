@@ -26,7 +26,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
         <?php echo fetch_nav_menu($achievement->id, $achievement->rank, $achievement->parent); ?>
     </div>    
 </div>
-<div>
+<div style='margin-bottom:8px;'>
     <?php if (!$achievement->deleted && $achievement->authorizing==0): ?>
     <input id='delete<?php echo $achievement->id; ?>' 
            class='remove_achievement_button' type='button' value='X' 
@@ -61,7 +61,8 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 	<?php elseif ($achievement->completed == 0 && $achievement->authorizing!=0): ?>    
 		<span id="cancel_authorization" class="hand text-button">[ Cancel Authorization ]</span>
         <?php echo display_vote_timer($achievement->id); ?>
-        
+    <?php elseif ($achievement->completed!=0 && $achievement->authorizing!=0): ?>
+        <span id="publish_achievement" class="hand text-button">[ Publish ]</span>    
     <?php endif; ?>
     <?php if ($achievement->locked==0  && $achievement->authorizing==0):?>
     <span class='toggle_locked_status hand text-button'>[ Lock ] </span>

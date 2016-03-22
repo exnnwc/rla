@@ -520,6 +520,15 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click", "#cancel_authorization", function (event) {
 		changeAuthorizingStatus(id, false);
     });	
+    $(document).on("click", "#publish_achievement", function (event) {
+        publishAchievement(id);
+    });	
+    $(document).on("click", "", function (event) {
+
+    });	
+    $(document).on("click", "", function (event) {
+
+    });	
     $(document).on("click", "", function (event) {
 
     });	

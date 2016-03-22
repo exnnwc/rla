@@ -481,6 +481,13 @@ function get_num_of_seconds_until_authorized($id){
     return $num_of_seconds;
 }
 
+function has_this_achievement_already_been_published($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("select count(*) from achievements where deleted=0 and published=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    return ((int)$statement->fetchColumn()>0);        
+}
 
 function how_many_days_until_due($id) {
     if (!user_owns_achievement($id)) {
@@ -527,6 +534,26 @@ function is_it_active($id) {
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     echo json_encode(!(boolean) $statement->fetchColumn());
+}
+
+function publish_achievement($id){
+    if (!user_owns_achievement($id)) {
+        //BAD
+        return;
+    }
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    if ($achievement->parent!=0){
+        //Send a confirmation to user that they will lose the parent achievement in this hierarchy.
+        return "Achievement has parent.";
+    } else if (has_this_achievement_already_been_published($id)){
+        return "Achievement already pbulished.";
+    } 
+    
+    $statement = $connection->exec("insert into achievements
+      (completed, owner, parent, name, description, locked, documented, published, original) 
+      values ('$achievement->completed', $achievement->owner, $achievement->parent, 
+      '$achievement->name', '$achievement->description', 1, 1, $achievement->id, 0)");
 }
 
 function rank_achievements($achievement, $new_rank) {

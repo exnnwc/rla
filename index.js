@@ -1,5 +1,16 @@
 
 $(document.body).ready(function () {
+    
+    $(document).on("focusin", ".explanation_input", function (event) {
+        $(".explanation_input").val("");
+        $(".explanation_input").css("color", "black");
+    });
+    $(document).on("focusout", ".explanation_input", function (event) {
+        if ($(".explanation_input").val().trim()==""){
+            $(".explanation_input").val("Please explain why if nay.");
+            $(".explanation_input").css("color", "grey");
+        }
+    });
     $(document).on("click", ".vote_button", function (event) {
         html_id = event.target.id; 
         vote = html_id.substr(0,3);
@@ -16,9 +27,7 @@ $(document.body).ready(function () {
         console.log(explanation);
         createVote(achievement_id, vote);
     
-    });
-   $(".vote_div").ready(function(event){
-
+        window.reload();
     });
 });
 function startTimer(id){
