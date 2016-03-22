@@ -81,7 +81,8 @@ function display_vote_timer($id){
         $minutes = 0;
         $seconds = $num_of_seconds_passed;
     }
-    return  " <span id='vote_timer$id' title='adfa'>".$hours . "h " . $minutes . "m " . $seconds . "s</span>";
+    return  "<script>startTimer($id);</script>
+ <span id='vote_timer$id' title='adfa'>".$hours . "h " . $minutes . "m " . $seconds . "s</span>";
 
 }
 function fetch_action_listing($action) {

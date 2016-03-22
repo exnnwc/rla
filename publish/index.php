@@ -1,8 +1,8 @@
 <?php
-	require_once("php/config.php");
-	require_once("php/display.php");
-	require_once("php/user.php");
-    require_once("php/votes.php");
+	require_once("../php/config.php");
+	require_once("../php/display.php");
+	require_once("../php/user.php");
+    require_once("../php/votes.php");
 ?>
 
 <html>
@@ -123,8 +123,7 @@ function display_achievements_requiring_authorization($type){
         $achievements_set=true;    
         $vote = how_did_user_vote($user_id, $achievement->id);
 		$string = $string . "
-            <script>startTimer($achievement->id);</script>
-            <div >                
+                        <div >                
                 <div style=''>"
             . display_vote_summary($achievement)
             . "</div>" 

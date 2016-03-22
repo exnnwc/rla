@@ -222,7 +222,8 @@ function check_achievement_authorization_status(){
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="tie"){
                 extend_vote($achievement->id, 24); 
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="against"){
-               
+                $connection->exec("update achievements set authorizing=0, hours_added=0, documentation='', documentation_explanation='' where id=$achievement->id");   
+                create_history($achievement->id, "Achievement failed authorization.");
             }
         } 
     }

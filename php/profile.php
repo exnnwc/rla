@@ -106,7 +106,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
     <div>
             <?php if ($achievement->documented) :?>
                 <div>
-                Documented (Requires proof of completion)
+                Documented 
 				
 				<?php if ($achievement->authorizing==0): ?>
 					<span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
@@ -143,7 +143,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 
                 </div>
             <?php elseif (!$achievement->documented) : ?>
-                Undocumented (No proof of completion required)
+                Undocumented 
                 <span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
             <?php endif; ?>
     </div>
@@ -153,15 +153,15 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 
 <div style='clear:both;margin-top:4px;'>
     <span id='achievement_active<?php echo $achievement->id; ?>' 
-	<?php if ($achievement->authorizing==0): ?>
+	<?php if ($achievement->completed=0 && $achievement->authorizing==0): ?>
 		class='hand toggle_active_status'
 	<?php endif; ?>
     <?php 
-    if (!$achievement->abandoned){
+    if ($achievement->completed=0 && !$achievement->abandoned){
         echo  $achievement->active ? "style='color:green;'>Active" : "style='color:darkred;'>Inactive";
     }
     ?>
-    <?php if ($achievement->abandoned):?>
+    <?php if ($achievement->completed=0 && $achievement->abandoned):?>
         style='font-weight:bold;'>Abandoned <span id='restore<?php echo $achievement->id;?>' class='restore_achievement_button hand text-button'>
                         [ Undo ]
                     </span>

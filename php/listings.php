@@ -130,7 +130,7 @@ function list_completed_achievements() {
         echo "  <div>
                     
                     <span style='font-weight:bold'>
-                        <a href='" . SITE_ROOT . "/?rla=$achievement->id' style='text-decoration:none;'>
+                        <a href='" . SITE_ROOT . "/summary/?id=$achievement->id' style='text-decoration:none;'>
                         $achievement->name                             
                         </a>
                     </span>
