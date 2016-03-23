@@ -48,15 +48,15 @@ function summarize_vote ($achievement_id){
         $status = "against";
         $caption= "Failed";
         $difference=$num_of_nays-$num_of_yays;
-    } else if ($num_of_yays > $num_of_nays){
+    } else if ($num_of_yays > $num_of_nays || ($num_of_yays == $num_of_nays && $num_of_votes==0)){
         $status = "for";
         $caption = "Passed";
         $difference=$num_of_yays-$num_of_nays;
-    } else if ($num_of_yays == $num_of_nays){
+    } else if ($num_of_yays == $num_of_nays && $num_of_votes>0){
         $status = "tie";
         $caption="Stalemate";
         $difference=0;
-    }
+    } 
     return ["id"=>$achievement_id, "status"=>$status, "total"=>$num_of_votes, "nays"=>$num_of_nays, "yays"=>$num_of_yays, "caption"=>$caption, "difference"=>$difference];
 }
 

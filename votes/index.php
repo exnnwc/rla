@@ -4,6 +4,7 @@ require_once("../php/config.php");
 require_once("../php/display.php");
 require_once("../php/user.php");
 require_once("../php/votes.php");
+check_achievement_authorization_status();
 ?>
 <html>
 <head>
@@ -51,6 +52,31 @@ require_once("../php/votes.php");
         </h3>
         <div>
             <?php display_votes(); ?>
+        </div>
+
+    <?php elseif ($id>0): ?>
+        <h2 style='text-align:center;'>
+            <?php 
+                $achievement = fetch_achievement($id);
+                $old_round=1;
+                echo "<a href='".SITE_ROOT."/summary/?id=$achievement->id'>$achievement->name</a>";
+            ?>
+        </h2>
+        <h3 style='text-align:center;'>
+           <?php
+                $summary = summarize_vote($achievement->id);
+                if ($summary["total"]===0 || ($summary["total"]>0 && $summary["status"]=="for") ){
+                    echo "<span style='color:green;'>Approved!</span>";
+                } else if ($summary["total"]>0 && $summary["status"]=="against"){
+                    echo "<span style='color:red;'>Rejected!</span>";
+                } else if ($summary["total"]>0 && $summary["status"]=="tie"){
+                    echo "<span style='color:grey;'>Deadlocked</span>";
+                }
+
+            ?> 
+        </h3>
+        <div>
+            <?php display_vote_summary_for_achievement($achievement->id); ?>
         </div>
     <?php endif; ?>
 </body>
@@ -107,7 +133,9 @@ function display_achievements_requiring_vote(){
                         $string = $string . " - " . substr($vote, 3);
                     }
             $string = $string 
-            . "</div><div style='padding-left:16px;padding-top:8px;'>"
+            . "</div>
+                <div style='padding-left:16px;padding-top:8px;'>Round #$achievement->round</div>
+                <div style='padding-left:16px;'>"
             . $achievement->name
                      . " - "
         . fetch_username($achievement->owner);
@@ -118,7 +146,7 @@ function display_achievements_requiring_vote(){
             $string = $string . "<div style='padding-left:16px;'> $achievement->description</div>";
         }
         $string = $string .
-               "<div style='padding-top:4px;padding-left:16px;'>
+               "<div style='padding-left:16px;'>
                         Documentation: <a href='$achievement->documentation'>$achievement->documentation </a>";
         if ($achievement->documentation_explanation){
             $string = $string . " - $achievement->documentation_explanation";
@@ -142,7 +170,7 @@ function display_votes(){
         echo "You must be logged in to view this.";
 		return;
 	} 
-    $statement = $connection->prepare("select * from votes where user_id=?");
+    $statement = $connection->prepare("select * from votes where user_id=? order by created desc");
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     $old_date=0;
@@ -150,31 +178,36 @@ function display_votes(){
     while ($vote=$statement->fetchObject()){
         $vote_set=true;
         $achievement = fetch_achievement($vote->achievement_id);
-        $vote_summary= summarize_vote($achievement->id);
-        var_dump($vote_summary, $vote->achievement_id);
-        $date = date("m/d/y", strtotime($vote->created)); 
-        $time = date("g:iA", strtotime($vote->created));
-        if ($date!=$old_date){
-            echo "<div style='font-weight:bold;text-decoration:underline;text-align:center;margin-top:16px;'>$date</div>";
-            $old_date = $date;
+        if ($achievement->completed!=0 && $achievement->round == $vote->round){
+            $vote_summary= summarize_vote($achievement->id);
+            $date = date("m/d/y", strtotime($vote->created)); 
+            $time = date("g:iA", strtotime($vote->created));
+            if ($date!=$old_date){
+                echo "<div style='font-weight:bold;text-decoration:underline;text-align:center;margin-top:16px;'>$date</div>";
+                $old_date = $date;
+            }
+            echo "<div>";
+            if ($time!=$old_time){
+                echo "<div style='margin-top:16px;margin-bottom:4px;'>$time</div>";
+            }
+            echo $vote->vote
+              ? "<div style='margin-left:8px;color:green;'>Voted For"
+              : "<div style='margin-left:8px;color:red'>Voted Against";
+            if (!empty($vote->explanation)){
+               echo " - $vote->explanation"; 
+            }
+            echo "</div><div style='margin-left:8px'>
+                        Round #$vote->round - \"$achievement->name\" - " . fetch_username($achievement->owner) . " <span style='font-style:italic;'>(<span style='text-decoration:underline;'>";
+            if ($vote_summary["status"]=="for" && $vote_summary["total"]==0){
+                echo "Passed</span> by default.)</span></div>";
+            } else if ($vote_summary["total"]>0){
+                echo $vote_summary["caption"] . "</span> by " . $vote_summary['difference'];
+                echo $vote_summary['difference']>1
+                  ? " votes."
+                  : " vote.";
+                echo ")</span></div>";
+            }
         }
-        echo "<div>";
-        if ($time!=$old_time){
-            echo "<div style='margin-top:16px;margin-bottom:4px;'>$time</div>";
-        }
-        echo $vote->vote
-          ? "<div style='margin-left:8px;color:green;'>Voted For"
-          : "<div style='margin-left:8px;color:red'>Voted Against";
-        if (!empty($vote->explanation)){
-           echo " - $vote->explanation"; 
-        }
-        echo "</div><div style='margin-left:8px'>
-                    Round #$vote->round - \"$achievement->name\" - " . fetch_username($achievement->owner) . " <span style='font-style:italic;'>(<span style='text-decoration:underline;'>" 
-          . $vote_summary["caption"] . "</span> by " . $vote_summary['difference'];
-        echo $vote_summary['difference']>1
-          ? " votes."
-          : " vote.";
-        echo ")</span></div>";
     }
     if (!$vote_set){
         echo "None.";
@@ -198,4 +231,36 @@ function display_vote_summary($achievement){
             }
             $string = $string . "</span>";
     return $string;
+}
+
+function display_vote_summary_for_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $old_round=0;
+    $old_date=0;
+    $statement = $connection->prepare ("select * from votes where active=1 and achievement_id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($vote = $statement->fetchObject()){
+        $date = date("m/d/y", strtotime($vote->created)) ;
+        $time = date("h:i:s A", strtotime($vote->created));
+
+        if($vote->round!=$old_round){
+            echo "<h3>Round #$vote->round</h3>";
+            $old_round = $vote->round;
+        }
+        if ($date != $old_date){
+            echo "<div style='margin-bottom:8px;'>$date</div>"; 
+        }
+        echo "  <div>$time - " . fetch_username($vote->user_id) 
+          . " voted <span style='color:";         
+        echo $vote->vote 
+          ? "green;'>for"
+          : "red;'>against";
+        echo "</span> </div>
+            <div style='padding-left:8px;color:grey;font-style:italic;'>";
+        echo !empty($vote->explanation)
+          ? $vote->explanation
+          : "-No explanation given- ";
+        echo "</div>"; 
+    }
 }

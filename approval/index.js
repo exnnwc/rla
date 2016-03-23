@@ -24,7 +24,6 @@ $(document.body).ready(function () {
         if (explanation.trim() === "Please explain why if nay." || explanation.trim()==""){
             explanation="";
         }
-        console.log(explanation);
         createVote(achievement_id, vote);
     
         window.reload();

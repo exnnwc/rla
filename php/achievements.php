@@ -218,11 +218,13 @@ function check_achievement_authorization_status(){
         $vote_summary=summarize_vote($achievement->id);
         if ($num_of_seconds<=0){
             if ($vote_summary["total"]==0 || ($vote_summary["total"]>0 &&  $vote_summary["status"]=="for")){
-                $connection->exec("update achievements set completed=now() where id=$achievement->id");
+                $connection->exec("update achievements set authorized=now, completed=now() where id=$achievement->id");
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="tie"){
                 extend_vote($achievement->id, 24); 
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="against"){
-                $connection->exec("update achievements set authorizing=0, hours_added=0, documentation='', documentation_explanation='' where id=$achievement->id");   
+                $connection->exec("update achievements 
+                  set rejected=now(), authorizing=0, hours_added=0, documentation='', documentation_explanation='' 
+                  where id=$achievement->id");   
                 create_history($achievement->id, "Achievement failed authorization.");
             }
         } 
@@ -480,7 +482,8 @@ function get_num_of_seconds_until_authorized($id){
     $statement->execute();
     $num_of_seconds=$statement->fetchColumn();
     $num_of_seconds=86400-$num_of_seconds;
-    return $num_of_seconds;
+    //return $num_of_seconds;
+    return 0;
 }
 
 function has_this_achievement_already_been_published($id){
