@@ -14,6 +14,7 @@ require_once("../php/votes.php");
         <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/display.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/global.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/votes/index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/votes.js"></script>
 </head>
@@ -132,45 +133,7 @@ function display_achievements_requiring_vote(){
     }
     echo $string;
 }
-function display_submitted_achievements(){
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $achievement_set = false;
-   	$user_id = fetch_current_user_id();
-	if ($user_id==false){
-        echo "You must be logged in to view this.";
-		return;
-	} 
-    $statement = $connection->prepare("select * from achievements where owner=? and id in (select achievement_id from votes) order by authorizing desc");
-    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
-    $statement->execute();
-    while ($achievement = $statement->fetchObject()){
-        $achievement_set = true;
-        $vote_summary = summarize_vote($achievement->id);
-        echo "  <div>
-                    <a href='".SITE_ROOT."/summary/?id=$achievement->id'>$achievement->name</a> - 
-                    <a href='".SITE_ROOT."/votes/?id=$achievement->id' style='text-decoration:none;'>";
-        if ($vote_summary['total']==0){
-            echo "<span style='color:green;' class='underline-hover'>Passed due to no conflict.</span>";
-        } else if ($vote_summary['total']>0 && $vote_summary["status"]=="for"){
-            echo "<span style='color:green;' class='underline-hover'> Passed by " . ($vote_summary['yays'] - $vote_summary['nays']. "</span>");
-        } else if ($vote_summary["status"]=="against"){
-            echo "<span style='color:red;' class='underline-hover'>Failed to pass by " . ($vote_summary['nays'] - $vote_summary['yays'] . "</span>");
-        } else if ($vote_summary["status"]=="tie"){
-            echo "<span style='color:grey;' class='underline-hover'>Stalemate</span>";
-        }
-        echo "</a> ";
-        if ($achievement->completed==0){
-            echo " <a href='".SITE_ROOT. "/publish/' style='' class='text-button'>[ Voting Ends" 
-              . display_vote_timer($achievement->id)."]</a>";
-;
-        }
-        echo "</div>";
-         
-    }
-    if (!$achievement_set){
-        echo "None.";
-    }
-}
+
 function display_votes(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $vote_set=false;
@@ -188,6 +151,7 @@ function display_votes(){
         $vote_set=true;
         $achievement = fetch_achievement($vote->achievement_id);
         $vote_summary= summarize_vote($achievement->id);
+        var_dump($vote_summary, $vote->achievement_id);
         $date = date("m/d/y", strtotime($vote->created)); 
         $time = date("g:iA", strtotime($vote->created));
         if ($date!=$old_date){
@@ -196,15 +160,16 @@ function display_votes(){
         }
         echo "<div>";
         if ($time!=$old_time){
-            echo "<div style=''>$time</div>";
+            echo "<div style='margin-top:16px;margin-bottom:4px;'>$time</div>";
         }
         echo $vote->vote
-          ? "<div style='color:green;'>Voted For"
-          : "<div style='color:red'>Voted Against";
+          ? "<div style='margin-left:8px;color:green;'>Voted For"
+          : "<div style='margin-left:8px;color:red'>Voted Against";
         if (!empty($vote->explanation)){
            echo " - $vote->explanation"; 
         }
-        echo "</div> \"$achievement->name\" - " . fetch_username($achievement->owner) . " <span style='font-style:italic;'>(<span style='text-decoration:underline;'>" 
+        echo "</div><div style='margin-left:8px'>
+                    Round #$vote->round - \"$achievement->name\" - " . fetch_username($achievement->owner) . " <span style='font-style:italic;'>(<span style='text-decoration:underline;'>" 
           . $vote_summary["caption"] . "</span> by " . $vote_summary['difference'];
         echo $vote_summary['difference']>1
           ? " votes."

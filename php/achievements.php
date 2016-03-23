@@ -70,7 +70,7 @@ function change_authorizing_status($id, $status){
     $authorizing = $status
         ? "now()"
         : "0";
-	$statement = $connection -> prepare ("update achievements set authorizing=$authorizing where id=?");
+	$statement = $connection -> prepare ("update achievements set round=round+1, authorizing=$authorizing where id=?");
 	$statement->bindValue(1, $id, PDO::PARAM_INT);
 	$statement->execute();
 	
@@ -228,6 +228,7 @@ function check_achievement_authorization_status(){
         } 
     }
 }
+
 function clear_due_date($id) {
     if (!user_owns_achievement($id)) {
         //BAD

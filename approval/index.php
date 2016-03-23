@@ -41,7 +41,7 @@
 	</div>
 
     <h3> 
-       Publishing Approval Process
+       Approval Process
     </h3>
     <div style='margin-left:16px;font-size:12px;'>
         <div>
@@ -56,9 +56,12 @@
         <div>
             Once all eligible voters have voted, the vote ends.
         </div>
+        <!--
+        PENDING 
         <div>
             Each swing vote extends the vote until the next day if there are voters remaining. 
         </div>
+        -->
         <div>
             If no one votes and time runs out, it succeeds. 
         </div>
@@ -78,23 +81,17 @@
         <?php list_all_achievements_pending_authorization(); ?>
     </div>
     <h3>
-        Owned Achievements
-    </h3>
-	<div id="owned_achievements_requiring_authorization">
-        None.
-	</div>
-    <h3>
-        Public Achievements
-    </h3>
-    <div id='public_achievements_requiring_authorization'>
-		<?php display_achievements_requiring_authorization(0); ?>
-    </div>
-    <h3>
-        Completed Achievements
+        Accepted Achievements
     </h3>
     <div id='completed_achievements_requiring_athuroziation'>
         <?php list_all_completed_authorized_achievements(); ?>
     </div>
+    <h3>
+        Rejected Achievements
+    </h3>
+	<div id="owned_achievements_requiring_authorization">
+        None.
+	</div>
 </body>
 </html>
 <?php
@@ -233,7 +230,7 @@ function list_all_achievements_pending_authorization(){
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
         $achievements_set=true;
-        echo "<div><a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> - "
+        echo "<div>Round #$achievement->round - <a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> - "
           . display_vote_summary($achievement) 
           . "</div>";
     }
