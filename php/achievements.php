@@ -218,7 +218,7 @@ function check_achievement_authorization_status(){
         $vote_summary=summarize_vote($achievement->id);
         if ($num_of_seconds<=0){
             if ($vote_summary["total"]==0 || ($vote_summary["total"]>0 &&  $vote_summary["status"]=="for")){
-                $connection->exec("update achievements set authorized=now, completed=now() where id=$achievement->id");
+                $connection->exec("update achievements set authorized=now(), completed=now() where id=$achievement->id");
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="tie"){
                 extend_vote($achievement->id, 24); 
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="against"){

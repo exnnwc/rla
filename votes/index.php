@@ -65,14 +65,17 @@ check_achievement_authorization_status();
         <h3 style='text-align:center;'>
            <?php
                 $summary = summarize_vote($achievement->id);
-                if ($summary["total"]===0 || ($summary["total"]>0 && $summary["status"]=="for") ){
-                    echo "<span style='color:green;'>Approved!</span>";
-                } else if ($summary["total"]>0 && $summary["status"]=="against"){
-                    echo "<span style='color:red;'>Rejected!</span>";
-                } else if ($summary["total"]>0 && $summary["status"]=="tie"){
-                    echo "<span style='color:grey;'>Deadlocked</span>";
+                if (($achievement->rejected!=0 || $achievement->authorized!=0)){
+                    if ($summary["total"]===0 || ($summary["total"]>0 && $summary["status"]=="for") ){
+                        echo "<span style='color:green;'>Approved!</span>";
+                    } else if ($summary["total"]>0 && $summary["status"]=="against"){
+                        echo "<span style='color:red;'>Rejected!</span>";
+                    } else if ($summary["total"]>0 && $summary["status"]=="tie"){
+                        echo "<span style='color:grey;'>Deadlocked</span>";
+                    }   
+                } else if ($achievement->authorizing!=0 && $achievement->rejected==0 && $achievement->authorized==0){
+                    echo "<span style='color:grey;'>Voting still active</span>";
                 }
-
             ?> 
         </h3>
         <div>

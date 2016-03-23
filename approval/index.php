@@ -3,6 +3,7 @@
 	require_once("../php/display.php");
 	require_once("../php/user.php");
     require_once("../php/votes.php");
+    check_achievement_authorization_status();
 ?>
 
 <html>
@@ -123,17 +124,12 @@ function list_all_completed_authorized_achievements(){
 	if ($user_id==false){
 		return;
 	} 
-    $statement = $connection->prepare("select * from achievements where completed!=0 and authorizing!=0 and owner=?");
+    $statement = $connection->prepare("select * from achievements where completed!=0 and authorized!=0 and owner=?");
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
         $achievements_set=true;
         echo "<div><a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> 
-                    <div style='padding-left:20px;'>
-                        Completed: 
-                        <span style='font-style:italic;'>"  
-                    . date("m/d/y", strtotime($achievement->completed)) 
-                    . " </span>
                     </div>
                 </div>";
     }
@@ -149,7 +145,7 @@ function list_all_achievements_pending_authorization(){
 	if ($user_id==false){
 		return;
 	} 
-    $statement = $connection->prepare("select * from achievements where completed=0 and authorizing!=0 and owner=?");
+    $statement = $connection->prepare("select * from achievements where completed=0 and authorized=0 and authorizing!=0 and owner=?");
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
@@ -177,10 +173,6 @@ function list_all_rejected_achievements(){
         $achievements_set=true;
         echo "  <div>
                     <a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> 
-                    - 
-                    <a href='". SITE_ROOT ."/votes/?id=$achievement->id'>
-                        Rejected " . date ("m/d/y", strtotime($achievement->rejected)) . " Round #$achievement->round
-                    </a>
                 </div>";
     }
     if (!$achievements_set){
