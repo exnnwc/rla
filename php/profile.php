@@ -13,7 +13,14 @@ $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, D
 $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
 $everything_else_is_complete = is_everything_else_completed($achievement->id);
 $all_requirements_documented = are_all_requirements_documented($achievement->id);
-?>
+
+$user_id = fetch_current_user_id();
+if (($user_id===false || $user_id!=$achievement->owner) && $achievement->published==0){
+    echo "<div style='clear:both;'>You are not authorized to view this achievement.</div>";
+    return;
+}
+
+if ($achievement->published==0):?>
 
 <div id="navbar" style='text-align:center;clear:both;'>
     <div style="margin-bottom:10px;">
@@ -80,9 +87,9 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
     </div>
 
 </div>
+<?php endif; ?>
 
-
-<h1 id="achievement_name" style='text-align:center;'> 
+<h1 id="achievement_name" style='text-align:center;clear:both;'> 
     <div 
     <?php if ($achievement->locked==0 && $achievement->authorizing==0):?>
         id="show_new_achievement_name" class="hand"
@@ -110,29 +117,43 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
         }
     ?>
 </div>
+<?php if ($achievement->published!=0): ?>
+<div style='clear:both;'>
+    <span style='font-weight:bold;'>Published</span> (Original) By <?php echo fetch_username($achievement->owner); ?>
+</div>
+<?php endif; ?>
 <div style='clear:both;'>
     <div>
             <?php if ($achievement->documented) :?>
                 <div>
-                Documented 
-				
-				<?php if ($achievement->authorizing==0): ?>
-					<span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
-				<?php endif; ?>
-				<div style='margin-left:24px;margin-top:4px;'>
-					
-					<?php if ($achievement->authorizing==0): ?>
-					<span id='show_new_documentation' class='hand text-button'> [ + ] </span>
-					<?php endif; ?>
-					<?php
-						echo $achievement->documentation==NULL
-								? "None."
-								: "<a href='$achievement->documentation'>$achievement->documentation</a>";                        
-                        echo empty($achievement->documentation_explanation)
-                          ? ""
-                          : " - $achievement->documentation_explanation";
-
-					?>
+                Documented: 
+			    <?php if ($achievement->published!=0):?>   
+                    <a href='<?php echo $achievement->documentation; ?>' class='text-button hand'>[ Original Documentation ]</a>
+                        <?php if(!empty($achievement->documentation_explanation)):?>
+                         -
+                        <span style='font-style:italic;'>
+                            <?php echo $achievement->documentation_explanation; ?>
+                        </span>
+                    <?php endif; ?>
+			    <?php elseif ($achievement->published==0): ?>	
+    				<?php if ($achievement->authorizing==0 ): ?>
+    					<span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
+    				<?php endif; ?>
+    				<div style='margin-left:24px;margin-top:4px;'>
+    					
+    					<?php if ($achievement->authorizing==0): ?>
+    					<span id='show_new_documentation' class='hand text-button'> [ + ] </span>
+    					<?php endif; ?>
+    					<?php
+    						echo $achievement->documentation==NULL
+    								? "None."
+    								: "<a href='$achievement->documentation'>$achievement->documentation</a>";                        
+                            echo empty($achievement->documentation_explanation)
+                              ? ""
+                              : " - $achievement->documentation_explanation";
+    
+    					?>
+                    <?php endif; ?>
 				</div>
                 
                 
@@ -178,13 +199,16 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 
 </div>
 <div>
-    <?php
-    if ($achievement->locked != 0) {
-    echo "<span style='font-weight:bold;' title='Achievement's information cannot be changed.'>Locked </span>("
-    . date("m/d/y", strtotime($achievement->locked))
-        .") <span class='toggle_locked_status hand text-button'>[ Unlock ] </span>";
-    }
-    ?>
+    <?php if ($achievement->locked != 0): ?> 
+     <span style="font-weight:bold;" title="Achievement's information cannot be changed.">Locked </span>        
+        <?php if ($achievement->published==0): ?>
+            (<?php echo date("m/d/y", strtotime($achievement->locked)) ?>)
+            <span class='toggle_locked_status hand text-button'>[ Unlock ] </span>
+        <?php elseif ($achievement->published!=0): ?>
+            
+
+        <?php endif; ?>
+   <?php endif; ?>
 
 </div>
 <div>
@@ -195,57 +219,60 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
     : "<a href='" . SITE_ROOT . "/summary/?id=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
     ?>
 </div>
-<div>
-    Created: <?php echo date($pref_date_format, strtotime($achievement->created)); ?>
-</div>
-<div>
-    Due:    <?php if ($achievement->due==0):?>
-                No due date set. 
-            <?php elseif ($achievement->due!=0):?>
-                <?php 
-                    echo date("m/d/y", strtotime($achievement->due)) . " "; 
-                    if(date("G", strtotime($achievement->due))!="0"){
-                        echo date("gA", strtotime($achievement->due)) . " " ;
-                    }
-                    $num_of_days_til_due=how_many_days_until_due($achievement->id);
-                    echo "<span style='color:red;";
-                    if ($num_of_days_til_due<0){
-                        echo "font-weight:bold;";
-                    }
-                    echo "' >".fetch_due_message($num_of_days_til_due) . "</span>";
-                ?>
-            <?php endif; ?>
-				<?php if ($achievement->authorizing==0): ?>
-					<span id='show_new_due_date' class='hand text-button'>[ + ] </span>
-				<?php endif; ?>
-                <span id='hide_new_due_date' class='hand text-button' style='display:none;'>[ - ] </span>
-                <div id='new_due_date' style='display:none;'>
-                    <div>
-                        <?php display_due_date(); ?>
-                    </div>
-                    <input id='create_new_due_date' type='button' value='Set Due Date' />
-                    <input id='clear_due_date' type='button' value='Clear Due Date' />
-                </div>
 
-</div>
-<div>
-    <?php
-    if ($achievement->completed != 0){
-        echo ("Completed:<span style=''>"
-          . date($pref_date_format, strtotime($achievement->completed))
-          . " </span>
-                        <span id='cancel$achievement->id' class='text-button hand cancel_completion_button'>
-                            [ Undo ]
-                        </span>");
-    }
-    ?>
-</div>
-<div> 
-    Rank: <?php echo $achievement->rank; ?>
-</div>
-<div>
-    Power: <?php echo $achievement->power_adj; ?>
-</div>
+<?php if($achievement->published==0): ?>
+    <div>
+        Created: <?php echo date($pref_date_format, strtotime($achievement->created)); ?>
+    </div>
+    <div>
+        Due:    <?php if ($achievement->due==0):?>
+                    No due date set. 
+                <?php elseif ($achievement->due!=0):?>
+                    <?php 
+                        echo date("m/d/y", strtotime($achievement->due)) . " "; 
+                        if(date("G", strtotime($achievement->due))!="0"){
+                            echo date("gA", strtotime($achievement->due)) . " " ;
+                        }
+                        $num_of_days_til_due=how_many_days_until_due($achievement->id);
+                        echo "<span style='color:red;";
+                        if ($num_of_days_til_due<0){
+                            echo "font-weight:bold;";
+                        }
+                        echo "' >".fetch_due_message($num_of_days_til_due) . "</span>";
+                    ?>
+                <?php endif; ?>
+    				<?php if ($achievement->authorizing==0): ?>
+    					<span id='show_new_due_date' class='hand text-button'>[ + ] </span>
+    				<?php endif; ?>
+                    <span id='hide_new_due_date' class='hand text-button' style='display:none;'>[ - ] </span>
+                    <div id='new_due_date' style='display:none;'>
+                        <div>
+                            <?php display_due_date(); ?>
+                        </div>
+                        <input id='create_new_due_date' type='button' value='Set Due Date' />
+                        <input id='clear_due_date' type='button' value='Clear Due Date' />
+                    </div>
+    
+    </div>
+    <div>
+        <?php
+        if ($achievement->completed != 0 ){
+            echo ("Completed:<span style=''>"
+              . date($pref_date_format, strtotime($achievement->completed))
+              . " </span>
+                            <span id='cancel$achievement->id' class='text-button hand cancel_completion_button'>
+                                [ Undo ]
+                            </span>");
+        }
+        ?>
+    </div>
+    <div> 
+        Rank: <?php echo $achievement->rank; ?>
+    </div>
+    <div>
+        Power: <?php echo $achievement->power_adj; ?>
+    </div>
+<?php endif; ?>
 <div >
     Tags: <span id='list_of_tags<?php echo $achievement->id; ?>' style='margin-right:8px;'></span>
 	<?php if ($achievement->authorizing==0): ?>
@@ -299,6 +326,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 </div>
 
 
+<?php if ($achievement->published==0):?>
 <h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
 
     Other Achievements
@@ -352,7 +380,6 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 
     </div>
 </div>
-
 <div>
     <h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
         Notes
@@ -382,7 +409,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
     </div>
 </div>
 <div style='padding:20px;'>&nbsp;</div>
-
+<?php endif; ?>
 <?php
 function display_documentation_menu($status) {
 
@@ -420,4 +447,3 @@ function generate_select_achievement_menu($parent, $id) {
     $string = $string . "  </select>";
     return $string;
 }
-

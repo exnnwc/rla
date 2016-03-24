@@ -1,3 +1,7 @@
+<?php 
+    require_once("../php/config.php");
+    require_once("../php/user.php");
+?>
 			<div style='float:right;font-size:12px;text-align:right;'>
 				<?php if (!isset($_SESSION['user'])): ?>
 				Not logged in.

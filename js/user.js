@@ -31,7 +31,6 @@ function login(login, password){
 
 }
 function logOut(){
-	console.log("slas");
     $.ajax({
         method:"POST",
         url:"/rla/php/logout.php"

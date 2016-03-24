@@ -493,10 +493,12 @@ function has_this_achievement_already_been_published($id){
 }
 
 function how_many_days_until_due($id) {
+/*
     if (!user_owns_achievement($id)) {
         //BAD
         return;
     }
+*/
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select datediff(due, curdate()) from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -528,10 +530,6 @@ function is_everything_else_completed($id){
 
 function is_it_active($id) {
     //This should be is is_it_deleted
-    if (!user_owns_achievement($id)) {
-        //BAD
-        return;
-    }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select deleted from achievements where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
@@ -540,6 +538,10 @@ function is_it_active($id) {
 }
 
 function publish_achievement($id){
+    $user_id=fetch_current_user_id();
+    if ($user_id===false){
+        return "You must be logged in to do this.";
+    }
     if (!user_owns_achievement($id)) {
         //BAD
         return "User does not own this achievement.";
@@ -551,12 +553,13 @@ function publish_achievement($id){
         return "Achievement has parent.";
     } else if (has_this_achievement_already_been_published($id)){
         return "Achievement already pbulished.";
-    } 
-    
+    }  else if (fetch_user_points($user_id)<1){
+        return "You do not have enough points to do this."; 
+    }
+    $statement = $connection->exec("update users set points=points-1 where id=$user_id");
     $statement = $connection->exec("insert into achievements
-      (completed, owner, parent, name, description, locked, documented, published, original) 
-      values ('$achievement->completed', $achievement->owner, $achievement->parent, 
-      '$achievement->name', '$achievement->description', 1, 1, $achievement->id, 0)");
+      (locked, points, documentation, documentation_explanation, completed, owner, parent, name, description, locked, documented, published, original) 
+      values (now(), 1, '$achievement->documentation', '$achievement->documentation_explanation', '$achievement->completed', $achievement->owner, $achievement->parent, '$achievement->name', '$achievement->description', 1, 1, $achievement->id, 0)");
 }
 
 function rank_achievements($achievement, $new_rank) {
