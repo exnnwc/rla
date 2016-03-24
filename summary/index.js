@@ -16,11 +16,10 @@ $(document.body).ready(function () {
         var achievement_id = Number($(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19));
         document.title = SITE_NAME + " - #" + achievement_id;
         displayProfile(Number(achievement_id));
-/*        add_handlers_to_index(0, true);
+        add_handlers_to_index(0, true);
         add_behavior_handlers_to_profile(achievement_id);
         add_keypress_handlers_to_profile(achievement_id);
-
-        add_button_handlers_to_profile(achievement_id);*/
+        add_button_handlers_to_profile(achievement_id);
     }
 });
 
@@ -523,8 +522,8 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click", "#publish_achievement", function (event) {
         publishAchievement(id);
     });	
-    $(document).on("click", "", function (event) {
-
+    $(document).on("click", "#own_published", function (event) {
+        ownPublished(id);
     });	
     $(document).on("click", "", function (event) {
 

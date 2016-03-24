@@ -194,6 +194,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         echo json_encode(login(filter_input(INPUT_POST, 'login', FILTER_SANITIZE_STRING), 
           filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING)));
         break;
+    case "own_published":
+        echo json_encode(own_published(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT)));
+        break;
     case "publish_achievement":
         echo json_encode(publish_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT)));
         break;

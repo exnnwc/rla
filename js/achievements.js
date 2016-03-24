@@ -273,7 +273,12 @@ function getNumOfSecondsUntilAuthorize(id,callback){
         callback(JSON.parse(result));
     });
 }
-
+function ownPublished(id){
+    data={function_to_be_called:"own_published", id:id};
+    AJAXOnly(data, function(result){
+        console.log(result);
+    });
+}
 function publishAchievement(id){
     data = {function_to_be_called:"publish_achievement", id:id}; 
     AJAXOnly(data, function(result){

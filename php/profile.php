@@ -32,6 +32,7 @@ if ($achievement->published==0):?>
     </div>    
 </div>
 <div style='margin-bottom:8px;'>
+    <div style='clear:both; float:left;'>
     <?php if (!$achievement->deleted && $achievement->authorizing==0): ?>
     <input id='delete<?php echo $achievement->id; ?>' 
            class='remove_achievement_button' type='button' value='X' 
@@ -44,7 +45,9 @@ if ($achievement->published==0):?>
            <?php if ($achievement->abandoned){
                echo "color:red;font-weight:bold;";
            }?>"/>
+
     <?php endif; ?>
+    </div>
     <?php if (!$everything_else_is_complete): ?>
         <div style='font-weight:bold;'>
             All child and required achievements of this achievement must be completed before this can be completed.
@@ -106,6 +109,15 @@ if ($achievement->published==0):?>
         </div>
     </div>
 </h1>
+<?php if ($achievement->published!=0): ?>
+<div style='margin-bottom:8px;'>
+    <?php if ($user_id===$achievement->owner): ?>
+    <span id="abandon_published" class='hand text-button'>[ Abandon ]</span>
+    <?php elseif ($user_id!=$achievement->owner): ?>
+    <span id="own_published" class='hand text-button'>[ Own ]</span>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
 <div>
     <?php 
         if (has_this_achievement_already_been_published($achievement->id)){

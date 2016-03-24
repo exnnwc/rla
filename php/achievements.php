@@ -296,6 +296,14 @@ function count_achievements() {
     }
     return $data;
 }
+function copy_achievement($id, $owner){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    $query="insert into achievements (locked, points, documentation, documentation_explanation, completed, owner, parent, name, description, documented, published, original) values (now(), 1, '$achievement->documentation', '$achievement->documentation_explanation', '$achievement->completed', $owner, $achievement->parent, '$achievement->name', '$achievement->description', 1, $achievement->id, 0)";
+    echo $query;
+    //$statement = $connection->exec();
+}
+
 
 function create_achievement($name, $parent) {
     $user_id = fetch_current_user_id();
@@ -537,6 +545,24 @@ function is_it_active($id) {
     echo json_encode(!(boolean) $statement->fetchColumn());
 }
 
+function own_published($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $user_id = fetch_current_user_id();
+    if ($user_id===false){
+        error_log (__FILE__ . " #" . __LINE__ . " " . __FUNCTION__ . "($id) tried to create a published achievement without being logged in.");
+        return "You need to be logged in to do this.";
+    }
+    copy_achievement($id, $user_id);
+    $statement = $connection->query("select id from achievements where original=$id and owner=$user_id and parent=0");
+    $new_achievement=$statement->fetchColumn();
+    if ($new_achievement===false){
+        error_log(__FILE__ . " #" . __LINE__ . " " . __FUNCTION__ . "($id) did not successfully create a new achievement.");
+        return;
+    } else if ($new_achievement!=false){
+        return (int)$new_achievement;
+    }
+}
+
 function publish_achievement($id){
     $user_id=fetch_current_user_id();
     if ($user_id===false){
@@ -557,9 +583,8 @@ function publish_achievement($id){
         return "You do not have enough points to do this."; 
     }
     $statement = $connection->exec("update users set points=points-1 where id=$user_id");
-    $statement = $connection->exec("insert into achievements
-      (locked, points, documentation, documentation_explanation, completed, owner, parent, name, description, locked, documented, published, original) 
-      values (now(), 1, '$achievement->documentation', '$achievement->documentation_explanation', '$achievement->completed', $achievement->owner, $achievement->parent, '$achievement->name', '$achievement->description', 1, 1, $achievement->id, 0)");
+    copy_achievement($id, $user_id);
+    //Still need to go thorugh child achievements and copy an achievement.
 }
 
 function rank_achievements($achievement, $new_rank) {
