@@ -1,3 +1,8 @@
+03/24/16
+In the approval process for documented achievements, the original design was that users -need- to explain when they voted against an achievement. The idea was that this would prevent trolls from disrupting the system. It's certainly possible to implement this, but now I'm reconsidering it. At the core of the idea is that I can't trust "the community" to not engage in trolling, but I think that if there are so many trolls that submissions are constantly getting rejected, that's another problem entirely.
+
+Also, for now, I'm not going to extend the approval vote with every swing vote just to see if it's really necessary to implement.
+
 03/21/16
 I'm having an issue now about how to pursue publishing achievements. Should it be an entirely new achievement or should I merely update the achievement?
 

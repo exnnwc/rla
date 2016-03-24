@@ -4,7 +4,7 @@ require_once("../php/config.php");
 require_once("../php/display.php");
 require_once("../php/user.php");
 require_once("../php/votes.php");
-check_achievement_authorization_status();
+//check_achievement_authorization_status();
 ?>
 <html>
 <head>
@@ -93,6 +93,7 @@ function display_achievements_requiring_vote(){
     $achievements_set=false;
 	$user_id = fetch_current_user_id();
 	if ($user_id==false){
+        echo "You must be logged in to view this.";
 		return;
 	} 
     $query="select * from achievements where completed=0 and authorizing!=0 and owner!=?";
@@ -238,12 +239,15 @@ function display_vote_summary($achievement){
 
 function display_vote_summary_for_achievement($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
     $old_round=0;
     $old_date=0;
+    $vote_set=false;
     $statement = $connection->prepare ("select * from votes where active=1 and achievement_id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     while ($vote = $statement->fetchObject()){
+        $vote_set=true;
         $date = date("m/d/y", strtotime($vote->created)) ;
         $time = date("h:i:s A", strtotime($vote->created));
 
@@ -265,5 +269,13 @@ function display_vote_summary_for_achievement($id){
           ? $vote->explanation
           : "-No explanation given- ";
         echo "</div>"; 
+        $last_round=$vote->round;
+    }
+    if($last_round!= $achievement->round){
+        echo "<h3>Round #$achievement->round</h3>
+        <div>No votes during this round. Passed by default.</div>";
+    }
+    if (!$vote_set){
+        echo "No one has voted yet.";
     }
 }

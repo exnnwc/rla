@@ -9,6 +9,7 @@ $pref_date_format = "F j, Y g:i:s";
 //Be sure to check user's session data and page reference before commencing.
 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+var_dump(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
 
 $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
 $everything_else_is_complete = is_everything_else_completed($achievement->id);
@@ -61,7 +62,7 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 	<?php elseif ($achievement->completed == 0 && $achievement->authorizing!=0): ?>    
 		<span id="cancel_authorization" class="hand text-button">[ Cancel Authorization ]</span>
         <?php echo display_vote_timer($achievement->id); ?>
-    <?php elseif ($achievement->completed!=0 && $achievement->authorizing!=0): ?>
+    <?php elseif ($achievement->completed!=0 && $achievement->authorizing!=0 && !has_this_achievement_already_been_published($achievement->id)): ?>
         <span id="publish_achievement" class="hand text-button">[ Publish ]</span>    
     <?php endif; ?>
     <?php if ($achievement->locked==0  && $achievement->authorizing==0):?>
@@ -101,7 +102,17 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
         </div>
     </div>
 </h1>
-
+<div>
+    <?php 
+        if (has_this_achievement_already_been_published($achievement->id)){
+            $statement = $connection->query("select * from achievements 
+              where deleted=0 and abandoned=0 and published=".$achievement->id);
+            while ($published = $statement->fetchObject()){
+               echo "Published @ <a href='".SITE_ROOT."/summary/?id=$published->id'>$published->name</a>"; 
+            }
+        }
+    ?>
+</div>
 <div style='clear:both;'>
     <div>
             <?php if ($achievement->documented) :?>
@@ -153,15 +164,15 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 
 <div style='clear:both;margin-top:4px;'>
     <span id='achievement_active<?php echo $achievement->id; ?>' 
-	<?php if ($achievement->completed=0 && $achievement->authorizing==0): ?>
+	<?php if ($achievement->completed==0 && $achievement->authorizing==0): ?>
 		class='hand toggle_active_status'
 	<?php endif; ?>
     <?php 
-    if ($achievement->completed=0 && !$achievement->abandoned){
+    if ($achievement->completed==0 && !$achievement->abandoned){
         echo  $achievement->active ? "style='color:green;'>Active" : "style='color:darkred;'>Inactive";
     }
     ?>
-    <?php if ($achievement->completed=0 && $achievement->abandoned):?>
+    <?php if ($achievement->completed==0 && $achievement->abandoned):?>
         style='font-weight:bold;'>Abandoned <span id='restore<?php echo $achievement->id;?>' class='restore_achievement_button hand text-button'>
                         [ Undo ]
                     </span>
@@ -222,14 +233,14 @@ $all_requirements_documented = are_all_requirements_documented($achievement->id)
 </div>
 <div>
     <?php
-    ($achievement->completed != 0)
-    and print ("Completed:
-                        <span style='margin-left:8px;'>"
-    . date($pref_date_format, strtotime($achievement->completed))
-    . " </span>
+    if ($achievement->completed != 0){
+        echo ("Completed:<span style=''>"
+          . date($pref_date_format, strtotime($achievement->completed))
+          . " </span>
                         <span id='cancel$achievement->id' class='text-button hand cancel_completion_button'>
                             [ Undo ]
                         </span>");
+    }
     ?>
 </div>
 <div> 

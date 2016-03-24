@@ -222,10 +222,8 @@ function check_achievement_authorization_status(){
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="tie"){
                 extend_vote($achievement->id, 24); 
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="against"){
-                $connection->exec("update achievements 
-                  set rejected=now(), authorizing=0, hours_added=0, documentation='', documentation_explanation='' 
-                  where id=$achievement->id");   
-                create_history($achievement->id, "Achievement failed authorization.");
+               reject_achievement($id); 
+                
             }
         } 
     }
@@ -544,7 +542,7 @@ function is_it_active($id) {
 function publish_achievement($id){
     if (!user_owns_achievement($id)) {
         //BAD
-        return;
+        return "User does not own this achievement.";
     }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
@@ -600,6 +598,11 @@ function remove_achievement($id) {
     $connection->exec("update tags set active=0 where achievement_id=$id");
 }
 
+function reject_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $connection->exec("update achievements set rejected=now(), authorizing=0, hours_added=0, documentation='', documentation_explanation='' where id=$id");   
+    create_history($id, "Achievement rejected in the approval process. <a href='" . SITE_ROOT ."/votes/?id=$id' class='hand text-button'>[ Vote Summary ]</a>");
+}
 function restore_achievement($id) {
     if (!user_owns_achievement($id)) {
         //BAD

@@ -86,7 +86,6 @@ function have_points_already_been_added($id){
     return false;
 }
 function login ($login, $password){
-    check_achievement_authorization_status();
     $is_login_email = preg_match("/.+\@.+/", $login);
     if ($is_login_email==false){
         //BAD preg_match failed.

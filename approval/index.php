@@ -40,7 +40,14 @@
 			<span id='logout' class='hand text-button'> [ Logout ] </span>
 		<?php endif; ?>
 	</div>
-
+    <div>
+    <?php
+    	$user_id = fetch_current_user_id();
+    	if ($user_id==false){
+            echo "You must be logged in to view this page.";
+    	}
+    ?>
+    </div>
     <h3> 
        Approval Process
     </h3>
@@ -66,6 +73,7 @@
         <div>
             If no one votes and time runs out, it succeeds. 
         </div>
+<!--
         <div>
             Voters must anonymously explain why they voted against the achievement so that the user can make a correction. All those who voted against have 24 hours to submit an explanation on why they voted negatively. If no one submits an explanation, the vote succeeds.
         
@@ -74,6 +82,7 @@
             If the user makes the stated correction and voters are  unwilling to change their vote during the next submission, mods will get involved.
         
         </div>
+-->
     </div>
     <h3>
         Pending Approval
@@ -122,6 +131,7 @@ function list_all_completed_authorized_achievements(){
     $achievements_set=false;
 	$user_id = fetch_current_user_id();
 	if ($user_id==false){
+        echo "None.";
 		return;
 	} 
     $statement = $connection->prepare("select * from achievements where completed!=0 and authorized!=0 and owner=?");
@@ -129,8 +139,9 @@ function list_all_completed_authorized_achievements(){
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
         $achievements_set=true;
-        echo "<div><a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> 
-                    </div>
+        echo "  <div>
+                    <a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> 
+                    <a href='" . SITE_ROOT ."/votes/?id=$achievement->id' class='hand text-button'>[ Vote Summary ]</a> 
                 </div>";
     }
     if (!$achievements_set){
@@ -143,6 +154,7 @@ function list_all_achievements_pending_authorization(){
     $achievements_set=false;
 	$user_id = fetch_current_user_id();
 	if ($user_id==false){
+        echo "None.";
 		return;
 	} 
     $statement = $connection->prepare("select * from achievements where completed=0 and authorized=0 and authorizing!=0 and owner=?");
@@ -164,6 +176,7 @@ function list_all_rejected_achievements(){
     $achievements_set=false;
 	$user_id = fetch_current_user_id();
 	if ($user_id==false){
+        echo "None.";
 		return;
 	} 
     $statement = $connection->prepare("select * from achievements where completed=0 and authorizing=0 and owner=?  and id in (select achievement_id from votes where active=1)");
@@ -173,6 +186,7 @@ function list_all_rejected_achievements(){
         $achievements_set=true;
         echo "  <div>
                     <a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> 
+                    <a href='" . SITE_ROOT ."/votes/?id=$achievement->id' class='hand text-button'>[ Vote Summary ]</a> 
                 </div>";
     }
     if (!$achievements_set){
