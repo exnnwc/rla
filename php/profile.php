@@ -9,7 +9,6 @@ $pref_date_format = "F j, Y g:i:s";
 //Be sure to check user's session data and page reference before commencing.
 
 $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-var_dump(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
 
 $achievement = fetch_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
 $everything_else_is_complete = is_everything_else_completed($achievement->id);

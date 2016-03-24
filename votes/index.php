@@ -20,7 +20,7 @@ require_once("../php/votes.php");
         <script src="<?php echo SITE_ROOT; ?>/js/votes.js"></script>
 </head>
 <body>
-
+    <?php include("../templates/navbar.php"); ?>
 	<div style='float:right;font-size:12px;text-align:right;'>
 		<?php if (!isset($_SESSION['user'])): ?>
 		Not logged in.

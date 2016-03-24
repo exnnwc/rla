@@ -35,6 +35,7 @@ require_once("../php/tags.php");
     if ($id == 0):
     ?>
         <body id="AchievementsList">
+            <?php require_once("../templates/navbar.php"); ?>
             <div id="error"></div>
 			<div style='float:right;font-size:12px;text-align:right;'>
 				<?php if (!isset($_SESSION['user'])): ?>
@@ -116,6 +117,7 @@ require_once("../php/tags.php");
             <div id="list_of_achievements"></div>
         <?php elseif ($id > 0): ?>
         <body id="achievement_number_<?php echo $id; ?>" >
+            <?php require_once("../templates/navbar.php"); ?>
             <div id="error"></div>
             <div id="achievement_profile"></div>
         <?php endif; ?>
