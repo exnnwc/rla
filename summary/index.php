@@ -35,24 +35,11 @@ require_once("../php/tags.php");
     if ($id == 0):
     ?>
         <body id="AchievementsList">
-            <?php require_once("../templates/navbar.php"); ?>
-            <div id="error"></div>
-			<div style='float:right;font-size:12px;text-align:right;'>
-				<?php if (!isset($_SESSION['user'])): ?>
-				Not logged in.
-				<a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
-				<span id='show_login' class='hand text-button' 
-					style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</span>
-				<div id="login_form" style='margin-top:16px;display:none;'>
-					<?php require ("../login/login.htm"); ?> 
-				</div>
-				<?php elseif (fetch_current_user_id()!=false): ?>
-					Logged in as <?php echo fetch_username(fetch_current_user_id()) . ". (" . fetch_user_points(fetch_current_user_id()) . ")"; ?> 
-					<span id='logout' class='hand text-button'> [ Logout ] </span>
-				<?php endif; ?>
-			</div>
-            <?php if (isset($_SESSION['user'])):?>
-            <div>
+            <?php 
+            include("../templates/navbar.php"); 
+            include("../templates/login.php"); 
+            if (isset($_SESSION['user'])):?>
+            <div style='clear:both;'>
                 <input id="new_achievement_text_input" type='text' maxlength="255" />          
                 <input id="new_achievement_button" type="button" value="Quick Create" />
             </div>
@@ -117,7 +104,10 @@ require_once("../php/tags.php");
             <div id="list_of_achievements"></div>
         <?php elseif ($id > 0): ?>
         <body id="achievement_number_<?php echo $id; ?>" >
-            <?php require_once("../templates/navbar.php"); ?>
+            <?php 
+            include("../templates/navbar.php");
+            include("../templates/login.php"); 
+ ?>
             <div id="error"></div>
             <div id="achievement_profile"></div>
         <?php endif; ?>

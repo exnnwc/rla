@@ -15,10 +15,8 @@ $everything_else_is_complete = is_everything_else_completed($achievement->id);
 $all_requirements_documented = are_all_requirements_documented($achievement->id);
 ?>
 
-<div id="navbar" style='text-align:center'>
-    <div style="margin:5px;">
-        <a href="<?= SITE_ROOT."/summary/" ?>">Achievements List</a>
-    </div><div style="margin-bottom:10px;">
+<div id="navbar" style='text-align:center;clear:both;'>
+    <div style="margin-bottom:10px;">
 
         <a href="<?= SITE_ROOT ?>/summary/?id=<?php echo fetch_random_achievement_id($achievement->owner) ?>">Random</a>
     </div>

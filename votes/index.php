@@ -20,28 +20,14 @@ require_once("../php/votes.php");
         <script src="<?php echo SITE_ROOT; ?>/js/votes.js"></script>
 </head>
 <body>
-    <?php include("../templates/navbar.php"); ?>
-	<div style='float:right;font-size:12px;text-align:right;'>
-		<?php if (!isset($_SESSION['user'])): ?>
-		Not logged in.
-		<a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
-		<span id='show_login' class='hand text-button' 
-			style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</span>
-		<div id="login_form" style='margin-top:16px;display:none;'>
-			<?php require ("../login/login.htm"); ?> 
-		</div>
-		<?php elseif (fetch_current_user_id()!=false): ?>
-			Logged in as <?php echo fetch_username(fetch_current_user_id()) . ". (" . fetch_user_points(fetch_current_user_id()) . ")"; ?> 
-			<span id='logout' class='hand text-button'> [ Logout ] </span>
-		<?php endif; ?>
-	</div>
-<?php
-
+    <?php 
+    include("../templates/navbar.php");
+    include("../templates/login.php"); 
     $id = isset($_GET['id']) 
         ? filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) 
         : 0;
     if ($id == 0):?>
-        <h3>
+        <h3 style='clear:both;'>
             Active
         </h3>
         <div>
@@ -55,7 +41,7 @@ require_once("../php/votes.php");
         </div>
 
     <?php elseif ($id>0): ?>
-        <h2 style='text-align:center;'>
+        <h2 style='text-align:center;clear:both;'>
             <?php 
                 $achievement = fetch_achievement($id);
                 $old_round=1;
