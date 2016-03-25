@@ -2,7 +2,7 @@ function abandonPublished(id){
     data = {function_to_be_called: "abandon_published", id: id};
     AJAXOnly(data, function (results){
         console.log(results);
-        window.location.href = "http://localhost/rla/published/";
+        //window.location.href = "http://localhost/rla/published/";
     });
 
 }

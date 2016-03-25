@@ -118,7 +118,7 @@ if ($achievement->published==0):?>
     <?php if ($user_id===$achievement->owner): ?>
     <span id="abandon_published" class='hand text-button'>[ Abandon ]</span>
     <?php elseif ($user_id!==false && $user_id!=$achievement->owner && !does_user_already_own_published_achievement($achievement->id)): ?>
-    <span id="own_published" class='hand text-button'>[ Own ]</span>
+    <span id="own_published" class='hand text-button'>[ Start Working On This Achievement ]</span>
     <?php elseif ($user_id!=$achievement->owner && does_user_already_own_published_achievement($achievement->id)): ?>
     <span class='text-button'>You already own this achievement.</span>
     <?php endif; ?>
@@ -135,7 +135,8 @@ if ($achievement->published==0):?>
         }
     ?>
 </div>
-<?php if ($achievement->published!=0): ?>
+<?php if ($achievement->published!=0 && $achievement->owner!=0): ?>
+    
 <div style='clear:both;'>
     <span style='font-weight:bold;'>Published</span> (Original) By <?php echo fetch_username($achievement->owner); ?>
 </div>

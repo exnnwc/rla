@@ -18,8 +18,17 @@ function abandon_achievement($id) {
 }
 
 function abandon_published($id){
-    delete_children($id);
-    delete_achievement($id);
+    if (!user_owns_achievement($id)) {
+        //BAD
+        return;
+    }
+    $num_of_users_working_on_this = how_many_users_are_working_on_this_published($id);
+    if ($num_of_users_working_on_this==0){
+        delete_children($id);
+        delete_achievement($id);
+    } else if ($num_of_users_working_on_this>0){
+        disown_achievement($id);
+    }
 }
 function achievement_name_exists($name, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
@@ -425,6 +434,13 @@ function delete_children($id){
     }
 
 }
+
+function disown_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement=$connection->prepare("update achievements set owner=0 where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
 function extend_vote($id, $hours){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set hours_added=hours_added+? where id=?");
@@ -601,6 +617,13 @@ function how_many_days_until_due($id) {
     return $val == NULL ? false : $val;
 }
 
+function how_many_users_are_working_on_this_published($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare("select count(*) from achievements where deleted=0 and abandoned=0 and original=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    return (int) $statement->fetchColumn();
+}
 function is_everything_else_completed($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare ("select count(*) from achievements where completed=0 and deleted=0 and abandoned=0 and parent=?");
