@@ -269,7 +269,6 @@ function deleteAchievement(id, parent, fromProfile) {
 function getNumOfSecondsUntilAuthorize(id,callback){
     data={function_to_be_called:"get_num_of_seconds_until_authorized", id:id};
     AJAXOnly(data, function (result){
-        console.log(result);
         callback(JSON.parse(result));
     });
 }
@@ -277,6 +276,7 @@ function ownPublished(id){
     data={function_to_be_called:"own_published", id:id};
     AJAXOnly(data, function(result){
         console.log(result);
+        window.location.href = "http://localhost/rla/summary/?id="+JSON.parse(result);
     });
 }
 function publishAchievement(id){

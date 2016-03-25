@@ -296,12 +296,21 @@ function count_achievements() {
     }
     return $data;
 }
-function copy_achievement($id, $owner){
+
+
+function copy_achievement($id, $owner, $parent){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
-    $query="insert into achievements (locked, points, documentation, documentation_explanation, completed, owner, parent, name, description, documented, published, original) values (now(), 1, '$achievement->documentation', '$achievement->documentation_explanation', '$achievement->completed', $owner, $achievement->parent, '$achievement->name', '$achievement->description', 1, $achievement->id, 0)";
-    echo $query;
-    //$statement = $connection->exec();
+    $query="insert into achievements (locked, points, documentation, documentation_explanation, completed, owner, parent, name, description, documented, published, original) values (now(), 1, '$achievement->documentation', '$achievement->documentation_explanation', '$achievement->completed', $owner, $parent, '$achievement->name', '$achievement->description', 1, $achievement->id, 0)";
+    $statement = $connection->exec($query);
+}
+
+
+function user_takes_over_achievement($id, $owner){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    $query="insert into achievements (locked, points,  owner, parent, name, description, documented,  original) values (now(), 1,  $owner, $achievement->parent, '$achievement->name', '$achievement->description', 1, $achievement->id)";
+    $statement = $connection->exec($query);
 }
 
 
@@ -423,6 +432,17 @@ function fetch_achievement_by_rank_and_parent($rank, $parent) {
     return $statement->fetchObject();
 }
 
+function fetch_children($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $child_ids = [];
+    $statement = $connection->prepare("select id from achievements where deleted=0 and abandoned=0 and parent=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    while ($child_id = (int)$statement->fetchColumn()){
+       $child_ids[] = $child_id; 
+    }
+    return $child_ids;
+}
 function fetch_due_message($num_of_days_til_due) {
     if ($num_of_days_til_due == -1) {
         return "(due yesterday)";
@@ -500,6 +520,24 @@ function has_this_achievement_already_been_published($id){
     return ((int)$statement->fetchColumn()>0);        
 }
 
+function does_user_already_own_published_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $user_id = fetch_current_user_id();
+    if ($user_id===false){
+        return;
+    }
+    $statement = $connection->query("select count(*) from achievements where deleted=0 and original=$id and owner=$user_id");
+    $num_of_achievements = (int)$statement->fetchColumn();
+    if ($num_of_achievements==0){
+        return false;
+    } else if ($num_of_achievements>0){
+        if ($num_of_achievements>1){
+            error_log(__FILE__ . " #" . __LINE__ . " " . __FUNCTION__ . "($id) user owns more than one achievement of this type.");
+        }
+        return true;
+    }    
+    
+}
 function how_many_days_until_due($id) {
 /*
     if (!user_owns_achievement($id)) {
@@ -552,8 +590,9 @@ function own_published($id){
         error_log (__FILE__ . " #" . __LINE__ . " " . __FUNCTION__ . "($id) tried to create a published achievement without being logged in.");
         return "You need to be logged in to do this.";
     }
-    copy_achievement($id, $user_id);
-    $statement = $connection->query("select id from achievements where original=$id and owner=$user_id and parent=0");
+    user_takes_over_achievement($id, $user_id);
+    $query = "select id from achievements where deleted=0 and original=$id and owner=$user_id and parent=0";
+    $statement = $connection->query($query);
     $new_achievement=$statement->fetchColumn();
     if ($new_achievement===false){
         error_log(__FILE__ . " #" . __LINE__ . " " . __FUNCTION__ . "($id) did not successfully create a new achievement.");
@@ -578,12 +617,12 @@ function publish_achievement($id){
         //Send a confirmation to user that they will lose the parent achievement in this hierarchy.
         return "Achievement has parent.";
     } else if (has_this_achievement_already_been_published($id)){
-        return "Achievement already pbulished.";
+        return "Achievement already published.";
     }  else if (fetch_user_points($user_id)<1){
         return "You do not have enough points to do this."; 
     }
     $statement = $connection->exec("update users set points=points-1 where id=$user_id");
-    copy_achievement($id, $user_id);
+    $new_id=copy_achievement($id, $user_id, 0);
     //Still need to go thorugh child achievements and copy an achievement.
 }
 

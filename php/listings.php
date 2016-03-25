@@ -29,7 +29,6 @@ if ($filter != "default") {
 }
 echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
 
-
   $statement = $connection->query("select * from achievements " . $query . fetch_order_query($sort_by));
 
   while ($achievement = $statement->fetchObject()) {

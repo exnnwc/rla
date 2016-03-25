@@ -113,8 +113,10 @@ if ($achievement->published==0):?>
 <div style='margin-bottom:8px;'>
     <?php if ($user_id===$achievement->owner): ?>
     <span id="abandon_published" class='hand text-button'>[ Abandon ]</span>
-    <?php elseif ($user_id!=$achievement->owner): ?>
+    <?php elseif ($user_id!=$achievement->owner && !does_user_already_own_published_achievement($achievement->id)): ?>
     <span id="own_published" class='hand text-button'>[ Own ]</span>
+    <?php elseif ($user_id!=$achievement->owner && does_user_already_own_published_achievement($achievement->id)): ?>
+    <span class='text-button'>You already own this achievement.</span>
     <?php endif; ?>
 </div>
 <?php endif; ?>
@@ -213,9 +215,9 @@ if ($achievement->published==0):?>
 <div>
     <?php if ($achievement->locked != 0): ?> 
      <span style="font-weight:bold;" title="Achievement's information cannot be changed.">Locked </span>        
-        <?php if ($achievement->published==0): ?>
+        <?php if ($achievement->published==0 && $achievement->original==0): ?>
             (<?php echo date("m/d/y", strtotime($achievement->locked)) ?>)
-            <span class='toggle_locked_status hand text-button'>[ Unlock ] </span>
+            <span class='toggle_locked_status hand text-button'>[ Unlock ]</span>
         <?php elseif ($achievement->published!=0): ?>
             
 
