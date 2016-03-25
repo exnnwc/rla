@@ -17,6 +17,10 @@ function abandon_achievement($id) {
     $statement->execute();
 }
 
+function abandon_published($id){
+    delete_children($id);
+    delete_achievement($id);
+}
 function achievement_name_exists($name, $parent) {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("select count(*) from achievements where deleted=0 and name=? and parent=? limit 1");
@@ -174,14 +178,23 @@ function change_points($id, $up){
     $cost = $up 
       ? $achievement->points*2
       : $achievement->points;
+    if ($cost===0){
+        $cost=1;
+    } 
+    $cost=abs($cost);
     if ($cost>$user_points){
-        return "You don't have enough points.";
+        $string = "You don't have enough points to vote this achievement ";
+        $string = $up
+          ? $string . "up."
+          : $string . "down.";
+        return $string;
     }
     $operator = $up
       ? "+"
       : "-";
     $statement = $connection->query("update achievements set points=points".$operator."1 where id=$achievement->id");
     $statement = $connection->query("update users set points=points-$cost where id=$user_id"); 
+    return true;
 }
 function change_quality($id, $quality) {
     if (!user_owns_achievement($id)) {
@@ -337,12 +350,6 @@ function copy_achievement($id, $owner, $parent){
 }
 
 
-function user_takes_over_achievement($id, $owner){
-    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $achievement = fetch_achievement($id);
-    $query="insert into achievements (locked, points,  owner, parent, name, description, documented,  original) values (now(), 1,  $owner, $achievement->parent, '$achievement->name', '$achievement->description', 1, $achievement->id)";
-    $statement = $connection->exec($query);
-}
 
 
 function create_achievement($name, $parent) {
@@ -408,6 +415,16 @@ function delete_achievement($id) {
     $statement->execute();
 }
 
+function delete_children($id){
+    $children=fetch_children($id);
+    foreach ($children as $child){
+        if (count(fetch_children($id))>0){
+            delete_children($child);
+        }
+        delete_achievement($child);
+    }
+
+}
 function extend_vote($id, $hours){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set hours_added=hours_added+? where id=?");
@@ -621,16 +638,9 @@ function own_published($id){
         error_log (__FILE__ . " #" . __LINE__ . " " . __FUNCTION__ . "($id) tried to create a published achievement without being logged in.");
         return "You need to be logged in to do this.";
     }
-    user_takes_over_achievement($id, $user_id);
-    $query = "select id from achievements where deleted=0 and original=$id and owner=$user_id and parent=0";
-    $statement = $connection->query($query);
-    $new_achievement=$statement->fetchColumn();
-    if ($new_achievement===false){
-        error_log(__FILE__ . " #" . __LINE__ . " " . __FUNCTION__ . "($id) did not successfully create a new achievement.");
-        return;
-    } else if ($new_achievement!=false){
-        return (int)$new_achievement;
-    }
+    $new_parent=take_over_achievement($id, $user_id, 0);
+    take_over_children($id, $user_id, $new_parent);
+    return $new_parent;
 }
 
 function publish_achievement($id){
@@ -827,4 +837,24 @@ function user_owns_achievement($id) {
         return true;
     }
     return false;
+}
+function take_over_achievement($id, $owner, $parent){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    $query="insert into achievements (locked, points,  owner, parent, name, description, documented,  original) values (now(), 1,  $owner, $parent, '$achievement->name', '$achievement->description', 1, $achievement->id)";
+    $statement = $connection->exec($query);
+
+    $query = "select id from achievements where deleted=0 and original=$id and owner=$owner and parent=$parent";
+    $statement = $connection->query($query);
+    return (int) $statement->fetchColumn();
+}
+
+function take_over_children($id, $owner, $parent){
+    $children=fetch_children($id);
+    foreach ($children as $child){
+        $new_parent = take_over_achievement($child, $owner, $parent);
+        if (count(fetch_children($id))>0){
+            take_over_children($child, $owner, $new_parent);
+        }
+    }
 }

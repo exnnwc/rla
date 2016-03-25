@@ -12,6 +12,9 @@ require_once("user.php");
 require_once("votes.php");
 error_log("DEBUG:".$_POST['function_to_be_called']);
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
+    case "abandon_published":
+        echo json_encode(abandon_published(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT)));
+        break;
     case "activate_achievement":
         activate_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
@@ -39,6 +42,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         break;
     case "change_name":
         change_name(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_name', FILTER_SANITIZE_STRING));
+        break;
+    case "change_points":
+        echo json_encode(change_points(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT),filter_input(INPUT_POST, 'up', FILTER_VALIDATE_BOOLEAN)));
         break;
     case "change_power":
         change_power(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'new_power', FILTER_SANITIZE_NUMBER_INT));

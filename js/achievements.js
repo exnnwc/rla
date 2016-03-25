@@ -1,5 +1,12 @@
+function abandonPublished(id){
+    data = {function_to_be_called: "abandon_published", id: id};
+    AJAXOnly(data, function (results){
+        console.log(results);
+        window.location.href = "http://localhost/rla/published/";
+    });
+
+}
 function activateAchievement(id, parent) {
-    console.log("RUN");
     if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
@@ -87,6 +94,18 @@ function changePower(id, new_power) {
             });
 }
 
+function changePoints(id, up){
+    data = {function_to_be_called:"change_points", id:id, up:up};
+    AJAXOnly(data, function(result){
+        if (JSON.parse(result)===true){
+            window.location.href = "http://localhost/rla/published/";
+        } else if (JSON.parse(result)!==true){
+            console.log("#"+id+"points_error", JSON.parse(result));
+            
+            $("#"+id+"points_error").html(JSON.parse(result));
+        }
+    });
+}
 function changeQuality(id, new_quality) {
     if (!testIfVariableIsNumber(id, "id")
             || !testIfVariableIsBoolean(new_quality, "new_quality")) {

@@ -525,8 +525,8 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click", "#own_published", function (event) {
         ownPublished(id);
     });	
-    $(document).on("click", "", function (event) {
-
+    $(document).on("click", "#abandon_published", function (event) {
+        abandonPublished(id);
     });	
     $(document).on("click", "", function (event) {
 

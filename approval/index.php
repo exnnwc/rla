@@ -123,7 +123,7 @@ function list_all_completed_authorized_achievements(){
         echo "None.";
 		return;
 	} 
-    $statement = $connection->prepare("select * from achievements where completed!=0 and authorized!=0 and owner=?");
+    $statement = $connection->prepare("select * from achievements where deleted=0 and abandoned=0 and completed!=0 and authorized!=0 and owner=?");
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
@@ -146,7 +146,7 @@ function list_all_achievements_pending_authorization(){
         echo "None.";
 		return;
 	} 
-    $statement = $connection->prepare("select * from achievements where completed=0 and authorized=0 and authorizing!=0 and owner=?");
+    $statement = $connection->prepare("select * from achievements where  deleted=0 and abandoned=0 and completed=0 and authorized=0 and authorizing!=0 and owner=?");
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
@@ -168,7 +168,7 @@ function list_all_rejected_achievements(){
         echo "None.";
 		return;
 	} 
-    $statement = $connection->prepare("select * from achievements where completed=0 and authorizing=0 and owner=?  and id in (select achievement_id from votes where active=1)");
+    $statement = $connection->prepare("select * from achievements where  deleted=0 and abandoned=0 and completed=0 and authorizing=0 and owner=?  and id in (select achievement_id from votes where active=1)");
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){

@@ -70,7 +70,11 @@ if ($achievement->published==0):?>
 		<span id="cancel_authorization" class="hand text-button">[ Cancel Authorization ]</span>
         <?php echo display_vote_timer($achievement->id); ?>
     <?php elseif ($achievement->completed!=0 && $achievement->authorizing!=0 && !has_this_achievement_already_been_published($achievement->id)): ?>
+        <?php if ($achievement->parent==0):?>
         <span id="publish_achievement" class="hand text-button">[ Publish ]</span>    
+        <?php elseif ($achievement->parent!=0):?>
+            <span style='font-weight:bold;'>Only top level achievements can be published.</span>
+        <?php endif; ?>
     <?php endif; ?>
     <?php if ($achievement->locked==0  && $achievement->authorizing==0):?>
     <span class='toggle_locked_status hand text-button'>[ Lock ] </span>
@@ -113,7 +117,7 @@ if ($achievement->published==0):?>
 <div style='margin-bottom:8px;'>
     <?php if ($user_id===$achievement->owner): ?>
     <span id="abandon_published" class='hand text-button'>[ Abandon ]</span>
-    <?php elseif ($user_id!=$achievement->owner && !does_user_already_own_published_achievement($achievement->id)): ?>
+    <?php elseif ($user_id!==false && $user_id!=$achievement->owner && !does_user_already_own_published_achievement($achievement->id)): ?>
     <span id="own_published" class='hand text-button'>[ Own ]</span>
     <?php elseif ($user_id!=$achievement->owner && does_user_already_own_published_achievement($achievement->id)): ?>
     <span class='text-button'>You already own this achievement.</span>

@@ -8,7 +8,7 @@
         <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/rla.css">
         <!--Replace this with a web link when the site goes live.-->
         <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
-        <!--<script src="index.js"></script>-->
+        <script src="index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/actions.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
@@ -35,9 +35,11 @@
     <h2 style="clear:both;">
         Published Achievements
     </h2>
+<!--
     <div>
         Tags: <span id='publishing_tags'></span>
     </div>
+-->
     <div>
         <?php list_all_published_achievements(); ?>
     </div>
@@ -49,18 +51,30 @@
 <?php 
 function list_all_published_achievements(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement_set=false;
     $user_id = fetch_current_user_id();
-    $statement = $connection -> query ("select * from achievements where deleted=0 and parent=0 and published!=0");
+    $statement = $connection -> query ("select * from achievements where deleted=0 and parent=0 and published!=0 order by points desc");
+    $margin_top = ($user_id===false)
+      ? "0"
+      : "16";
     while($achievement = $statement->fetchObject()){
-        echo "<div style='clear:both;padding-top:16px;'><div style='float:left;width:50px;itext-align:center;'>";
+        $achievement_set=true;
+        echo "<div style='clear:both;padding-top:16px;'>
+            <div id='".$achievement->id."points_error' style='color:red;'></div>
+            <div style='float:left;width:50px;text-align:center;'>";
         echo !$user_id
           ? $achievement->points 
-          : "<div id='upvote$achievement->id' upvote='upvote' style='text-align:center;font-weight:bold;color:grey;' class='hand'>&uarr;</div>
+          : "<div id='upvote$achievement->id' class='hand upvote' style='text-align:center;font-weight:bold;color:grey;' class='hand'>&uarr;</div>
              <div style='text-align:center;font-size:12px;color:grey;'>($achievement->points)</div>
-             <div id='downvote$achievement->id' class='downvote' style='text-align:center;font-weight:bold;color:grey;' class='hand'>&darr;</div>";
+             <div id='downvote$achievement->id' class='hand downvote' style='text-align:center;font-weight:bold;color:grey;' class='hand'>&darr;</div>";
         echo "</div> 
-                <div style='float:left;padding-top:16px;padding-left:16px;'>
-                    <a href=".SITE_ROOT."/summary/?id=$achievement->id'>$achievement->name</a> Published by " . fetch_username($achievement->owner);
+            
+                <div style='float:left;padding-top:".$margin_top."px;padding-left:16px;'>
+                    <a href='".SITE_ROOT."/summary/?id=$achievement->id'>$achievement->name</a> ";
+
+        echo ($user_id===$achievement->owner)
+          ? "<span class='text-button'>Self-published</span>"
+          : "Published by " . fetch_username($achievement->owner);
         if (does_user_already_own_published_achievement($achievement->id)){
             echo " <span class='text-button'>(Owned)</span>";
         }
@@ -70,7 +84,7 @@ function list_all_published_achievements(){
             ";
         }
 
-
+        //16px
         echo "
             </div></div>";
         if (!empty($achievement->description)){
@@ -80,5 +94,8 @@ function list_all_published_achievements(){
                 </div>";
         }
 
+    }
+    if (!$achievement_set){
+        echo "No achievements have been published.";
     }
 }

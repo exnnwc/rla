@@ -44,7 +44,7 @@ require_once("../php/tags.php");
                 <input id="new_achievement_button" type="button" value="Quick Create" />
             </div>
             <?php endif;?>
-            <div>
+            <div style='clear:both;'>
                 <input id="hide_achievements_button" type='button' value='Hide'  />
                 <input id="show_achievements_button" type='button' value='Show' style="display:none" />
                 <span>Total: 
