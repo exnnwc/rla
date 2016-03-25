@@ -135,6 +135,11 @@ if ($achievement->published==0):?>
 <div style='clear:both;'>
     <span style='font-weight:bold;'>Published</span> (Original) By <?php echo fetch_username($achievement->owner); ?>
 </div>
+<?php elseif ($achievement->published==0 && $achievement->original!=0): ?>
+<div style='clear:both;font-weight:bold;margin-bottom:4px;'>
+    Originally published <a href="<?php echo SITE_ROOT; ?>/summary/?id=<?php echo $achievement->original; ?>">here.</a>
+</div>
+
 <?php endif; ?>
 <div style='clear:both;'>
     <div>

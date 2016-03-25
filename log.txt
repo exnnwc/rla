@@ -1,3 +1,17 @@
+03-25-16
+My scheduled release date is July, so I'd like to schedule out how the release would go. 
+March
+Finish the most basic version of the product and upload it to the web.
+
+April
+Polish - All of the things that need to be fixed should be fixed.
+
+May
+Security - Implement all security precautions.
+
+June
+UI - Polish just the user interface.
+
 03/24/16
 In the approval process for documented achievements, the original design was that users -need- to explain when they voted against an achievement. The idea was that this would prevent trolls from disrupting the system. It's certainly possible to implement this, but now I'm reconsidering it. At the core of the idea is that I can't trust "the community" to not engage in trolling, but I think that if there are so many trolls that submissions are constantly getting rejected, that's another problem entirely.
 

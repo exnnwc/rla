@@ -281,8 +281,9 @@ function ownPublished(id){
 }
 function publishAchievement(id){
     data = {function_to_be_called:"publish_achievement", id:id}; 
-    AJAXOnly(data, function(result){
+    AJAXThenReload(data, id, function(result){
         console.log(result);
+        
     });
 }
 function restoreAchievement(id, parent) {

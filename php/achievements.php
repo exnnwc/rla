@@ -163,6 +163,26 @@ function change_power($id, $power) {
     $statement->execute();
 }
 
+function change_points($id, $up){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    $user_id = fetch_current_user_id();
+    if ($user_id===false){
+        return "You need to be logged in to do this.";
+    }
+    $user_points = fetch_user_points($user_id);
+    $cost = $up 
+      ? $achievement->points*2
+      : $achievement->points;
+    if ($cost>$user_points){
+        return "You don't have enough points.";
+    }
+    $operator = $up
+      ? "+"
+      : "-";
+    $statement = $connection->query("update achievements set points=points".$operator."1 where id=$achievement->id");
+    $statement = $connection->query("update users set points=points-$cost where id=$user_id"); 
+}
 function change_quality($id, $quality) {
     if (!user_owns_achievement($id)) {
         //BAD
@@ -296,13 +316,24 @@ function count_achievements() {
     }
     return $data;
 }
-
+function copy_children($id, $owner, $parent){
+    $children=fetch_children($id);
+    foreach ($children as $child){
+        $new_id=copy_achievement($child, $owner, $parent);
+        if (count(fetch_children($id))>0){
+            copy_children($child, $owner, $new_id);
+        }
+    }
+}
 
 function copy_achievement($id, $owner, $parent){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
     $query="insert into achievements (locked, points, documentation, documentation_explanation, completed, owner, parent, name, description, documented, published, original) values (now(), 1, '$achievement->documentation', '$achievement->documentation_explanation', '$achievement->completed', $owner, $parent, '$achievement->name', '$achievement->description', 1, $achievement->id, 0)";
     $statement = $connection->exec($query);
+    
+    $statement = $connection->query("select id from achievements where deleted=0 and published=$id and owner=$owner");
+    return (int)$statement->fetchColumn();
 }
 
 
@@ -623,7 +654,9 @@ function publish_achievement($id){
     }
     $statement = $connection->exec("update users set points=points-1 where id=$user_id");
     $new_id=copy_achievement($id, $user_id, 0);
-    //Still need to go thorugh child achievements and copy an achievement.
+    if (count(fetch_children($id))>0){
+        copy_children($id, $user_id, $new_id);
+    }
 }
 
 function rank_achievements($achievement, $new_rank) {
