@@ -8,10 +8,7 @@ $(document.body).ready(function () {
         add_keypress_handlers_to_listings();
         add_button_handlers_to_listings();
         add_behavior_handlers_to_listings();
-
         add_handlers_to_index(0, false);
-
-
     } else if ($(document.body).attr('id').substr(0, 19) === "achievement_number_") {
         var achievement_id = Number($(document.body).attr('id').substr(19, $(document.body).attr('id').length - 19));
         document.title = SITE_NAME + " - #" + achievement_id;
@@ -504,6 +501,11 @@ function add_button_handlers_to_profile(id) {
     });
     $(document).on("click", "#create_documentation", function (event) {
         createDocumentation(id, $("#documentation_input").val(), $("#documentation_explanation_input").val());
+    });
+    $(document).on("keydown", "#documentation_input", function (event) {
+        if (event.key==="Enter"){
+            createDocumentation(id, $("#documentation_input").val(), $("#documentation_explanation_input").val());
+        }
     });
     $(document).on("click", "#show_new_documentation", function (event) {
         $("#show_new_documentation").hide();

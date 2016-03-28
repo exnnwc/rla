@@ -100,8 +100,10 @@ function change_description($id, $description) {
     $statement->bindValue(2, $id, PDO::PARAM_INT);
     $statement->execute();
 }
-
 function change_documentation_status($id, $status) {
+
+}
+function change_documentation_status_of_achievement($id, $status) {
     if ($id==0){
         error_log(__FUNCTION__ . " ($id, $status) - id should not be 0");
         return;
@@ -123,14 +125,29 @@ function change_documentation_status($id, $status) {
         ? "Achievement is now undocumented." 
         : "Achievement is now documented.";
     create_history($id, $message);
-    $statement = $connection->prepare("select id from achievements where completed=0 and parent=?");
-    $statement->bindValue(1, $id, PDO::PARAM_INT);
-    $statement->execute();
-    while ($child_id = $statement->fetchColumn()){
-        change_documentation_status($child_id, $status);
-    }
 }
 
+function change_documentation_status_of_children($id, $status){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $message = !$status 
+        ? "undocumented" 
+        : "documented";
+    $children =  fetch_children($id);
+    foreach ($children as $child){
+        $achievement = fetch_achievement($child);
+        if ($achievement->completed=0 && $achievement->authorizing=0 && $achievement->published=0){
+            change_documentation_status($achievement->id, $status);
+        } else if ($achievement->documented!=$status 
+          && ($achievement->completed=0 || $achievement->authorizing=0 || $achievement->published=0)){
+            create_history($id, 
+              "Tried to change achievement to $message but was unable to, 
+                because it was already completed, in approval or published."); 
+        }
+        if (count(fetch_children($achievement->id))>0){
+          change_documentation_status_of_children($achievement->id);  
+        }
+    }
+}
 function change_due_date($id, $date) {
     if (!user_owns_achievement($id)) {
         //BAD
@@ -887,7 +904,7 @@ function uncomplete_achievement($id) {
         return;
     }
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->prepare("update achievements set completed=0 where id=?");
+    $statement = $connection->prepare("update achievements set authorized=0, completed=0,  where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }

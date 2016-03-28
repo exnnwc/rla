@@ -1,3 +1,12 @@
+03/28/16
+So for like the four or fifth time I'm building a children-oriented version of a function to iterate through an achievement's ascendants. I'm starting to think it might be more effective to just create a top record to indicate the shared hierarchy and indicate which level they're at to allow for ascendant functionions that start midway instead of at the top of the hierarchy. 
+
+Probably won't do that though. Why do shit properly in two hours when you can hack a solution in five minutes? (Maybe in the refactor though.)
+
+On a similar note, creating a function that returns the child ids of the achievement and going through each individual on and running a mysql statement on each one is far less efficient than just running one mysql statement per function.
+
+Conversely though, I just started to do this for this function I'm working on right now, change_documentation_status_of_children and it's actually not the ideal way of doing it. Because only certain children need to be worked on, it becomes more complex if I create a mysql statement because I do the updates in mysql but I also have to update change log for each individual id. Some will be changed and some won't. 
+
 03-25-16
 My scheduled release date is July, so I'd like to schedule out how the release would go. 
 

@@ -371,12 +371,14 @@ function uncompleteAchievement(id) {
     if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
-    $.ajax({
-        method: "POST",
-        url: "/rla/php/ajax.php",
-        data: {function_to_be_called: "uncomplete_achievement", id: id}
-    })
-            .done(function (result) {
-                softGenericReload(id);
-            });
+    if (window.confirm("This will cancel the completion of your achievement. If the achievement is documented, you will have to be approved again.")){
+        $.ajax({
+            method: "POST",
+            url: "/rla/php/ajax.php",
+            data: {function_to_be_called: "uncomplete_achievement", id: id}
+        })
+                .done(function (result) {
+                    softGenericReload(id);
+                });
+    }
 }

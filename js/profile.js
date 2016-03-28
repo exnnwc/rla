@@ -57,7 +57,7 @@ function displayProfile(id) {
                                 listNotes(id);
                             });
                 } else if (!active) {
-                    $("#achievement_profile").html("This achievement has been deleted.");
+                    $("#achievement_profile").html("<div style='clear:both;'>This achievement has been deleted.</div>");
                 } 
             });
 }
