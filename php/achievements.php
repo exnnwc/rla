@@ -27,7 +27,7 @@ function abandon_published($id){
         delete_children($id);
         delete_achievement($id);
     } else if ($num_of_users_working_on_this>0){
-        disown_achievement($id);
+        disown_published($id);
     }
 }
 function achievement_name_exists($name, $parent) {
@@ -437,10 +437,25 @@ function delete_children($id){
 
 function disown_achievement($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement=$connection->prepare("update achievements set owner=0 where id=?");
+    $statement=$connection->prepare("update achievements set disowned=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
+function disown_children($id){
+    $children=fetch_children($id);
+    foreach ($children as $child){
+        if (count(fetch_children($id))>0){
+            disown_children($child);
+        }
+        disown_achievement($child);
+    }
+
+}
+function disown_published($id){
+    disown_achievement($id);
+    disown_children($id);
+}
+
 function extend_vote($id, $hours){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare("update achievements set hours_added=hours_added+? where id=?");

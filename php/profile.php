@@ -135,11 +135,16 @@ if ($achievement->published==0):?>
         }
     ?>
 </div>
-<?php if ($achievement->published!=0 && $achievement->owner!=0): ?>
-    
-<div style='clear:both;'>
-    <span style='font-weight:bold;'>Published</span> (Original) By <?php echo fetch_username($achievement->owner); ?>
-</div>
+<?php if ($achievement->published!=0):?>
+    <?php if ($achievement->owner!=0): ?>
+        <div style='clear:both;'>
+            <span style='font-weight:bold;'>Published</span> (Original) By <?php echo fetch_username($achievement->owner); ?>
+        </div>
+    <?php elseif ((int)$achievement->owner==0) : ?>
+        <div style='clear:both;'>
+            <span style='font-weight:bold;'>Published then abandoned.</span>
+        </div>
+    <?php endif; ?>
 <?php elseif ($achievement->published==0 && $achievement->original!=0): ?>
 <div style='clear:both;font-weight:bold;margin-bottom:4px;'>
     Originally published <a href="<?php echo SITE_ROOT; ?>/summary/?id=<?php echo $achievement->original; ?>">here.</a>
@@ -203,7 +208,7 @@ if ($achievement->published==0):?>
 </div>
 
 
-
+<?php if ($achievement->published==0): ?>
 <div style='clear:both;margin-top:4px;'>
     <span id='achievement_active<?php echo $achievement->id; ?>' 
 	<?php if ($achievement->completed==0 && $achievement->authorizing==0): ?>
@@ -222,6 +227,7 @@ if ($achievement->published==0):?>
     </span>
 
 </div>
+<?php endif; ?>
 <div>
     <?php if ($achievement->locked != 0): ?> 
      <span style="font-weight:bold;" title="Achievement's information cannot be changed.">Locked </span>        
@@ -239,7 +245,7 @@ if ($achievement->published==0):?>
     Parent: 
     <?php
     echo ($achievement->parent == 0)
-    ? "<a href='".  SITE_ROOT . "/'> Top level</a>"
+    ? "<a href='".  SITE_ROOT . "/summary/'> Top level</a>"
     : "<a href='" . SITE_ROOT . "/summary/?id=$achievement->parent'>" . fetch_achievement_name($achievement->parent) . "</a>";
     ?>
 </div>

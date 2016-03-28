@@ -70,14 +70,20 @@ function list_all_published_achievements(){
         echo "</div> 
             
                 <div style='float:left;padding-top:".$margin_top."px;padding-left:16px;'>
-                    <a href='".SITE_ROOT."/summary/?id=$achievement->id'>$achievement->name</a> ";
+                    <a href='".SITE_ROOT."/summary/?id=$achievement->id'>$achievement->name</a>
+                    <span class='text-button' style='font-style:italic;'>";
+        if  ($user_id===$achievement->owner){
+            echo "Self-published";
+            
+        } else if  ($user_id!==$achievement->owner){
+            if ((int)$achievement->owner>0){
+                echo "Published by " . fetch_username($achievement->owner);
+            } else if ((int)$achievement->owner===0){
+                echo "Abandoned by publisher.";
+            }
 
-        echo ($user_id===$achievement->owner)
-          ? "<span class='text-button'>Self-published</span>"
-          : "Published by " . fetch_username($achievement->owner);
-        if (does_user_already_own_published_achievement($achievement->id)){
-            echo " <span class='text-button'>(Owned)</span>";
         }
+        echo "</span>";
         if (!empty($achievement->description)){
             echo "
                 <span class='hand text-button'>[ + ]</span>

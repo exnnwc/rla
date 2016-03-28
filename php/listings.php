@@ -124,7 +124,7 @@ function list_completed_achievements() {
         echo "<div>None.</div>";
         return;
     }
-    $statement = $connection->query("select * from achievements where completed!=0");
+    $statement = $connection->query("select * from achievements where published=0 and completed!=0 and deleted=0 and abandoned=0 and parent=0");
     while ($achievement = $statement->fetchObject()) {
         echo "  <div>
                     
