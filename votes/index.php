@@ -72,7 +72,6 @@ require_once("../php/votes.php");
 </html>
 
 <?php
-
 function display_achievements_requiring_vote(){
 	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $string = "";
@@ -87,64 +86,67 @@ function display_achievements_requiring_vote(){
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
 	$statement->execute();
 	while ($achievement = $statement->fetchObject()){
-        $achievements_set=true;    
-        $vote = how_did_user_vote($user_id, $achievement->id);
-		$string = $string . "
-                <div style='margin-top:16px;' >                
-                <div style=''>"
-            . display_vote_summary($achievement)
-            . "</div>
-                <div>
-                <span id='yay$achievement->id' class='";
+        if ($achievement->original=0 
+          || ($achievement->original!=0 && in_array($user_id, fetch_all_voters_for_this_achievement($achievement->id)) )){
+            $achievements_set=true;    
+            $vote = how_did_user_vote($user_id, $achievement->id);
+    		$string = $string . "
+                    <div style='margin-top:16px;' >                
+                    <div style=''>"
+                . display_vote_summary($achievement)
+                . "</div>
+                    <div>
+                    <span id='yay$achievement->id' class='";
+                            if ($vote==false){
+                                $string = $string . "vote_button hand text-button'>[ Yay ]";
+                            } else if ($vote=="nay"){
+                                $string = $string . "inactive-vote'>Yay";
+                            } else if (substr($vote, 0, 3)=="yay"){
+                                $string = $string . "active-vote'>Yay";
+                            }
+                        $string = $string . "</span>
+                        /
+                        <span id='nay$achievement->id' class='";
+                            if ($vote==false){
+                                $string = $string . "vote_button hand text-button'>[ Nay ]";
+                            } else if ($vote=="nay"){
+                                $string = $string . "active-vote'>Nay";
+                            } else if (substr($vote, 0, 3)=="yay"){
+                                $string = $string . "inactive-vote'>Nay";
+                            }
+                        $string = $string . "
+                        </span>";
                         if ($vote==false){
-                            $string = $string . "vote_button hand text-button'>[ Yay ]";
-                        } else if ($vote=="nay"){
-                            $string = $string . "inactive-vote'>Yay";
-                        } else if (substr($vote, 0, 3)=="yay"){
-                            $string = $string . "active-vote'>Yay";
+                            $string = $string 
+                              . "<input type='text' id='explanation_input$achievement->id' class='explanation_input' 
+                                value='Please explain why if nay.' style='color:grey;'/>";
+                        } else if ($vote!=false && strlen(substr($vote, 3))>0){
+                            $string = $string . " - " . substr($vote, 3);
                         }
-                    $string = $string . "</span>
-                    /
-                    <span id='nay$achievement->id' class='";
-                        if ($vote==false){
-                            $string = $string . "vote_button hand text-button'>[ Nay ]";
-                        } else if ($vote=="nay"){
-                            $string = $string . "active-vote'>Nay";
-                        } else if (substr($vote, 0, 3)=="yay"){
-                            $string = $string . "inactive-vote'>Nay";
-                        }
-                    $string = $string . "
-                    </span>";
-                    if ($vote==false){
-                        $string = $string 
-                          . "<input type='text' id='explanation_input$achievement->id' class='explanation_input' 
-                            value='Please explain why if nay.' style='color:grey;'/>";
-                    } else if ($vote!=false && strlen(substr($vote, 3))>0){
-                        $string = $string . " - " . substr($vote, 3);
-                    }
-            $string = $string 
-            . "</div>
-                <div style='padding-left:16px;padding-top:8px;'>Round #$achievement->round</div>
-                <div style='padding-left:16px;'>"
-            . $achievement->name
-                     . " - "
-        . fetch_username($achievement->owner);
-                    
-                    $string = $string . "                        
+                $string = $string 
+                . "</div>
+                    <div style='padding-left:16px;padding-top:8px;'>Round #$achievement->round</div>
+                    <div style='padding-left:16px;'>"
+                . $achievement->name
+                         . " - "
+            . fetch_username($achievement->owner);
+                        
+                        $string = $string . "                        
+                    </div>";
+            if (!empty($achievement->description)){
+                $string = $string . "<div style='padding-left:16px;'> $achievement->description</div>";
+            }
+            $string = $string .
+                   "<div style='padding-left:16px;'>
+                            Documentation: <a href='$achievement->documentation'>$achievement->documentation </a>";
+            if ($achievement->documentation_explanation){
+                $string = $string . " - $achievement->documentation_explanation";
+            }
+    
+            $string = $string . "
+                    </div>
                 </div>";
-        if (!empty($achievement->description)){
-            $string = $string . "<div style='padding-left:16px;'> $achievement->description</div>";
         }
-        $string = $string .
-               "<div style='padding-left:16px;'>
-                        Documentation: <a href='$achievement->documentation'>$achievement->documentation </a>";
-        if ($achievement->documentation_explanation){
-            $string = $string . " - $achievement->documentation_explanation";
-        }
-
-        $string = $string . "
-                </div>
-            </div>";
 	}
     if (!$achievements_set){
         $string = "None.";

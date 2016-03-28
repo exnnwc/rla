@@ -26,6 +26,7 @@ function return_if_filter_active(){
 }
 
 function process_filter_to_query($filter) {
+    
     $generic_query = DEFAULT_LISTING;
     $user_id = fetch_current_user_id();
     $generic_query = ($user_id == false)

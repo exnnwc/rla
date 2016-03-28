@@ -528,6 +528,19 @@ function add_button_handlers_to_profile(id) {
     $(document).on("click", "#abandon_published", function (event) {
         abandonPublished(id);
     });	
+    $(document).on("click", "#show_unoriginals", function (event) {
+        $("#show_unoriginals").hide();
+        $("#hide_unoriginals").show();
+        $("#list_of_unoriginals").show();
+    });	
+    $(document).on("click", "#hide_unoriginals", function (event) {
+        $("#show_unoriginals").show();
+        $("#hide_unoriginals").hide();
+        $("#list_of_unoriginals").hide();
+    });	
+    $(document).on("click", "", function (event) {
+
+    });	
     $(document).on("click", "", function (event) {
 
     });	

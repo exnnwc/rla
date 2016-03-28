@@ -84,13 +84,17 @@ function fetch_table_header($sort_by) {
 }
 function list_abandoned_achievements(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    
-    $statement = $connection->query("select count(*) from achievements where abandoned=1 and deleted=0 and completed=0");
+    $where_query=" where abandoned=1 and deleted=0 and completed=0";    
+    $user_id=fetch_current_user_id();
+    $where_query = $user_id==false
+        ? $where_query . " and public=1"
+        : $where_query . " and owner=$user_id";
+    $statement = $connection->query("select count(*) from achievements" . $where_query);
     if ((int) $statement->fetchColumn() == 0) {
         echo "<div>None.</div>";
         return;
     }
-    $statement = $connection->query("select * from achievements where abandoned=1 and deleted=0 and completed=0");
+    $statement = $connection->query("select * from achievements" . $where_query);
     while ($achievement = $statement->fetchObject()) {
         echo "  <div>
                     <span id='delete$achievement->id' class='remove_achievement_button hand' style='color:darkred'>
@@ -114,17 +118,18 @@ function list_abandoned_achievements(){
 function list_completed_achievements() {
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     echo "<h3 style='text-align:center;'>Completed Achievements</h3>";
-    $query="select count(*) from achievements where active=0 and completed!=0";
+    
+    $where_query=" where published=0 and deleted=0 and abandoned=0 and parent=0 and completed!=0";
     $user_id=fetch_current_user_id();
-    $query = $user_id==false
-        ? $query . " and public=1"
-        : $query . " and owner=$user_id";
-    $statement = $connection->query($query);
+    $where_query = $user_id==false
+        ? $where_query . " and public=1"
+        : $where_query . " and owner=$user_id";
+    $statement = $connection->query("select count(*) from achievements". $where_query);
     if ((int) $statement->fetchColumn() == 0) {
         echo "<div>None.</div>";
         return;
     }
-    $statement = $connection->query("select * from achievements where published=0 and completed!=0 and deleted=0 and abandoned=0 and parent=0");
+    $statement = $connection->query("select * from achievements" . $where_query);
     while ($achievement = $statement->fetchObject()) {
         echo "  <div>
                     

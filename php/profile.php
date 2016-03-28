@@ -71,7 +71,9 @@ if ($achievement->published==0):?>
         <?php echo display_vote_timer($achievement->id); ?>
     <?php elseif ($achievement->completed!=0 && $achievement->authorizing!=0 && !has_this_achievement_already_been_published($achievement->id)): ?>
         <?php if ($achievement->parent==0):?>
-        <span id="publish_achievement" class="hand text-button">[ Publish ]</span>    
+            <?php if ($achievement->original==0): ?>
+            <span id="publish_achievement" class="hand text-button">[ Publish ]</span>    
+            <?php endif; ?>
         <?php elseif ($achievement->parent!=0):?>
             <span style='font-weight:bold;'>Only top level achievements can be published.</span>
         <?php endif; ?>
@@ -139,17 +141,41 @@ if ($achievement->published==0):?>
     <?php if ($achievement->owner!=0): ?>
         <div style='clear:both;'>
             <span style='font-weight:bold;'>Published</span> (Original) By <?php echo fetch_username($achievement->owner); ?>
+            <span id='show_unoriginals' class='hand text-button'>[ + ]</span>
+            <span id='hide_unoriginals' class='hand text-button' style='display:none;'>[ - ]</span>
+        </div>
+        <div id='list_of_unoriginals' style='display:none;padding-left:16px;padding-bottom:16px;'>
+            <?php 
+                $unoriginal_ids = fetch_unoriginals($achievement->id);
+                if (count($unoriginal_ids)===0){
+                    echo "No one owns this achievement yet.";
+                }
+                foreach ($unoriginal_ids as $unoriginal_id){
+                    $unoriginal = fetch_achievement($unoriginal_id);
+                    echo "  <div>
+                                <a href='".SITE_ROOT."/summary/?id=$unoriginal->id'>$unoriginal->name</a> 
+                                by " . fetch_username($unoriginal->owner);
+                    if ($unoriginal->completed!=0){
+                        echo "- <span style='font-style:italic;'> Completed (" . date("m/d/y", strtotime($unoriginal->completed)) . ")";
+                    }
+                    echo "  </div>";
+                }
+            ?>
+
         </div>
     <?php elseif ((int)$achievement->owner==0) : ?>
         <div style='clear:both;'>
             <span style='font-weight:bold;'>Published then abandoned.</span>
         </div>
     <?php endif; ?>
-<?php elseif ($achievement->published==0 && $achievement->original!=0): ?>
-<div style='clear:both;font-weight:bold;margin-bottom:4px;'>
-    Originally published <a href="<?php echo SITE_ROOT; ?>/summary/?id=<?php echo $achievement->original; ?>">here.</a>
-</div>
-
+<?php elseif ($achievement->published==0): ?> 
+    <?php if ($achievement->original!=0): ?>
+    <div style='clear:both;font-weight:bold;margin-bottom:4px;'>
+        Originally published <a href="<?php echo SITE_ROOT; ?>/summary/?id=<?php echo $achievement->original; ?>">here.</a>
+    </div>
+    <?php elseif ($achievement->original==0): ?>
+        By <?php fetch_username($achievement->owner); ?>
+    <?php endif; ?>
 <?php endif; ?>
 <div style='clear:both;'>
     <div>

@@ -256,9 +256,10 @@ function check_achievement_authorization_status(){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from achievements where authorizing!=0 and completed=0 and deleted=0 and abandoned=0");
     while ($achievement=$statement->fetchObject()){
+
         $num_of_seconds=get_num_of_seconds_until_authorized($achievement->id);        
         $vote_summary=summarize_vote($achievement->id);
-        if ($num_of_seconds<=0){
+        if ($num_of_seconds<=0 || ($achievement->original!=0 && have_all_voters_voted($achievement->id))){
             if ($vote_summary["total"]==0 || ($vote_summary["total"]>0 &&  $vote_summary["status"]=="for")){
                 $connection->exec("update achievements set authorized=now(), completed=now() where id=$achievement->id");
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="tie"){
@@ -511,6 +512,22 @@ function fetch_achievement_by_rank_and_parent($rank, $parent) {
     return $statement->fetchObject();
 }
 
+function fetch_all_voters_for_this_achievement($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $voters = [];
+    $achievement = fetch_achievement($id);
+    $original = fetch_achievement($achievement->original);
+    $voters[] = $original->owner;
+    $unoriginal_ids = fetch_unoriginals($original->id);
+    foreach ($unoriginal_ids as $unoriginal_id){
+        $unoriginal = fetch_achievement($unoriginal_id);
+        if ($unoriginal->completed!=0){
+            $voters[] = $unoriginal->owner;
+        }
+    }
+    return $voters;
+}
+
 function fetch_children($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $child_ids = [];
@@ -569,6 +586,17 @@ function fetch_random_achievement_id($user_id) {
     return $statement->fetchColumn();
 }
 
+function fetch_unoriginals($original){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $unoriginals = [];
+    $statement = $connection -> prepare("select id from achievements where deleted=0 and abandoned=0 and original=?");
+    $statement->bindValue(1, $original, PDO::PARAM_INT);
+    $statement -> execute();
+    while ($id=$statement->fetchColumn()){
+        $unoriginals[] = $id;
+    }
+    return $unoriginals;
+}
 function fix_achievement_ranks($field, $achievement) {
     if (!user_owns_achievement($achievement->id)) {
         //BAD
@@ -587,8 +615,7 @@ function get_num_of_seconds_until_authorized($id){
     $statement->execute();
     $num_of_seconds=$statement->fetchColumn();
     $num_of_seconds=86400-$num_of_seconds;
-    //return $num_of_seconds;
-    return 0;
+    return $num_of_seconds;
 }
 
 function has_this_achievement_already_been_published($id){
@@ -616,6 +643,28 @@ function does_user_already_own_published_achievement($id){
         return true;
     }    
     
+}
+
+function have_all_voters_voted($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    $voters = fetch_all_voters_for_this_achievement($id);
+    $where_query = "where active=1 and achievement_id=$id and round=$achievement->round and (";
+    foreach ($voters as $voter){
+        $or_clause = !isset($or_clause)
+          ? "user_id=$voter"
+          : $or_clause . " or user_id=$voter";
+    }    
+    $where_query = $where_query . $or_clause . ")";
+    $statement = $connection->query("select count(*) from votes " . $where_query);
+    if (count($voters)===(int)$statement->fetchColumn()){
+        return true;
+    } else if (count($voters)<(int)$statement->fetchColumn()){ 
+        error_log(__FILE__ . " #" . __LINE__ . " " . __FUNCTION__ ."($id) there are more votes than voters.");
+        return true;
+    } else if (count($voters)>(int)$statement->fetchColumn()){
+        return false;
+    }
 }
 function how_many_days_until_due($id) {
 /*

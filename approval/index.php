@@ -48,7 +48,7 @@
              If it is the first of its kind, any user can vote on it.
         </div>
         <div class='indent-1'>
-            If it is a previously published achievement, the original publisher and other users who have aleady completed it can vote on it. (The original publisher receives 2 votes instead of 1.) 
+            If it is a previously published achievement, the original publisher and other users who have aleady completed it can vote on it. <!--(The original publisher receives 2 votes instead of 1.) -->
         </div>
         <div>
             Once all eligible voters have voted, the vote ends.
