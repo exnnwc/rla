@@ -1,5 +1,8 @@
 <?php 
 require_once ("../php/config.php"); 
+        $id = isset($_GET['id']) 
+          ? filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) 
+          : "";
 ?>
 <html>
 <head>
@@ -25,13 +28,13 @@ require_once ("../php/config.php");
         <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>        
         <title><?PHP echo SITE_NAME ?></title>
 </head>
-<body>
-            <?php 
-            include("../templates/navbar.php"); 
-            include("../templates/login.php"); 
-            ?>
+<body id="user_profile<?php echo $id;?>" >
+    <?php 
+        include("../templates/navbar.php"); 
+        include("../templates/login.php"); 
+        ?>
 
-<div id='user_profile<?php echo $id; ?>' style='clear:both;'>
+<div id='profile_div' style='clear:both;'>
 
 </div>
 </body>
