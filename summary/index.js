@@ -540,8 +540,8 @@ function add_button_handlers_to_profile(id) {
         $("#hide_unoriginals").hide();
         $("#list_of_unoriginals").hide();
     });	
-    $(document).on("click", "", function (event) {
-
+    $(document).on("click", ".toggle_public", function (event) {
+        togglePublicStatus(id);
     });	
     $(document).on("click", "", function (event) {
 

@@ -109,7 +109,7 @@ function fetch_child_menu($achievement) {
 }
 function fetch_listing_row($achievement) {
     //this could be written so much better.
-    $string = " <tr><td>
+        $string = " <tr ><td>
                     <input id='rank$achievement->id' type='number' 
                         class='change_rank_button' value='$achievement->rank' style='width:40px;text-align:center;' />
                 </td>";
@@ -137,6 +137,9 @@ function fetch_listing_row($achievement) {
     } else if (!$achievement->active) {
         $string = $string . "color:red;";
     }
+    if (strlen($achievement->name)>48){
+        $achievement->name = substr($achievement->name, 0, 48) . "...";
+    }
     $string = $string . "'>
                     $achievement->name 
                     </a>";
@@ -149,6 +152,9 @@ function fetch_listing_row($achievement) {
 
         $string = $string . "'> " . fetch_due_message($num_of_days_til_due);
         $string= $string . "</span>";
+    }
+    if ($achievement->public){
+        $string = $string . "<span style='color:grey;float:right;font-style:italic;'>Publicly Visible</span>";
     }
     $string = $string . "</td></tr>";
     return $string;

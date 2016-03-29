@@ -175,9 +175,26 @@ if ($achievement->published==0):?>
         Originally published <a href="<?php echo SITE_ROOT; ?>/summary/?id=<?php echo $achievement->original; ?>">here.</a>
     </div>
     <?php elseif ($achievement->original==0): ?>
-        By <?php fetch_username($achievement->owner); ?>
+    <div style='clear:both;margin-bottom:4px;'>
+            <?php 
+            echo ($achievement->owner === $user_id)
+               ? "<span style='font-style:italic;'>This achievement is yours.</span>"
+               : "<a href='<?php echo SITE_ROOT; ?>/user/?id=<?php echo $achievement->owner; ?>'>"
+               . fetch_username($achievement->owner)
+               . "</a>";
+        ?> 
+    </div>
     <?php endif; ?>
 <?php endif; ?>
+<div style='clear:both;margin-bottom:4px;' class='toggle_public hand text-button'>
+    [
+    <?php 
+    echo $achievement->public
+      ? "Publicly visible"
+      : "Not visible to the public";
+    ?>
+    ]
+</div>
 <div style='clear:both;'>
     <div>
             <?php if ($achievement->documented) :?>

@@ -27,7 +27,7 @@ if ($filter != "default") {
 } else if ($filter == "default") {
     $query = isset($_SESSION['filter']) ? process_filter_to_query($_SESSION['filter']) : process_filter_to_query($filter);
 }
-echo "<table style='text-align:center;'>" . fetch_table_header($sort_by);
+echo "<table style='width:100%;text-align:center;'>" . fetch_table_header($sort_by);
 
   $statement = $connection->query("select * from achievements " . $query . fetch_order_query($sort_by));
 
