@@ -1,6 +1,4 @@
 <?php 
-    require_once("../php/config.php");
-    require_once("../php/user.php");
 $user_id=fetch_current_user_id();
 ?>
 			<div style='float:right;font-size:12px;text-align:right;'>
