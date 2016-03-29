@@ -35,7 +35,6 @@ require_once ("../php/config.php");
         ?>
 
 <div id='profile_div' style='clear:both;'>
-
 </div>
 </body>
 </html>

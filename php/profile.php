@@ -132,7 +132,7 @@ if ($achievement->published==0):?>
             $statement = $connection->query("select * from achievements 
               where deleted=0 and abandoned=0 and published=".$achievement->id);
             while ($published = $statement->fetchObject()){
-               echo "Published @ <a href='".SITE_ROOT."/summary/?id=$published->id'>$published->name</a>"; 
+               echo "Published <a href='".SITE_ROOT."/summary/?id=$published->id'>here</a>"; 
             }
         }
     ?>
@@ -140,7 +140,8 @@ if ($achievement->published==0):?>
 <?php if ($achievement->published!=0):?>
     <?php if ($achievement->owner!=0): ?>
         <div style='clear:both;'>
-            <span style='font-weight:bold;'>Published</span> (Original) By <?php echo fetch_username($achievement->owner); ?>
+            <span style='font-weight:bold;'>Published</span> (Original) By 
+            <a href="<?php echo SITE_ROOT; ?>/user/?id=<?php echo $achievement->owner; ?>" class="user-link"><?php echo fetch_username($achievement->owner); ?></a>
             <span id='show_unoriginals' class='hand text-button'>[ + ]</span>
             <span id='hide_unoriginals' class='hand text-button' style='display:none;'>[ - ]</span>
         </div>
@@ -154,7 +155,7 @@ if ($achievement->published==0):?>
                     $unoriginal = fetch_achievement($unoriginal_id);
                     echo "  <div>
                                 <a href='".SITE_ROOT."/summary/?id=$unoriginal->id'>$unoriginal->name</a> 
-                                by " . fetch_username($unoriginal->owner);
+                                by <a href='".SITE_ROOT. "/user/?id=".$unoriginal->owner ."'>". fetch_username($unoriginal->owner) . "</a>";
                     if ($unoriginal->completed!=0){
                         echo "- <span style='font-style:italic;'> Completed (" . date("m/d/y", strtotime($unoriginal->completed)) . ")";
                     }

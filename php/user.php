@@ -60,6 +60,14 @@ function fetch_current_user_id(){
         return $_SESSION['user']['id'];
     }
 }
+function fetch_sign_up_date($id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $statement = $connection->prepare ("select created from users where id=?");
+    $statement->bindValue(1, $id, PDO::PARAM_INT);
+    $statement->execute();
+    return $statement->fetchColumn();
+}
+
 function fetch_user_points($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->prepare ("select points from users where id=?");
@@ -67,6 +75,7 @@ function fetch_user_points($id){
     $statement->execute();
     return (int)$statement->fetchColumn();
 }
+
 function have_points_already_been_added($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement=$connection->prepare ("select count(*) from point_log where user_id=? order by created desc limit 1");
@@ -169,3 +178,4 @@ function user_logged_in($id){
     $_SESSION['user']=$user;
     add_points_if_necessary($id);//Move this to a chron when this is hosted on a server.
 }
+

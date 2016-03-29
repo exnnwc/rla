@@ -64,6 +64,10 @@ border-radius:4px 4px 4px 4px;
 .underline-hover:hover{
    text-decoration:underline; 
 }
+
+.user-link{
+    color:grey;
+}
 .win {
     color:green;
 }

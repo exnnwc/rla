@@ -189,7 +189,9 @@ function display_votes(){
                echo " - $vote->explanation"; 
             }
             echo "</div><div style='margin-left:8px'>
-                        Round #$vote->round - \"$achievement->name\" - " . fetch_username($achievement->owner) . " <span style='font-style:italic;'>(<span style='text-decoration:underline;'>";
+                        Round #$vote->round - \"$achievement->name\" - 
+                        <a href='" . SITE_ROOT . "/user/?id=" . $achievement->owner . "' class='user-link'>"
+                      . fetch_username($achievement->owner) . "</a> <span style='font-style:italic;'>(<span style='text-decoration:underline;'>";
             if ($vote_summary["status"]=="for" && $vote_summary["total"]==0){
                 echo "Passed</span> by default.)</span></div>";
             } else if ($vote_summary["total"]>0){
@@ -228,14 +230,15 @@ function display_vote_summary($achievement){
 function display_vote_summary_for_achievement($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement = fetch_achievement($id);
+    $last_round=0;
     $old_round=0;
     $old_date=0;
-    $vote_set=false;
+    //$vote_set=false;
     $statement = $connection->prepare ("select * from votes where active=1 and achievement_id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
     while ($vote = $statement->fetchObject()){
-        $vote_set=true;
+  //      $vote_set=true;
         $date = date("m/d/y", strtotime($vote->created)) ;
         $time = date("h:i:s A", strtotime($vote->created));
 
@@ -246,8 +249,8 @@ function display_vote_summary_for_achievement($id){
         if ($date != $old_date){
             echo "<div style='margin-bottom:8px;'>$date</div>"; 
         }
-        echo "  <div>$time - " . fetch_username($vote->user_id) 
-          . " voted <span style='color:";         
+        echo "  <div>$time - <a href='".SITE_ROOT."/user/?id=".$user_id."' class='user-link'>" . fetch_username($vote->user_id) 
+          . "</a> voted <span style='color:";         
         echo $vote->vote 
           ? "green;'>for"
           : "red;'>against";
@@ -263,7 +266,9 @@ function display_vote_summary_for_achievement($id){
         echo "<h3>Round #$achievement->round</h3>
         <div>No votes during this round. Passed by default.</div>";
     }
+/*
     if (!$vote_set){
         echo "No one has voted yet.";
     }
+*/
 }

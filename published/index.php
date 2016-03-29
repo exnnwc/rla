@@ -77,7 +77,7 @@ function list_all_published_achievements(){
             
         } else if  ($user_id!==$achievement->owner){
             if ((int)$achievement->owner>0){
-                echo "Published by " . fetch_username($achievement->owner);
+                echo "Published by <a href='".SITE_ROOT . "/user/?id=". $achievement->owner . "' class='user-link'>" . fetch_username($achievement->owner) . "</a>";
             } else if ((int)$achievement->owner===0){
                 echo "Abandoned by publisher.";
             }

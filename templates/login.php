@@ -1,9 +1,10 @@
 <?php 
     require_once("../php/config.php");
     require_once("../php/user.php");
+$user_id=fetch_current_user_id();
 ?>
 			<div style='float:right;font-size:12px;text-align:right;'>
-				<?php if (!isset($_SESSION['user'])): ?>
+				<?php if ($user_id==false): ?>
 				Not logged in.
 				<a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
 				<span id='show_login' class='hand text-button' 
@@ -24,8 +25,11 @@
                         <input id='login' type='button' value='Login'/>
                     </div>
 				</div>
-				<?php elseif (fetch_current_user_id()!=false): ?>
-					Logged in as <?php echo fetch_username(fetch_current_user_id()) . ". (" . fetch_user_points(fetch_current_user_id()) . ")"; ?> 
+				<?php elseif ($user_id!=false): ?>
+					Logged in as 
+                    <a class='user-link'
+                    href="<?php echo SITE_ROOT; ?>/user/?id=<?php echo $user_id; ?>"><?php echo fetch_username($user_id); ?></a>
+                    (<?php echo fetch_user_points($user_id); ?>)
 					<span id='logout' class='hand text-button'> [ Logout ] </span>
 				<?php endif; ?>
 			</div>

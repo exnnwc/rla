@@ -311,6 +311,49 @@ function complete_achievement($id) {
     $statement->execute();
 }
 
+function count_achievements_for_user_profile($user_id){
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $default_where =  "where deleted=0 and parent=0";
+    $statement = $connection->prepare("select count(*) from achievements $default_where and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    $total = (int) $statement->fetchColumn();
+
+    
+    $statement = $connection->prepare("select count(*) from achievements $default_where and completed!=0 and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    $num_of_completed = (int) $statement->fetchColumn();
+
+    
+    $statement = $connection->prepare("select count(*) from achievements $default_where and documented=0 and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    $num_of_documented = (int) $statement->fetchColumn();
+
+    $statement = $connection->prepare("select count(*) from achievements $default_where and public=1 and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    $num_of_public = (int) $statement->fetchColumn();
+
+    $statement = $connection->prepare("select count(*) from achievements $default_where and abandoned=0 and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    $num_of_abandoned = (int) $statement->fetchColumn();
+
+    $statement = $connection->prepare("select count(*) from achievements $default_where and published!=0 and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    $num_of_published = (int) $statement->fetchColumn();
+
+    $statement = $connection->prepare("select count(*) from achievements $default_where and original is null and owner=?");
+    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
+    $statement->execute();
+    $num_of_originals = (int) $statement->fetchColumn();
+
+    return ["total"=>$total, "completed"=>$num_of_completed, "documented"=>$num_of_documented, "public"=>$num_of_public, "abandoned"=>$num_of_abandoned, "published"=>$num_of_published, "original"=>$num_of_originals];
+}
+
 function count_achievements() {
     //INTEGRATE
     //This is intended for working achievements.

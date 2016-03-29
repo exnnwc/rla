@@ -9,13 +9,14 @@ $(document.body).ready(function () {
 
 
 function displayUserProfile(userID){
+    console.log(userID);
     $.ajax({
         method:"POST",
         url:"/rla/php/user-profile.php",
         data:{ id:userID }
     })
         .done(function (result){
-            console.log(result);
+            $("#profile_div").html(result);
         });
     
 }
