@@ -185,6 +185,7 @@ function countAchievements() {
         data: {function_to_be_called: "count_achievements"}
     })
             .done(function (result) {
+                console.log(result);
                 count = JSON.parse(result);
                 if (!count.working) { //public
                     $("#private_achievement_total").html("");
@@ -366,6 +367,14 @@ function toggleLockedStatus(id) {
                 console.log(result);
                 softGenericReload(id);
             });
+}
+
+
+function togglePublicStatus(id){
+    var data = {function_to_be_called:"toggle_public_status", id:id};
+    AJAXThenReload(data, id, function(result){
+        console.log(result);
+    });
 }
 function uncompleteAchievement(id) {
     if (!testIfVariableIsNumber(id, "id")) {

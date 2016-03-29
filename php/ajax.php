@@ -224,6 +224,9 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
     case "toggle_active_status":
         toggle_active_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;
+    case "toggle_public_status":
+        echo json_encode(toggle_public_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT)));
+        break;
     case "uncomplete_achievement":
         uncomplete_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
         break;

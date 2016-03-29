@@ -928,7 +928,19 @@ function toggle_locked_status($id) {
     $message = $achievement->locked ? "Achievement is now unlocked." : "Achievement is now locked.";
     create_history($id, $message);
 }
-
+function toggle_public_status($id){
+    if (!user_owns_achievement($id)) {
+        //BAD
+        return;
+    }
+    $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
+    $achievement = fetch_achievement($id);
+    $status = !(boolean)$achievement->public;
+    $statement = $connection->prepare("update achievements set public=? where id=?");
+    $statement->bindValue(1, $status, PDO::PARAM_BOOL);
+    $statement->bindValue(2, $id, PDO::PARAM_INT);
+    $statement->execute();
+}
 function update_rank($id, $new_rank) {
     if (!user_owns_achievement($id)) {
         //BAD

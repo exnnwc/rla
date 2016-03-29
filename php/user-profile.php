@@ -16,6 +16,11 @@ $count = count_achievements_for_user_profile($user_profile_id);
 <h1>
     <?php echo $username; ?>
 </h1>
+<?php if ($user_id===$user_profile_id): ?>
+<div>
+    <span style='font-style:italic;'>This page is what other users see about you. </span>
+</div>
+<?php endif; ?>
 <div>
     <?php echo date("F j, Y", strtotime($sign_up_date)); ?>
 </div>
