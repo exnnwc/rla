@@ -2,7 +2,4 @@
 *~
 nbproject
 *.swp
-php/config.php
-config.php
-config*
 **/config.php
