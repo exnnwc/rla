@@ -1,8 +1,9 @@
 
 <?php 
-require_once("php/achievements.php");
-require_once ("php/config.php"); 
-require_once("php/tags.php");
+require_once($_SERVER['DOCUMENT_ROOT'] ."/rla/php/achievements.php");
+require_once ($_SERVER['DOCUMENT_ROOT'] ."/rla/php/config.php"); 
+require_once($_SERVER['DOCUMENT_ROOT'] ."/rla/php/tags.php");
+require_once($_SERVER['DOCUMENT_ROOT'] ."/rla/php/user.php");
 ?>
 <!DOCTYPE html>
 <html>
@@ -31,8 +32,9 @@ require_once("php/tags.php");
     </head>
 <body>
 <?php
-include("templates/navbar.php"); 
-include("templates/login.php"); 
+
+include($_SERVER['DOCUMENT_ROOT'] ."/rla/templates/navbar.php"); 
+include($_SERVER['DOCUMENT_ROOT'] ."/rla/templates/login.php"); 
 ?>
 <div style='clear:both;margin-bottom:16px;padding-top:16px;'>
     <span style='color:black;'> [ Incomplete ] </span>

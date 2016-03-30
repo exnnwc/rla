@@ -101,8 +101,10 @@ function change_description($id, $description) {
     $statement->execute();
 }
 function change_documentation_status($id, $status) {
-
+    change_documentation_status_of_achievement($id, $status);
+    change_documentation_status_of_children($id, $status);
 }
+
 function change_documentation_status_of_achievement($id, $status) {
     if ($id==0){
         error_log(__FUNCTION__ . " ($id, $status) - id should not be 0");

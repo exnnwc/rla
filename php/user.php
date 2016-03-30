@@ -1,6 +1,6 @@
 <?php
-require_once("achievements.php");
-require_once("config.php");
+require_once($_SERVER['DOCUMENT_ROOT'] ."/rla/php/achievements.php");
+require_once($_SERVER['DOCUMENT_ROOT'] ."/rla/php/config.php");
 //Security concern check best practice of sending password in post. HTTPS?
 
 function add_points_if_necessary($id){

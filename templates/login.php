@@ -1,4 +1,5 @@
 <?php 
+require_once($_SERVER['DOCUMENT_ROOT'] ."/rla/php/user.php");
 $user_id=fetch_current_user_id();
 ?>
 			<div style='float:right;font-size:12px;text-align:right;'>
@@ -26,7 +27,9 @@ $user_id=fetch_current_user_id();
 				<?php elseif ($user_id!=false): ?>
 					Logged in as 
                     <a class='user-link'
-                    href="<?php echo SITE_ROOT; ?>/user/?id=<?php echo $user_id; ?>"><?php echo fetch_username($user_id); ?></a>
+                    href="<?php echo SITE_ROOT; ?>/user/?id=<?php echo $user_id; ?>">
+                    <?php echo fetch_username($user_id); ?>
+                    </a>
                     (<?php echo fetch_user_points($user_id); ?>)
 					<span id='logout' class='hand text-button'> [ Logout ] </span>
 				<?php endif; ?>
