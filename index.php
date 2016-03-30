@@ -1,5 +1,6 @@
 
 <?php 
+require_once("php/achievements.php");
 require_once ("php/config.php"); 
 require_once("php/tags.php");
 ?>
@@ -27,21 +28,17 @@ require_once("php/tags.php");
         <script src="<?php echo SITE_ROOT; ?>/js/work.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/relations.js"></script>        
         <title><?PHP echo SITE_NAME ?></title>
-        <style>
-            a{
-                color:black;
-                text-decoration:none;
-            }
-            a:hover{
-                text-decoration:underline;
-            }
-        </style>
     </head>
 <body>
 <?php
 include("templates/navbar.php"); 
 include("templates/login.php"); 
 ?>
+<div style='clear:both;margin-bottom:16px;padding-top:16px;'>
+    <span style='color:black;'> [ Incomplete ] </span>
+    <span style='color:grey;'>[ Completed ]</span>
+    <span style='color:green;'>[ Published ]</span>
+</div>
 <div style='clear:both;'>
 <?php
 ($user_id==false)
@@ -58,18 +55,22 @@ include("templates/login.php");
 
 function display_all_public_achievements(){
 	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $statement = $connection->query("select * from achievements where deleted=0 and parent=0 and public=1");
+    $statement = $connection->query("select * from achievements where deleted=0 and parent=0 and public=1 and published=0");
     while ($achievement = $statement->fetchObject()){
-        echo "  <div style='clear:both;'>
-                    <div style='float:left;width:600px;padding:4px;";
-        if ($achievement->published!=0){
-            echo "background-color:green;";
+        echo "  <div style='clear:both;";
+
+        echo    "'>
+                    <div style='float:left;width:600px;padding:4px;'>
+                        <a href='".SITE_ROOT."/summary/?id=".$achievement->id."' style='";
+        if (has_this_achievement_already_been_published($achievement->id)){
+            echo "color:green;";
         } else if ($achievement->completed!=0){
-            echo "background-color:grey;";
+            echo "color:grey;";
+        } else{
+            echo "color:black";
         }
-        echo "        '>
-                    <a href='".SITE_ROOT."/summary/?id=".$achievement->id."'>$achievement->name</a> 
-                    </div><div style='float:left;'>
+        echo "          '>$achievement->name</a> 
+                    </div><div style='float:left;padding:4px;'>
                     <a style='float:right;margin-right:256px;' class='user-link' href='".SITE_ROOT."/user/?id=".$achievement->owner."'>".fetch_username($achievement->owner)."</a>
                     </div>
                 </div>";
@@ -77,5 +78,5 @@ function display_all_public_achievements(){
 }
 
 function display_landing_page(){
-    echo "That shit cray.";
+    require_once("templates/landing.php");
 }

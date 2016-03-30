@@ -1,5 +1,6 @@
 <?php 
 require_once ("../php/config.php"); 
+require_once ("../php/user.php");
         $id = isset($_GET['id']) 
           ? filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT) 
           : "";
