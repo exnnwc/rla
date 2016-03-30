@@ -13,3 +13,5 @@ define ("SECS_BTWN_REGISTRATIONS", 60); //in seconds
 if (session_status()==PHP_SESSION_NONE){
     session_start();
 }
+
+TESTING TO SEE IF THIS GETS PUT ON GITHUB
