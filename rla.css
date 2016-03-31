@@ -1,6 +1,29 @@
+a {
+    color:black;
+}
+.completed {
+    color:grey;
+}
+.published{
+    color:green;
+}
 .active-vote{
     font-weight:bold;
 }
+
+.achievement-name{
+    float:left;
+    width:600px;
+}
+.achievement-owner{
+    float:left;
+
+}
+.achievement-row{
+    clear:both;
+    padding:4px;
+}
+
 .hand{
     cursor:pointer;
 }

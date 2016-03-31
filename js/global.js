@@ -1,4 +1,6 @@
-
+/*
+    requires user.js
+*/
 $(document.body).ready(function () {
     $(document).on("click", "#login", function (event) {
         login($("#login_input").val(), $("#password_input").val());

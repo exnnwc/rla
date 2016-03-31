@@ -1,9 +1,9 @@
 <?php
 	require_once("../php/config.php");
-	require_once("../php/display.php");
 	require_once("../php/user.php");
     require_once("../php/votes.php");
     check_achievement_authorization_status();
+    $user_id = fetch_current_user_id();
 ?>
 
 <html>
@@ -12,14 +12,17 @@
     .indent-1{
         margin-left:24px;
     }
+    h3{
+        margin-bottom:4px;
+    }
 </style>
         <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/rla.css">
+        <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/approval.css">
+        <script src="<?php echo SITE_ROOT; ?>/approval/index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
-        <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/display.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/global.js"></script>
-        <script src="<?php echo SITE_ROOT; ?>/approval/index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/votes.js"></script>
 </head>
@@ -29,18 +32,10 @@
     include("../templates/navbar.php");
     include("../templates/login.php");
     ?>
-    <div style='clear:both;'>
-    <?php
-    	$user_id = fetch_current_user_id();
-    	if ($user_id==false){
-            echo "You must be logged in to view this page.";
-    	}
-    ?>
-    </div>
     <h3 style='clear:both;'> 
        Approval Process
     </h3>
-    <div style='margin-left:16px;font-size:12px;'>
+    <div id='approval-explanation' class='content-div'>
         <div>
             Once a user has posted their link to documentation and marked it as completed:
         </div>
@@ -48,49 +43,39 @@
              If it is the first of its kind, any user can vote on it.
         </div>
         <div class='indent-1'>
-            If it is a previously published achievement, the original publisher and other users who have aleady completed it can vote on it. <!--(The original publisher receives 2 votes instead of 1.) -->
+            If it is a previously published achievement, the original publisher and other users who have aleady completed it can vote on it. 
         </div>
         <div>
             Once all eligible voters have voted, the vote ends.
         </div>
-        <!--
-        PENDING 
-        <div>
-            Each swing vote extends the vote until the next day if there are voters remaining. 
-        </div>
-        -->
         <div>
             If no one votes and time runs out, it succeeds. 
         </div>
-<!--
+    </div>
+    <?php if ($user_id==false):?>
         <div>
-            Voters must anonymously explain why they voted against the achievement so that the user can make a correction. All those who voted against have 24 hours to submit an explanation on why they voted negatively. If no one submits an explanation, the vote succeeds.
-        
+                You must be logged in to view this page.
         </div>
-        <div>
-            If the user makes the stated correction and voters are  unwilling to change their vote during the next submission, mods will get involved.
-        
+    <?php elseif ($user_id!=false): ?>
+        <h3>
+            Pending Approval
+        </h3>
+        <div id="achievements_pending_approval">
+            <?php list_all_achievements_pending_authorization(); ?>
         </div>
--->
-    </div>
-    <h3>
-        Pending Approval
-    </h3>
-    <div id="achievements_pending_approval">
-        <?php list_all_achievements_pending_authorization(); ?>
-    </div>
-    <h3>
-        Accepted Achievements
-    </h3>
-    <div id='completed_achievements_requiring_athuroziation'>
-        <?php list_all_completed_authorized_achievements(); ?>
-    </div>
-    <h3>
-        Rejected Achievements
-    </h3>
-	<div id="owned_achievements_requiring_authorization">
-        <?php list_all_rejected_achievements(); ?>
-	</div>
+        <h3>
+            Accepted Achievements
+        </h3>
+        <div id='completed_achievements_requiring_athuroziation'>
+            <?php list_all_completed_authorized_achievements(); ?>
+        </div>
+        <h3>
+            Rejected Achievements
+        </h3>
+    	<div id="owned_achievements_requiring_authorization">
+            <?php list_all_rejected_achievements(); ?>
+    	</div>
+    <?php endif; ?>
 </body>
 </html>
 <?php

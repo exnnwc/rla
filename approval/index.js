@@ -1,6 +1,4 @@
-
 $(document.body).ready(function () {
-    
     $(document).on("focusin", ".explanation_input", function (event) {
         $(".explanation_input").val("");
         $(".explanation_input").css("color", "black");

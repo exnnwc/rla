@@ -1,78 +1,38 @@
-Real Life Achievements
-Your Resume Of Awesome
-
-This is mostly incomplete. I use Trello for most of the design process and 
-
-User System
-Achievements can be censored so that no one or only certain other users can view them. 
-
+This is mostly incomplete. I use Trello for most of the design process 
 
 Pages
 /
 Home Page - unsure what home page will be
 
-(Achievements as a directory name is ...weird. inventory or something else would be better. Looking up synonyms for inventory got me "summary". It'll do for now.)
-
-/summary/
+/achievements/
 Achievement Listings
 
-/summary/id=
+/achievements/id=
 Achievement Profile
 
 /user/?name=
 /user/?id=
 User Profile Page
 
-
 Friend Activity Page - Based off of Steam's Activity page
 
 Publication 
-An issue that I've realized about this whole voting up achievements is that there's nothing to prevent users from continually voting up an achievement. To go into more detail, if I do a linear progression with the upvote/downvote system (each vote up adds one point), then over time, there could be really achievements with hundreds of points that people do to gain points easily. This is problematic. 
-
-So, ideally, the cost of the vote needs to be twice of whatever it currently is. So if an achievement is 1, it costs 2 points to vote it up. If the achievement is worth 4 points, it should cost 8 points to vote it up and so on. It costs the same amount of points to vote it down. Though, that may change depending how that works.
-
-
-
+The cost to vote up an achievement is twice of whatever the achievement is currently worth. So if an achievement is worth 1, it costs 2 points to vote it up. If the achievement is worth 4 points, it should cost 8 points to vote it up and so on. Instead of the twice of what its worth, it costs an equal amount of points to vote it down. That may change depending how that works.
 
 Documentation Process
 Once a user has posted their link to documentation and marked it as completed:
-
     If it is the first of its kind:
         Any user can vote on it.
-        -People can vote it up or down in the published achievements section.
-        
     If it is a previously published achievement:
         The original publisher and other users who have completed it can vote on it. (The original publisher receives 2 votes instead of 1.) 
   
 Once all eligible voters have voted, the vote ends.
 
-Each swing vote extends the vote until the next day if there are voters remaining. 
-
 If no one votes and time runs out, it succeeds. 
-
-Voters must anonymously explain why they voted against the achievement so that the user can make a correction. All those who voted against have 24 hours to submit an explanation on why they voted negatively. If no one submits an explanation, the vote succeeds.
-
-If the user makes the stated correction and voters are  unwilling to change their vote during the next submission, mods will get involved.
-
-create table votes(
-id int unsigned primary key auto_increment,
-created timestamp default current_timestamp,
-updated default 0 on update current_timestamp,
-user_id int unsigned,
-achievement_id int unsigned,
-vote boolean,
-explanation text);
-
 
 FEATURES FOR CONSIDERATION
 Should users be able to see what other users are currently working on?
 Yes. Possibly, they could give someone points because they like that they're working on an achievement.
 
-Users receive points that can be used to vote achievements up or down. They receive one point a day. They can vote up or down on something and use a point. If they vote up, it transfers to the owner of the action(eventually/possibly).
-
 For example, one user can tag another user's achievement as something and another person can upvote that tagging action, letting the tagger receive a point. If they vote it down, the action receives a negative balance and the tagger will not receive any points from any upvotes until it becomes positive.
-
-After a user publishes an achievement, they get a say in determining the legitimacy of the documentation. Obviously, they don't have complete control, but they have a larger role than an average user. An idea is that the people who are working on the achievement or have completed it are all part of the community for that achievement and they determine the legitimacy. Though, how specifically that would work is yet to be determined.
-
-Remove "children" as a concept. They're requirement achievements. Not "children".
 
