@@ -175,20 +175,20 @@ function display_votes(){
             $date = date("m/d/y", strtotime($vote->created)); 
             $time = date("g:iA", strtotime($vote->created));
             if ($date!=$old_date){
-                echo "<div style='font-weight:bold;text-decoration:underline;text-align:center;margin-top:16px;'>$date</div>";
+                echo "<div style='font-weight:bold;text-decoration:underline;margin-top:16px;'>$date</div>";
                 $old_date = $date;
             }
-            echo "<div>";
+            echo "<div style='margin-left:16px;'>";
             if ($time!=$old_time){
-                echo "<div style='margin-top:16px;margin-bottom:4px;'>$time</div>";
+                echo "<div style='margin-top:12px;margin-bottom:4px;'>$time</div>";
             }
             echo $vote->vote
-              ? "<div style='margin-left:8px;color:green;'>Voted For"
-              : "<div style='margin-left:8px;color:red'>Voted Against";
+              ? "<div style='margin-left:12px;color:green;'>Voted For"
+              : "<div style='margin-left:12px;color:red'>Voted Against";
             if (!empty($vote->explanation)){
                echo " - $vote->explanation"; 
             }
-            echo "</div><div style='margin-left:8px'>
+            echo "</div><div style='margin-left:12px'>
                         Round #$vote->round - \"$achievement->name\" - 
                         <a href='" . SITE_ROOT . "/user/?id=" . $achievement->owner . "' class='user-link'>"
                       . fetch_username($achievement->owner) . "</a> <span style='font-style:italic;'>(<span style='text-decoration:underline;'>";

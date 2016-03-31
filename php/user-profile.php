@@ -41,19 +41,19 @@ $count = count_achievements_for_user_profile($user_profile_id);
 function display_achievements_for_user_profile($user_id, $count){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievement_set=false;
-    $statement=$connection->prepare("select * from achievements where deleted=0 and parent=0 and public=1 and published=0 and owner=? order by name"); 
+    $statement=$connection->prepare("select * from achievements where deleted=0 and parent=0 and public=1 and disowned=0 and owner=? order by name"); 
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
         $achievement_set=true;
         echo "<div style='padding:8px;"; 
-        if (has_this_achievement_already_been_published($achievement->id)){
+        if ($achievement->published!=0){
             echo "color:green;";
         } else if ($achievement->completed!=0){
             echo "color:grey;";
         } 
         echo "'><a href='".SITE_ROOT."/summary/?id=$achievement->id' style='"; 
-        if (has_this_achievement_already_been_published($achievement->id)){
+        if ($achievement->published!=0){
             echo "color:green;";
         } else if ($achievement->completed!=0){
             echo "color:grey;";

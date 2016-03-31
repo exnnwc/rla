@@ -109,10 +109,11 @@ function fetch_child_menu($achievement) {
 }
 function fetch_listing_row($achievement) {
     //this could be written so much better.
-        $string = " <tr ><td>
+/*        $string = " <tr ><td>
                     <input id='rank$achievement->id' type='number' 
                         class='change_rank_button' value='$achievement->rank' style='width:40px;text-align:center;' />
-                </td>";
+                </td>";*/   
+    $string = "<tr style='background-color:#eeeeee;'>";
     if ($achievement->parent==0){
         $string = $string . "   <td>
                                     <span id='power_caption$achievement->id' class='hand power_caption'>

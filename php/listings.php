@@ -62,7 +62,7 @@ function fetch_order_query($sort_by) {
 }
 
 function fetch_table_header($sort_by) {
-    $headers = ["Rank", "Power", "Adjusted",  "Name"];
+    $headers = ["Power", "Adjusted",  "Name"];
     $string = "<tr>";
     foreach ($headers as $header) {
         $string = $string . "<td id='sort_";

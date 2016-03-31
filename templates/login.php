@@ -5,7 +5,7 @@ $user_id=fetch_current_user_id();
 			<div style='float:right;font-size:12px;text-align:right;'>
 				<?php if ($user_id==false): ?>
 				Not logged in.
-				<a href='signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
+				<a href='<?php echo SITE_ROOT; ?>/signup/' class='text-button' style='margin-left:2px;font-size:12px;float:right;'>[ Sign Up ]</a> 
 				<span id='show_login' class='hand text-button' 
 					style='margin-left:4px;font-size:12px;float:right;'>[ Login ]</span>
 				<div id="login_form" style='margin-top:16px;display:none;'>

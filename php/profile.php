@@ -15,12 +15,12 @@ $everything_else_is_complete = is_everything_else_completed($achievement->id);
 $all_requirements_documented = are_all_requirements_documented($achievement->id);
 
 $user_id = fetch_current_user_id();
-if (($user_id===false || $user_id!=$achievement->owner) && $achievement->published==0){
+if (($user_id===false || $user_id!=$achievement->owner) && $achievement->published==0 && $achievement->public==0){
     echo "<div style='clear:both;'>You are not authorized to view this achievement.</div>";
     return;
 }
 
-if ($achievement->published==0):?>
+if ($achievement->published==0 && $achievement->public==0):?>
 
 <div id="navbar" style='text-align:center;clear:both;'>
     <div style="margin-bottom:10px;">
@@ -117,7 +117,7 @@ if ($achievement->published==0):?>
 </h1>
 <?php if ($achievement->published!=0): ?>
 <div style='margin-bottom:8px;'>
-    <?php if ($user_id===$achievement->owner): ?>
+    <?php if ($user_id===$achievement->owner && $achievement->disowned==0): ?>
     <span id="abandon_published" class='hand text-button'>[ Abandon ]</span>
     <?php elseif ($user_id!==false && $user_id!=$achievement->owner && !does_user_already_own_published_achievement($achievement->id)): ?>
     <span id="own_published" class='hand text-button'>[ Start Working On This Achievement ]</span>
@@ -138,10 +138,15 @@ if ($achievement->published==0):?>
     ?>
 </div>
 <?php if ($achievement->published!=0):?>
-    <?php if ($achievement->owner!=0): ?>
         <div style='clear:both;'>
-            <span style='font-weight:bold;'>Published</span> (Original) By 
-            <a href="<?php echo SITE_ROOT; ?>/user/?id=<?php echo $achievement->owner; ?>" class="user-link"><?php echo fetch_username($achievement->owner); ?></a>
+            <span style='font-weight:bold;'>Published</span>
+            <?php if ($achievement->disowned==0): ?>
+                 (Original) By 
+                <a href="<?php echo SITE_ROOT; ?>/user/?id=<?php echo $achievement->owner; ?>" class="user-link">
+                <?php echo fetch_username($achievement->owner); ?></a>
+            <?php elseif ($achievement->disowned==1): ?>
+                <span style='font-weight:bold;'>& Abandoned</span>
+            <?php endif; ?>
             <span id='show_unoriginals' class='hand text-button'>[ + ]</span>
             <span id='hide_unoriginals' class='hand text-button' style='display:none;'>[ - ]</span>
         </div>
@@ -164,11 +169,6 @@ if ($achievement->published==0):?>
             ?>
 
         </div>
-    <?php elseif ((int)$achievement->owner==0) : ?>
-        <div style='clear:both;'>
-            <span style='font-weight:bold;'>Published then abandoned.</span>
-        </div>
-    <?php endif; ?>
 <?php elseif ($achievement->published==0): ?> 
     <?php if ($achievement->original!=0): ?>
     <div style='clear:both;font-weight:bold;margin-bottom:4px;'>
@@ -186,6 +186,7 @@ if ($achievement->published==0):?>
     </div>
     <?php endif; ?>
 <?php endif; ?>
+<?php if ($achievement->owner==$user_id && $achievement->disowned==0): ?>
 <div style='clear:both;margin-bottom:4px;' class='toggle_public hand text-button'>
     [
     <?php 
@@ -195,6 +196,7 @@ if ($achievement->published==0):?>
     ?>
     ]
 </div>
+<?php endif; ?>
 <div style='clear:both;'>
     <div>
             <?php if ($achievement->documented) :?>
@@ -371,7 +373,7 @@ if ($achievement->published==0):?>
 </h3>
 <span id="current_description">
     <?php
-    echo $achievement->description ? format_appropriately($achievement->description) : "<div style=' font-style:italic;'>There is no description.</div>";
+    echo $achievement->description ? format_appropriately($achievement->description) : "<div style=' font-style:italic;'>None.</div>";
     ?>
 </span>
 <span id="new_description_input" style="display:none">
@@ -395,8 +397,8 @@ if ($achievement->published==0):?>
         <input id="new_child_name" type='text' maxlength="255"/>
         <input id="create_child" type="button" value="Quick Create"/>
     </div>
-    <div id='child_achievements_of_<?php echo $achievement->id; ?>'>
-    </div>
+    <table id='child_achievements_of_<?php echo $achievement->id; ?>' style='width:800px;'>
+    </table>
 </div>
 
 

@@ -498,12 +498,14 @@ function delete_children($id){
 
 }
 
+
 function disown_achievement($id){
     $connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement=$connection->prepare("update achievements set disowned=1 where id=?");
     $statement->bindValue(1, $id, PDO::PARAM_INT);
     $statement->execute();
 }
+
 function disown_children($id){
     $children=fetch_children($id);
     foreach ($children as $child){

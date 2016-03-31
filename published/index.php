@@ -73,12 +73,15 @@ function list_all_published_achievements(){
                     <a href='".SITE_ROOT."/summary/?id=$achievement->id'>$achievement->name</a>
                     <span class='text-button' style='font-style:italic;'>";
         if  ($user_id===$achievement->owner){
-            echo "Self-published";
-            
+            if ($achievement->disowned==0){
+                echo "Self-published";
+            } else if ($achievement->disowned==1){
+                echo "You abandoned this achievement.";
+            }           
         } else if  ($user_id!==$achievement->owner){
-            if ((int)$achievement->owner>0){
+            if ($achievement->disowned==0){
                 echo "Published by <a href='".SITE_ROOT . "/user/?id=". $achievement->owner . "' class='user-link'>" . fetch_username($achievement->owner) . "</a>";
-            } else if ((int)$achievement->owner===0){
+            } else if ($achievement->disowned==1){
                 echo "Abandoned by publisher.";
             }
 
