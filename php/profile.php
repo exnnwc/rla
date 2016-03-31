@@ -20,7 +20,7 @@ if (($user_id===false || $user_id!=$achievement->owner) && $achievement->publish
     return;
 }
 
-if ($achievement->published==0 && $achievement->public==0):?>
+if ($achievement->published==0 && $achievement->owner==$user_id):?>
 
 <div id="navbar" style='text-align:center;clear:both;'>
     <div style="margin-bottom:10px;">
@@ -33,7 +33,7 @@ if ($achievement->published==0 && $achievement->public==0):?>
 </div>
 <div style='margin-bottom:8px;'>
     <div style='clear:both; float:left;'>
-    <?php if (!$achievement->deleted && $achievement->authorizing==0): ?>
+    <?php if ($achievement->authorizing==0): ?>
     <input id='delete<?php echo $achievement->id; ?>' 
            class='remove_achievement_button' type='button' value='X' 
            title='
@@ -179,7 +179,7 @@ if ($achievement->published==0 && $achievement->public==0):?>
             <?php 
             echo ($achievement->owner === $user_id)
                ? "<span style='font-style:italic;'>This achievement is yours.</span>"
-               : "<a href='<?php echo SITE_ROOT; ?>/user/?id=<?php echo $achievement->owner; ?>'>"
+               : "Created by <a href='" . SITE_ROOT ."/user/?id=$achievement->owner'>"
                . fetch_username($achievement->owner)
                . "</a>";
         ?> 
@@ -211,12 +211,12 @@ if ($achievement->published==0 && $achievement->public==0):?>
                         </span>
                     <?php endif; ?>
 			    <?php elseif ($achievement->published==0): ?>	
-    				<?php if ($achievement->authorizing==0 ): ?>
+    				<?php if ($achievement->authorizing==0 && $user_id==$achievement->owner): ?>
     					<span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
     				<?php endif; ?>
     				<div style='margin-left:24px;margin-top:4px;'>
     					
-    					<?php if ($achievement->authorizing==0): ?>
+    					<?php if ($achievement->authorizing==0 && $user_id==$achievement->owner): ?>
     					<span id='show_new_documentation' class='hand text-button'> [ + ] </span>
     					<?php endif; ?>
     					<?php
@@ -246,7 +246,7 @@ if ($achievement->published==0 && $achievement->public==0):?>
                         </div>
 
                 </div>
-            <?php elseif (!$achievement->documented) : ?>
+            <?php elseif (!$achievement->documented && $achievement->owner == $user_id) : ?>
                 Undocumented 
                 <span  id='change_documentation' class='hand text-button'>[ Toggle ]</span>
             <?php endif; ?>
@@ -254,7 +254,7 @@ if ($achievement->published==0 && $achievement->public==0):?>
 </div>
 
 
-<?php if ($achievement->published==0): ?>
+<?php if ($achievement->published==0 && $user_id==$achievement->owner): ?>
 <div style='clear:both;margin-top:4px;'>
     <span id='achievement_active<?php echo $achievement->id; ?>' 
 	<?php if ($achievement->completed==0 && $achievement->authorizing==0): ?>
@@ -277,7 +277,7 @@ if ($achievement->published==0 && $achievement->public==0):?>
 <div>
     <?php if ($achievement->locked != 0): ?> 
      <span style="font-weight:bold;" title="Achievement's information cannot be changed.">Locked </span>        
-        <?php if ($achievement->published==0 && $achievement->original==0): ?>
+        <?php if ($achievement->published==0 && $achievement->original==0 && $user_id==$achievement->owner): ?>
             (<?php echo date("m/d/y", strtotime($achievement->locked)) ?>)
             <span class='toggle_locked_status hand text-button'>[ Unlock ]</span>
         <?php elseif ($achievement->published!=0): ?>
@@ -296,7 +296,7 @@ if ($achievement->published==0 && $achievement->public==0):?>
     ?>
 </div>
 
-<?php if($achievement->published==0): ?>
+<?php if($achievement->published==0 ): ?>
     <div>
         Created: <?php echo date($pref_date_format, strtotime($achievement->created)); ?>
     </div>
@@ -317,7 +317,7 @@ if ($achievement->published==0 && $achievement->public==0):?>
                         echo "' >".fetch_due_message($num_of_days_til_due) . "</span>";
                     ?>
                 <?php endif; ?>
-    				<?php if ($achievement->authorizing==0): ?>
+    				<?php if ($achievement->authorizing==0 && $user_id==$achievement->owner): ?>
     					<span id='show_new_due_date' class='hand text-button'>[ + ] </span>
     				<?php endif; ?>
                     <span id='hide_new_due_date' class='hand text-button' style='display:none;'>[ - ] </span>
@@ -342,16 +342,16 @@ if ($achievement->published==0 && $achievement->public==0):?>
         }
         ?>
     </div>
+<?php if ($achievement->owner == $user_id) :?>
     <div> 
         Rank: <?php echo $achievement->rank; ?>
     </div>
     <div>
-        Power: <?php echo $achievement->power_adj; ?>
+        Power: <?php echo $achievement->power ?> (<?php echo $achievement->power_adj; ?>)
     </div>
-<?php endif; ?>
 <div >
     Tags: <span id='list_of_tags<?php echo $achievement->id; ?>' style='margin-right:8px;'></span>
-	<?php if ($achievement->authorizing==0): ?>
+	<?php if ($achievement->authorizing==0 && $user_id==$achievement->owner): ?>
     <span id="show_new_tags" class="hand text-button h-normal" style=''> [ + ] </span>
 	<?php endif; ?>
     <span id='new_tags' style='display:none;'>
@@ -361,6 +361,8 @@ if ($achievement->published==0 && $achievement->public==0):?>
         <input id="create_tag" type='button' value='New Tag'>
     </span>
 </div>
+<?php endif; ?>
+<?php endif; ?>
 
 <h3>
     Description
@@ -402,7 +404,7 @@ if ($achievement->published==0 && $achievement->public==0):?>
 </div>
 
 
-<?php if ($achievement->published==0):?>
+<?php if ($achievement->published==0 && $user_id==$achievement->owner):?>
 <h2 style='text-align:center;border-top:1px dashed black;padding-top:32px;padding-bottom:32px;'>
 
     Other Achievements

@@ -137,10 +137,10 @@ function change_documentation_status_of_children($id, $status){
     $children =  fetch_children($id);
     foreach ($children as $child){
         $achievement = fetch_achievement($child);
-        if ($achievement->completed=0 && $achievement->authorizing=0 && $achievement->published=0){
+        if ($achievement->completed==0 && $achievement->authorizing==0 && $achievement->published==0){
             change_documentation_status($achievement->id, $status);
         } else if ($achievement->documented!=$status 
-          && ($achievement->completed=0 || $achievement->authorizing=0 || $achievement->published=0)){
+          && ($achievement->completedi==0 || $achievement->authorizing==0 || $achievement->published==0)){
             create_history($id, 
               "Tried to change achievement to $message but was unable to, 
                 because it was already completed, in approval or published."); 
@@ -280,7 +280,7 @@ function check_achievement_authorization_status(){
         $vote_summary=summarize_vote($achievement->id);
         if ($num_of_seconds<=0 || ($achievement->original!=0 && have_all_voters_voted($achievement->id))){
             if ($vote_summary["total"]==0 || ($vote_summary["total"]>0 &&  $vote_summary["status"]=="for")){
-                $connection->exec("update achievements set authorized=now(), completed=now() where id=$achievement->id");
+                $connection->exec("update achievements set authorizing=0, authorized=now(), completed=now() where id=$achievement->id");
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="tie"){
                 extend_vote($achievement->id, 24); 
             } else if ($vote_summary["total"]>0 && $vote_summary["status"]=="against"){

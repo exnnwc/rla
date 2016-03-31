@@ -108,6 +108,7 @@ function fetch_child_menu($achievement) {
                 class='change_child_rank_button' value='$achievement->rank' style='width:32px;text-align:center;' />";
 }
 function fetch_listing_row($achievement) {
+    $user_id = fetch_current_user_id();
     //this could be written so much better.
 /*        $string = " <tr ><td>
                     <input id='rank$achievement->id' type='number' 
@@ -125,18 +126,24 @@ function fetch_listing_row($achievement) {
                                     $achievement->power_adj
                                 </td>";
     }
-    $string = $string . "<td style='text-align:left'> 
-                    <input type='button'  id='activity$achievement->id' ";
-    $string = !$achievement->active 
-        ? $string . "  class='activate_button' style='background-color:red;' />" 
-        : $string . "  class='deactivate_button' style='background-color:green;' />";
-    $string = $string . "<a href='" . SITE_ROOT . "/summary/?id=$achievement->id' style='text-decoration:none;";
-    if ($achievement->completed!=0){
-        $string = $string . "text-decoration:line-through;";
-    } else if ($achievement->active) {
-        $string = $string . "color:green;";
-    } else if (!$achievement->active) {
-        $string = $string . "color:red;";
+        $string = $string . "<td style='text-align:left'>";
+    if ($achievement->owner===$user_id){
+        $string = $string . "
+                        <input type='button'  id='activity$achievement->id' ";
+        $string = !$achievement->active 
+            ? $string . "  class='activate_button' style='background-color:red;' />" 
+            : $string . "  class='deactivate_button' style='background-color:green;' />";
+
+    }
+    $string = $string . "<a href='" . SITE_ROOT . "/summary/?id=$achievement->id' style='color:grey;text-decoration:none;";
+    if ($achievement->owner===$user_id){
+        if ($achievement->completed!=0){
+            $string = $string . "text-decoration:line-through;";
+        } else if ($achievement->active) {
+            $string = $string . "color:green;";
+        } else if (!$achievement->active) {
+            $string = $string . "color:red;";
+        }
     }
     if (strlen($achievement->name)>48){
         $achievement->name = substr($achievement->name, 0, 48) . "...";

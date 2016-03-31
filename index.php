@@ -37,7 +37,8 @@ include($_SERVER['DOCUMENT_ROOT'] ."/rla/templates/navbar.php");
 include($_SERVER['DOCUMENT_ROOT'] ."/rla/templates/login.php"); 
 if ($user_id!=false): ?>
 <div style='clear:both;margin-bottom:16px;padding-top:16px;'>
-    <span style='color:black;'> [ Incomplete ] </span>
+    <span style='color:black;font-weight:bold;'> [ All ] </span>
+    <span style='color:black;'> [ Work In Progress ] </span>
     <span style='color:grey;'>[ Completed ]</span>
     <span style='color:green;'>[ Published ]</span>
 </div>
@@ -49,7 +50,7 @@ if ($user_id!=false): ?>
 <?php
 ($user_id==false)
   ? display_landing_page()
-  : display_all_public_achievements();
+  : display_all_public_achievements(0);
 ?>
 </div>
 
@@ -59,7 +60,21 @@ if ($user_id!=false): ?>
 
 <?php 
 
-function display_all_public_achievements(){
+function display_all_public_achievements($filter){
+    switch ($filter){  
+        case 0:
+            $where = "";
+            break;
+        case 1:
+            $where = " and completed=0 and published=0"; 
+            break;
+        case 2:
+            $where = " and completed!=0"; 
+            break;
+        case 3:
+            $where = " and published!=0"; 
+            break;
+    }
 	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $statement = $connection->query("select * from achievements where deleted=0 and parent=0 and public=1"); 
     while ($achievement = $statement->fetchObject()){
