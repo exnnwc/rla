@@ -8,6 +8,10 @@ Create a log of all AJAX calls.
 /js/ajax.js
 Be able to handle JSON references.
 
+
+I'm beginning to think that the entire format of RLA is wrong. I don't believe this is just perfectionism. This site started as something for myself that I jury-rigged into a platform. I'm starting to think this was the wrong way to go about things.
+
+
 03/28/16
 So for like the four or fifth time I'm building a children-oriented version of a function to iterate through an achievement's ascendants. I'm starting to think it might be more effective to just create a top record to indicate the shared hierarchy and indicate which level they're at to allow for ascendant functionions that start midway instead of at the top of the hierarchy. 
 
