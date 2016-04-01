@@ -86,7 +86,6 @@ function change_authorizing_status($id, $status){
 	$statement = $connection -> prepare ("update achievements set round=round+1, authorizing=$authorizing where id=?");
 	$statement->bindValue(1, $id, PDO::PARAM_INT);
 	$statement->execute();
-	
 }
 
 function change_description($id, $description) {

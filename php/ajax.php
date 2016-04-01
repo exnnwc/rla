@@ -10,19 +10,20 @@ require_once("tags.php");
 require_once("todo.php");
 require_once("user.php");
 require_once("votes.php");
-error_log("DEBUG:".$_POST['function_to_be_called']);
+error_log("AJAX:".$_POST['function_to_be_called']);
+
 switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING)) {
     case "abandon_published":
         echo json_encode(abandon_published(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT)));
         break;
     case "activate_achievement":
-        activate_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
+        echo json_encode(activate_achievement(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT)));
         break;
     case "associate_action":
         associate_action(filter_input(INPUT_POST, 'achievement_id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
 	case "change_authorizing_status":
-		change_authorizing_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'status', FILTER_VALIDATE_BOOLEAN));
+		echo json_encode(change_authorizing_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'status', FILTER_VALIDATE_BOOLEAN)));
 		break;
     case "cancel_todo":
         cancel_todo(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT));
@@ -31,7 +32,7 @@ switch (filter_input(INPUT_POST, "function_to_be_called", FILTER_SANITIZE_STRING
         cancel_work(filter_input(INPUT_POST, 'action_id', FILTER_SANITIZE_NUMBER_INT));
         break;
     case "change_description":
-        change_description(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING));
+        echo json_encode(change_description(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING)));
         break;
     case "change_documentation_status":
         change_documentation_status(filter_input(INPUT_POST, 'id', FILTER_SANITIZE_NUMBER_INT), filter_input(INPUT_POST, 'status', FILTER_SANITIZE_STRING));

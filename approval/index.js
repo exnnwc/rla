@@ -22,7 +22,7 @@ $(document.body).ready(function () {
         if (explanation.trim() === "Please explain why if nay." || explanation.trim()==""){
             explanation="";
         }
-        createVote(achievement_id, vote);
+        createVote(achievement_id, vote, explanation);
     
         window.reload();
     });

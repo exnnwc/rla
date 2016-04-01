@@ -1,3 +1,13 @@
+04/01/16
+/approval/index.php
+Feel like the mysql query to select all achievements that have been rejected may be faulty.
+
+/php/ajax.php
+Create a log of all AJAX calls.
+
+/js/ajax.js
+Be able to handle JSON references.
+
 03/28/16
 So for like the four or fifth time I'm building a children-oriented version of a function to iterate through an achievement's ascendants. I'm starting to think it might be more effective to just create a top record to indicate the shared hierarchy and indicate which level they're at to allow for ascendant functionions that start midway instead of at the top of the hierarchy. 
 

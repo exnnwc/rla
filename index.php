@@ -7,10 +7,9 @@ require_once($_SERVER['DOCUMENT_ROOT'] ."/rla/php/user.php");
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/rla.css">
+        <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/css/rla.css">
         <!--Replace this with a web link when the site goes live.-->
         <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
-        <script src="index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/error.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/global.js"></script>

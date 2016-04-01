@@ -1,7 +1,13 @@
+h3{
+    margin-bottom:4px;
+}
 .content-div{
     margin-left:16px;
 }
 
 #approval-explanation{
     font-size:12px;
+}
+.indent-1{
+    margin-left:24px;
 }

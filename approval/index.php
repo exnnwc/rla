@@ -1,5 +1,6 @@
 <?php
 	require_once("../php/config.php");
+	require_once("../php/display.php");
 	require_once("../php/user.php");
     require_once("../php/votes.php");
     check_achievement_authorization_status();
@@ -9,18 +10,14 @@
 <html>
 <head>
 <style>
-    .indent-1{
-        margin-left:24px;
-    }
-    h3{
-        margin-bottom:4px;
-    }
 </style>
-        <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/rla.css">
-        <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/approval.css">
-        <script src="<?php echo SITE_ROOT; ?>/approval/index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/jquery-2.1.4.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/css/rla.css">
+        <link rel="stylesheet" type="text/css" href="<?php echo SITE_ROOT; ?>/css/approval.css">
+        <script src="<?php echo SITE_ROOT; ?>/approval/index.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/achievements.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/display.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/global.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
@@ -60,20 +57,20 @@
         <h3>
             Pending Approval
         </h3>
-        <div id="achievements_pending_approval">
-            <?php list_all_achievements_pending_authorization(); ?>
+        <div id="achievements_pending_approval" class='content-div'>
+            <?php list_pending_achievements(); ?>
         </div>
         <h3>
             Accepted Achievements
         </h3>
-        <div id='completed_achievements_requiring_athuroziation'>
-            <?php list_all_completed_authorized_achievements(); ?>
+        <div id='completed_achievements_requiring_authorization' class='content-div'>
+            <?php list_achievements_with_votes(false); ?>
         </div>
         <h3>
             Rejected Achievements
         </h3>
-    	<div id="owned_achievements_requiring_authorization">
-            <?php list_all_rejected_achievements(); ?>
+    	<div id="owned_achievements_requiring_authorization" class='content-div'>
+            <?php list_achievements_with_votes(true); ?>
     	</div>
     <?php endif; ?>
 </body>
@@ -83,24 +80,27 @@
 function display_vote_summary($achievement){
 
            $vote_summary = summarize_vote($achievement->id);
-            $string = display_vote_timer($achievement->id)  
-              . "<span style='font-style:italic;' class='";
             if ($vote_summary["status"]=="tie"){
-                if ($vote_summary["total"]!=0){
-                    $string = $string . "tie'> Tie";
-                } else if ($vote_summary["total"]==0){
-                    $string = $string . "tie'> Approved if no one votes against.";
-                }
+                $class_name="tie"; 
+                    $vote_caption="Tie";
             } else if ($vote_summary["status"]=="for"){
-                $string = $string . "win'> Leading by ". ($vote_summary["yays"] - $vote_summary["nays"]);
+                $class_name="win";
+                if ($vote_summary["total"]==0){
+                    $vote_caption="Win by default. No votes.";
+                } else if ($vote_summary["total"]>0){
+                    $vote_caption="Leading by " . ($vote_summary["yays"] - $vote_summary["nays"]);
+                }
+
             } else if ($vote_summary["status"]=="against"){
-                $string = $string . "lose'> Losing by " . ($vote_summary["nays"] - $vote_summary["yays"]);
+                $class_name="lose"; 
+                $vote_caption="Losing by " . ($vote_summary["nays"] - $vote_summary["yays"]);
             }
-            $string = $string . "</span>";
+            $string = display_vote_timer($achievement->id)  
+              . "<span style='font-style:italic;' class='$class_name'> $vote_caption</span>";
     return $string;
 }
 
-function list_all_completed_authorized_achievements(){
+function list_achievements_with_votes($reject){
 	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievements_set=false;
 	$user_id = fetch_current_user_id();
@@ -108,7 +108,10 @@ function list_all_completed_authorized_achievements(){
         echo "None.";
 		return;
 	} 
-    $statement = $connection->prepare("select * from achievements where deleted=0 and abandoned=0 and completed!=0 and authorized!=0 and owner=?");
+    $query = !$reject 
+      ? "select * from achievements where deleted=0 and abandoned=0 and completed!=0 and authorized!=0 and owner=?"
+      : "select * from achievements where  deleted=0 and abandoned=0 and completed=0 and authorizing=0 and owner=?  and id in (select achievement_id from votes where active=1)";
+    $statement = $connection->prepare($query);
     $statement->bindValue(1, $user_id, PDO::PARAM_INT);
     $statement->execute();
     while ($achievement = $statement->fetchObject()){
@@ -123,7 +126,7 @@ function list_all_completed_authorized_achievements(){
     }
 }
 
-function list_all_achievements_pending_authorization(){
+function list_pending_achievements(){
 	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
     $achievements_set=false;
 	$user_id = fetch_current_user_id();
@@ -145,25 +148,3 @@ function list_all_achievements_pending_authorization(){
     }
 }
 
-function list_all_rejected_achievements(){
-	$connection = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PWD);
-    $achievements_set=false;
-	$user_id = fetch_current_user_id();
-	if ($user_id==false){
-        echo "None.";
-		return;
-	} 
-    $statement = $connection->prepare("select * from achievements where  deleted=0 and abandoned=0 and completed=0 and authorizing=0 and owner=?  and id in (select achievement_id from votes where active=1)");
-    $statement->bindValue(1, $user_id, PDO::PARAM_INT);
-    $statement->execute();
-    while ($achievement = $statement->fetchObject()){
-        $achievements_set=true;
-        echo "  <div>
-                    <a href='" . SITE_ROOT ."/summary/?id=$achievement->id'>$achievement->name</a> 
-                    <a href='" . SITE_ROOT ."/votes/?id=$achievement->id' class='hand text-button'>[ Vote Summary ]</a> 
-                </div>";
-    }
-    if (!$achievements_set){
-        echo "None.";
-    }
-}

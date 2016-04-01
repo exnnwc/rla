@@ -1,0 +1,10 @@
+.date-header{
+    font-weight:bold;
+    text-decoration:underline;
+    margin-top:16px;
+}
+
+.time-header{
+    margin-top:12px;
+    margin-bottom:4px;
+}

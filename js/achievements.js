@@ -1,41 +1,42 @@
 function abandonPublished(id){
-    data = {function_to_be_called: "abandon_published", id: id};
-    AJAXOnly(data, function (results){
-        console.log(results);
-        //window.location.href = "http://localhost/rla/published/";
-    });
-
-}
-function activateAchievement(id, parent) {
     if (!testIfVariableIsNumber(id, "id")) {
         return;
     }
-    data = {function_to_be_called: "activate_achievement", id: id};
+    data = {function_to_be_called: "abandon_published", id: id};
+    AJAXThenReload(data, id, function (results){
 
-    AJAXThenReload(data, parent, function () {
+    });
+}
+function activateAchievement(id, parent) {
+    if (!testIfVariableIsNumber(id, "id") 
+      || !testIfVariableIsNumber(parent, "parent")) {
+        return;
+    }
+    data = {function_to_be_called: "activate_achievement", id: id};
+    AJAXThenReload(data, parent, function (result) {
+
     });
 }
 
 function changeAuthorizingStatus(id, status){
+    if (!testIfVariableIsNumber(id, "id") 
+      ||  !testIfVariableIsBoolean(status, "status")) {
+        return;
+    }
 	data={function_to_be_called:"change_authorizing_status", id:id, status:status};
 	AJAXThenReload(data, id, function (result){
-		console.log(result);
+
 	});
 }
 function changeDescription(id, description) {
     if (!testIfVariableIsNumber(id, "id")
-            || !testStringForMaxLength(description, 20000, "description")) {
+      || !testStringForMaxLength(description, 20000, "description")) {
         return;
     }
+    data = {function_to_be_called: "change_description", id: id, description: description};
+    AJAXThenReload(data, id, function(result){
 
-    $.ajax({
-        method: "POST",
-        url: "/rla/php/ajax.php",
-        data: {function_to_be_called: "change_description", id: id, description: description}
-    })
-            .done(function (result) {
-                displayProfile(id);
-            });
+    });
 }
 
 function changeDocumentationStatus(id, status) {

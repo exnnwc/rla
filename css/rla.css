@@ -1,11 +1,14 @@
 a {
     color:black;
 }
-.completed {
-    color:grey;
+.completed, .user-link, .tie {
+    color:gray;
 }
-.published{
+.published, .win, .for{
     color:green;
+}
+.loss, .against{
+    color:red;
 }
 .active-vote{
     font-weight:bold;
@@ -41,11 +44,6 @@ a {
     font-weight:normal;
 
 }
-.inactive-vote{
-}
-.loss{
-    color:red;
-}
 .tag{
     background-color:lightgrey;
     margin-right:8px;
@@ -78,9 +76,6 @@ border-radius:4px 4px 4px 4px;
     float:left;
     text-align:right;
 }
-.tie {
-    color:grey;
-}
 .underline-hover{
     text-decoration:none;
 }
@@ -88,12 +83,3 @@ border-radius:4px 4px 4px 4px;
    text-decoration:underline; 
 }
 
-.user-link{
-    color:grey;
-}
-.win {
-    color:green;
-}
-
-#documentation_input{
-}
