@@ -13,6 +13,7 @@ require_once($_SERVER['DOCUMENT_ROOT'] ."/rla/php/user.php");
         <script src="<?php echo SITE_ROOT; ?>/js/ajax.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/error.js"></script>
         <script src="<?php echo SITE_ROOT; ?>/js/global.js"></script>
+        <script src="<?php echo SITE_ROOT; ?>/js/user.js"></script>
         <title><?PHP echo SITE_NAME ?></title>
     </head>
 <body>
